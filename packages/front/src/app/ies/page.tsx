@@ -18,6 +18,7 @@ export default function IesPage() {
       filtersPanel={<FiltersPanelIes module={module} />}
       toolbar={<SortingOptionsIes module={module} />}
       results={<SearchResultSectionIes module={module} />}
+      emptyPrompt="Busque uma instituição para ver os resultados"
     />
   )
 }

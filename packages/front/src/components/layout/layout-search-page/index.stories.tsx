@@ -29,6 +29,20 @@ export const Cursos: Story = {
     filtersPanel: slot('Painel de filtros'),
     toolbar: slot('Ordenação'),
     results: slot('Resultados'),
+    hasSearched: true,
+  },
+}
+
+export const SemBusca: Story = {
+  args: {
+    module: '1',
+    searchLabel: 'Buscar curso',
+    searchHeader: slot('Cabeçalho de busca'),
+    activeFilters: slot('Filtros ativos'),
+    filtersPanel: slot('Painel de filtros'),
+    toolbar: slot('Ordenação'),
+    results: slot('Resultados'),
+    hasSearched: false,
   },
 }
 

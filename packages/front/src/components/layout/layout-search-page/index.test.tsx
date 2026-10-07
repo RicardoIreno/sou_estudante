@@ -3,10 +3,11 @@ import { describe, expect, it } from 'vitest'
 import { MODULE_META } from '@/lib/module'
 import { LayoutSearchPage } from '.'
 
-const renderLayout = (module?: '1' | '4') =>
+const renderLayout = (module?: '1' | '4', hasSearched = true) =>
   render(
     <LayoutSearchPage
       module={module}
+      hasSearched={hasSearched}
       searchHeader={<p>cabeçalho</p>}
       activeFilters={<p>filtros ativos</p>}
       filtersPanel={<p>filtros</p>}
@@ -54,6 +55,27 @@ describe('LayoutSearchPage', () => {
     const { container } = renderLayout('4')
 
     expect(container.querySelector('[data-module="4"]')).toBeInTheDocument()
+  })
+
+  it('hides filters, sorting and results until a search is made', () => {
+    renderLayout(undefined, false)
+
+    expect(screen.getByText('cabeçalho')).toBeInTheDocument()
+    expect(screen.queryByText('filtros')).not.toBeInTheDocument()
+    expect(screen.queryByText('filtros ativos')).not.toBeInTheDocument()
+    expect(screen.queryByText('ordenação')).not.toBeInTheDocument()
+    expect(screen.queryByText('resultados')).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Faça uma busca para ver os resultados'),
+    ).toBeInTheDocument()
+  })
+
+  it('shows the filters, sorting and results once a search is made', () => {
+    renderLayout(undefined, true)
+
+    expect(screen.getByText('filtros')).toBeInTheDocument()
+    expect(screen.getByText('ordenação')).toBeInTheDocument()
+    expect(screen.getByText('resultados')).toBeInTheDocument()
   })
 
   it('omits the module attribute when not provided', () => {
