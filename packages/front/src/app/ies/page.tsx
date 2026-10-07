@@ -6,7 +6,7 @@ import SearchResultSectionIes from '@/components/search/search-result-section/wr
 import { SortingOptionsIes } from '@/components/search/sorting-options/wrappers/sorting-options-ies/sorting-options-ies'
 import type { Module } from '@/lib/module'
 
-const module: Module = '1'
+const module: Module = '4'
 
 export default function IesPage() {
   return (

@@ -104,6 +104,17 @@
   --container-pages: 1100px;
 
   --ease-wave: cubic-bezier(0.55, 0.5, 0.45, 0.5);
+
+  /* Movimento · Durações e easings */
+  --duration-fast: 150ms;
+  --duration-cruise: 400ms;
+  --duration-page: 400ms;
+  --ease-prow: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-page: var(--ease-prow);
+  --ease-tide: var(--ease-wave);
+
+  /* Transição de página (fade + subida) */
+  --page-transition-offset: 8px;
 }
 
 /* Temas por módulo */
@@ -223,6 +234,27 @@ body {
   animation: pulso-esqueleto 1.2s var(--ease-tide) infinite;
   background: var(--color-plum-100);
   border-radius: 10px;
+}
+
+/* ==========================================================================
+   Transição de página (fade + leve subida)
+   ========================================================================== */
+.page-transition {
+  animation-name: page-transition-enter;
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--ease-page);
+  animation-fill-mode: both;
+}
+
+@keyframes page-transition-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--page-transition-offset), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Todo movimento respeita prefers-reduced-motion */
