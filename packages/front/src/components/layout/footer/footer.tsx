@@ -8,7 +8,7 @@ export const Footer = ({ className }: FooterProps) => {
   return (
     <footer
       className={cn(
-        'flex justify-center border-t border-plum-100 bg-footer-background px-5 py-3.5',
+        'flex justify-center px-5 py-3.5',
         className,
       )}
     >
