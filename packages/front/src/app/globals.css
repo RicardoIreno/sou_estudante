@@ -22,7 +22,7 @@
   --color-enade-warn-surface: #fff3e0;
   --color-enade-low: #c0392b;
   --color-enade-low-surface: #fdecea;
-  --color-progress-bar-foreground: oklch(0.48 0.03 240);
+  --color-progress-bar-foreground: oklch(81.5% 0.055 215.50);
   --color-progress-bar-background: oklch(0.94 0.01 75);
 
   /* Cores · Callout (sobrescritas por [data-variant] em .callout) */
@@ -61,21 +61,19 @@
   --color-text-muted: #5b5266;
 
   /*  Tipografia · Famílias */
+  --font-mono: "DM Mono", ui-monospace, monospace; /* dados numéricos */
+ --font-display: "Source Sans 3", system-ui, sans-serif;
+
 
   /* Protagonista — conteúdo principal (card, callout, textos principais) */
   --font-protagonist: "Source Sans 3", system-ui, sans-serif;
   /* Coadjuvante — apoio (button, tag, filtros, tips) */
   --font-coadjuvant: "Source Sans 3", system-ui, sans-serif;
 
-  /* Títulos — display (Playfair Display) */
-  --font-title-protagonist: var(--font-display);
-  --font-title-coadjuvant: var(--font-display);
+  --font-title-protagonist: "Source Sans 3", system-ui, sans-serif;
+  --font-title-coadjuvant: "Source Sans 3", system-ui, sans-serif;
 
-  --font-mono: "DM Mono", ui-monospace, monospace; /* dados numéricos */
-
-  /* Display — títulos de destaque (Playfair Display) */
-  --font-display: "Playfair Display", Georgia, serif;
-
+ 
   /* Tipografia · Escala */
 
   /* Protagonista — conteúdo principal (card, callout, textos principais) */

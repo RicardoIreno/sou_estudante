@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { DM_Mono, Playfair_Display, Source_Sans_3 } from 'next/font/google'
+import { DM_Mono, Source_Sans_3  } from 'next/font/google'
 import { LayoutSite } from '@/components/layout/layout-site'
 import { Footer } from '@/components/layout/footer/footer'
 import { WavesShape } from '@/assets/waves'
@@ -17,11 +17,6 @@ const dmMono = DM_Mono({
   weight: ['400', '500'],
 })
 
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-display',
-})
-
 export const metadata: Metadata = {
   title: 'SoU_Estudante',
   description:
@@ -36,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`bg-site-background relative ${sourceSans.variable} ${dmMono.variable} ${playfair.variable} antialiased`}
+        className={`bg-site-background relative ${sourceSans.variable} ${dmMono.variable} antialiased`}
       >
         <LayoutSite className='z-10'>{children}</LayoutSite>
         <Footer className='z-10' />

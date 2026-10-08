@@ -22,6 +22,22 @@ describe('Card', () => {
     expect(screen.getByText('Gratuito')).toHaveAttribute('data-module', '3')
   })
 
+  it('renders rich tags with icon and source', () => {
+    render(
+      <Card module="2">
+        <Card.Tags
+          source={[
+            { label: 'Tubarão, SC', source: 'Censo' },
+            { label: '19 vagas', source: 'Censo', tone: 'neutral' },
+          ]}
+        />
+      </Card>,
+    )
+    expect(screen.getByText('Tubarão, SC')).toHaveAttribute('data-module', '2')
+    expect(screen.getByText('19 vagas')).not.toHaveAttribute('data-module')
+    expect(screen.getAllByText(/Censo/)).toHaveLength(2)
+  })
+
   it('renders the header title and subtitle', () => {
     render(
       <Card>

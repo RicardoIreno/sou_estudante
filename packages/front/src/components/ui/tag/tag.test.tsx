@@ -17,4 +17,17 @@ describe('Tag', () => {
     render(<Tag label="Gratuito" module="1" className="custom-class" />)
     expect(screen.getByText('Gratuito')).toHaveClass('custom-class')
   })
+
+  it('renders an icon and a source alongside the label', () => {
+    render(
+      <Tag
+        label="Tubarão, SC"
+        source="Censo"
+        icon={<svg aria-hidden data-testid="icon" />}
+      />,
+    )
+    expect(screen.getByText('Tubarão, SC')).toBeInTheDocument()
+    expect(screen.getByText(/Censo/)).toBeInTheDocument()
+    expect(screen.getByTestId('icon')).toBeInTheDocument()
+  })
 })

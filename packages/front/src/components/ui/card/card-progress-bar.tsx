@@ -11,7 +11,7 @@ export const CardProgressBar = ({ title, className, percentage }: Props) => {
 
   return (
     <div className="m-1">
-      <div className="flex justify-between font-coadjuvant text-coadjuvant-sm font-bold uppercase text-fg-muted">
+      <div className="flex justify-between font-coadjuvant text-coadjuvant-sm text-fg-muted">
         <p>{title}</p>
         <p>{percentage}</p>
       </div>

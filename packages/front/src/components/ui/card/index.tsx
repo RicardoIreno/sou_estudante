@@ -12,3 +12,5 @@ export const Card = Object.assign(CardRoot, {
   ProgressBar: CardProgressBar,
   Fields: CardFields,
 })
+
+export type { CardTag } from './card-tags'
