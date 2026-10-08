@@ -94,10 +94,36 @@ func TestBuildAggregationsUsaCamposKeywordSemSufixo(t *testing.T) {
 func TestBuildAggregationsIncluiTodosOsGrupos(t *testing.T) {
 	aggs := buildAggregations()
 
-	for _, key := range []string{"ufs", "graus", "modalidades", "enades", "categorias", "turnos"} {
+	for _, key := range []string{"ufs", "graus", "modalidades", "enades", "categorias", "turnos", "gratuitos"} {
 		if _, ok := aggs[key]; !ok {
 			t.Errorf("esperado agregação %q, obtido %v", key, aggs)
 		}
+	}
+}
+
+// A contagem de gratuitos deve usar o campo booleano curso.in_gratuito, e não
+// a heurística antiga baseada em categoria/IES.
+func TestBuildAggregationsGratuitosFiltraInGratuito(t *testing.T) {
+	aggs := buildAggregations()
+
+	agg, ok := aggs["gratuitos"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("agregação gratuitos ausente ou com tipo inesperado: %v", aggs["gratuitos"])
+	}
+	filters, ok := agg["filters"].(map[string]interface{})["filters"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("esperado nó filters.filters, obtido %v", agg["filters"])
+	}
+	gratuito, ok := filters["Gratuito"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("esperado bucket Gratuito, obtido %v", filters)
+	}
+	term, ok := gratuito["term"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("esperado nó term, obtido %v", gratuito)
+	}
+	if got := term["curso.in_gratuito"]; got != true {
+		t.Errorf("curso.in_gratuito = %v, esperado true", got)
 	}
 }
 

@@ -294,6 +294,15 @@ func buildAggregations() map[string]interface{} {
 				},
 			},
 		},
+		"gratuitos": map[string]interface{}{
+			"filters": map[string]interface{}{
+				"filters": map[string]interface{}{
+					"Gratuito": map[string]interface{}{
+						"term": map[string]interface{}{"curso.in_gratuito": true},
+					},
+				},
+			},
+		},
 	}
 }
 
@@ -361,6 +370,7 @@ func (r *ElasticsearchRepository) Search(
 			Categorias:  elasticsearch.ParseBuckets(resp.Aggregations, "categorias"),
 			Modalidades: elasticsearch.ParseBuckets(resp.Aggregations, "modalidades"),
 			Enades:      elasticsearch.ParseBuckets(resp.Aggregations, "enades"),
+			Gratuitos:   elasticsearch.ParseBuckets(resp.Aggregations, "gratuitos"),
 		}
 	}
 

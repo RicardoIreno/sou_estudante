@@ -30,6 +30,8 @@ export interface SearchResultsProps<TItem> {
   module?: Module
   emptyMessage?: string
   skeletonCount?: number
+  /** Conteúdo extra exibido ao lado da contagem de resultados. */
+  summary?: ReactNode
 }
 
 /**
@@ -51,6 +53,7 @@ export function SearchResults<TItem>({
   module,
   emptyMessage,
   skeletonCount = 3,
+  summary,
 }: SearchResultsProps<TItem>) {
   if (isLoading) {
     return (
@@ -79,15 +82,18 @@ export function SearchResults<TItem>({
 
   return (
     <div className="space-y-4">
-      <Typo v="mute" s="sm" t="p" className="cursor-auto">
-        {total > 0
-          ? `${total} ${
-              total === 1
-                ? (labels.foundSingular ?? `${labels.singular} encontrado`)
-                : (labels.foundPlural ?? `${labels.plural} encontrados`)
-            }`
-          : `${items.length} ${items.length === 1 ? labels.singular : labels.plural}`}
-      </Typo>
+      <div className="flex items-center gap-2">
+        <Typo v="mute" s="sm" t="p" className="cursor-auto">
+          {total > 0
+            ? `${total} ${
+                total === 1
+                  ? (labels.foundSingular ?? `${labels.singular} encontrado`)
+                  : (labels.foundPlural ?? `${labels.plural} encontrados`)
+              }`
+            : `${items.length} ${items.length === 1 ? labels.singular : labels.plural}`}
+        </Typo>
+        {summary}
+      </div>
       <div className="grid gap-4">
         {items.map((item, index) => (
           <Fragment key={getItemKey(item, index)}>

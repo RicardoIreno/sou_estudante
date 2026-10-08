@@ -29,6 +29,7 @@ type SearchAggregations struct {
 	Categorias  []AggregationBucket `json:"categorias,omitempty"`
 	Modalidades []AggregationBucket `json:"modalidades,omitempty"`
 	Enades      []AggregationBucket `json:"enades,omitempty"`
+	Gratuitos   []AggregationBucket `json:"gratuitos,omitempty"`
 }
 
 // CursoListResponse é a resposta paginada de busca de cursos

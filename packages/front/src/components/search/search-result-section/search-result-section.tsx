@@ -20,6 +20,7 @@ export interface SearchResultSectionProps<TItem> {
   getItemKey: (item: TItem, index: number) => string
   renderItem: (item: TItem) => ReactNode
   module?: Module
+  summary?: ReactNode
 }
 
 /**
@@ -40,6 +41,7 @@ export function SearchResultSection<TItem>({
   getItemKey,
   renderItem,
   module,
+  summary,
 }: SearchResultSectionProps<TItem>) {
   return (
     <SearchResults<TItem>
@@ -56,6 +58,7 @@ export function SearchResultSection<TItem>({
       getItemKey={getItemKey}
       renderItem={renderItem}
       module={module}
+      summary={summary}
     />
   )
 }
