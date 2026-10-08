@@ -13,6 +13,9 @@ scripts/
 docs/imgs/
 random_curso.sh
 random_ies.sh
+query.json
+query2.json
+get_curso.sh
 
 # dependencies
 node_modules/
