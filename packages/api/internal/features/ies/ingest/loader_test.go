@@ -20,7 +20,7 @@ func TestDocumentsIndexaPorCoIESEIgnoraVazios(t *testing.T) {
 	if len(docs) != 2 {
 		t.Fatalf("esperado 2 documentos, obtido %d (%v)", len(docs), docs)
 	}
-	if docs["376"].NoIES != "ANHANGUERA" || docs["383"].NoIES != "UNAMA" {
+	if docs["376"].NoIES != "Anhanguera" || docs["383"].NoIES != "Unama" {
 		t.Errorf("documentos mapeados incorretamente: %+v", docs)
 	}
 }

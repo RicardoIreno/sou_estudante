@@ -1,6 +1,9 @@
 package ingest
 
-import "api_estudante/internal/features/cursos"
+import (
+	"api_estudante/internal/features/cursos"
+	"api_estudante/internal/ingest/textcase"
+)
 
 // InstituicaoInfo agrupa atributos da IES usados para enriquecer o documento
 // de curso no momento da ingestão.
@@ -72,24 +75,24 @@ func mapInstituicao(src SourceRecord, info InstituicaoInfo) cursos.Instituicao {
 func mapCurso(src SourceRecord) cursos.DadosCurso {
 	return cursos.DadosCurso{
 		CoCurso:            intToStr(src.CursoCoCurso),
-		NoCurso:            src.CursoNoCurso,
+		NoCurso:            textcase.Title(src.CursoNoCurso),
 		TpDimensao:         src.CursoTpDimensao,
 		TpGrauAcademico:    intToStr(src.CursoTpGrauAcademico),
-		NoGrauAcademico:    src.CursoNoGrauAcademico,
+		NoGrauAcademico:    textcase.Title(src.CursoNoGrauAcademico),
 		InGratuito:         intToBool(src.CursoInGratuito),
 		TpModalidadeEnsino: intToStr(src.CursoTpModalidadeEnsino),
-		NoModalidadeEnsino: src.CursoNoModalidadeEnsino,
+		NoModalidadeEnsino: textcase.Title(src.CursoNoModalidadeEnsino),
 		TpNivelAcademico:   intToStr(src.CursoTpNivelAcademico),
-		NoNivelAcademico:   src.CursoNoNivelAcademico,
+		NoNivelAcademico:   textcase.Title(src.CursoNoNivelAcademico),
 		Cine: cursos.Cine{
 			CoCineRotulo:         src.CursoCoCineRotulo,
-			NoCineRotulo:         src.CursoNoCineRotulo,
+			NoCineRotulo:         textcase.Title(src.CursoNoCineRotulo),
 			CoCineAreaGeral:      intToStr(src.CursoCoCineAreaGeral),
-			NoCineAreaGeral:      src.CursoNoCineAreaGeral,
+			NoCineAreaGeral:      textcase.Title(src.CursoNoCineAreaGeral),
 			CoCineAreaEspecifica: intToStr(src.CursoCoCineAreaEspecifica),
-			NoCineAreaEspecifica: src.CursoNoCineAreaEspecifica,
+			NoCineAreaEspecifica: textcase.Title(src.CursoNoCineAreaEspecifica),
 			CoCineAreaDetalhada:  intToStr(src.CursoCoCineAreaDetalhada),
-			NoCineAreaDetalhada:  src.CursoNoCineAreaDetalhada,
+			NoCineAreaDetalhada:  textcase.Title(src.CursoNoCineAreaDetalhada),
 		},
 	}
 }
@@ -97,12 +100,12 @@ func mapCurso(src SourceRecord) cursos.DadosCurso {
 func mapLocalizacao(src SourceRecord) cursos.Localizacao {
 	return cursos.Localizacao{
 		CoRegiao:    intToStr(src.CursoCoRegiao),
-		NoRegiao:    src.CursoNoRegiao,
+		NoRegiao:    textcase.Title(src.CursoNoRegiao),
 		CoUF:        intToStr(src.CursoCoUF),
-		NoUF:        src.CursoNoUF,
+		NoUF:        textcase.Title(src.CursoNoUF),
 		SgUF:        src.CursoSgUF,
 		CoMunicipio: intToStr(src.CursoCoMunicipio),
-		NoMunicipio: src.CursoNoMunicipio,
+		NoMunicipio: textcase.Title(src.CursoNoMunicipio),
 		InCapital:   intToBool(src.CursoInCapital),
 	}
 }
@@ -112,8 +115,8 @@ func mapOfertas(src []OfertaSource) []cursos.Oferta {
 	for _, oferta := range src {
 		ofertas = append(ofertas, cursos.Oferta{
 			Municipio:       intToStr(oferta.Municipio),
-			NomeMunicipio:   oferta.NomeMunicipio,
-			Turno:           oferta.Turno,
+			NomeMunicipio:   textcase.Title(oferta.NomeMunicipio),
+			Turno:           textcase.Title(oferta.Turno),
 			Modalidade:      oferta.Modalidade,
 			OrdemModalidade: oferta.OrdemModalidade,
 			Grupo:           oferta.Grupo,

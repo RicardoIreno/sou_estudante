@@ -39,8 +39,8 @@ func TestStreamNextDerivaIDDoSequencialEEnriquece(t *testing.T) {
 	if !ok {
 		t.Fatalf("Body tem tipo %T, esperado cursos.Curso", doc.Body)
 	}
-	if curso.Curso.NoCurso != "DIREITO" {
-		t.Errorf("curso = %q, esperado DIREITO", curso.Curso.NoCurso)
+	if curso.Curso.NoCurso != "Direito" {
+		t.Errorf("curso = %q, esperado Direito", curso.Curso.NoCurso)
 	}
 	if curso.Instituicao.NoIES != "UNIVERSIDADE DA AMAZÔNIA" {
 		t.Errorf("IES não enriquecida: %+v", curso.Instituicao)
