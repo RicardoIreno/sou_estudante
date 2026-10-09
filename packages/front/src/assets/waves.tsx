@@ -1,15 +1,16 @@
 // Thanks to Arjun Gautam
 import { cn } from '@/utils/cn'
+
 interface Props {
   className?: string
 }
 
-export const WavesShape = ({className}: Props) => {
+export const WavesShape = ({ className }: Props) => {
   return (
     <svg
       className={cn(
         'relative w-full h-[40px] min-h-[40px] md:h-[15vh] md:min-h-[100px] md:max-h-[150px] -mb-[7px]',
-        className
+        className,
       )}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"

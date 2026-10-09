@@ -27,6 +27,7 @@ export const CardRoot = ({
         data-module={module}
         className={cn(
           'bg-white border border-card-border font-protagonist rounded-card text-fg-protagonist shadow',
+          'relative isolate overflow-hidden',
           'px-6 py-4',
           variants[v],
           className,

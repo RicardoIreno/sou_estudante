@@ -7,23 +7,20 @@ interface Props {
   className?: string
 }
 
-export const CardHeader = ({
-  v = 'prev',
-  children,
-  className,
-}: Props) => {
+export const CardHeader = ({ v = 'prev', children, className }: Props) => {
   const variants = {
     prev: '',
     full: 'bg-gradient-to-r from-accent/40 to-accent/10',
   }
 
   return (
-    <div className={cn(
-      'flex w-full', 
-      'border-b-[1px] border-plum-100 pb-2 mb-2', 
-      variants[v], 
-      className
-    )}
+    <div
+      className={cn(
+        'flex w-full',
+        'border-b-[1px] border-plum-100 pb-2 mb-2',
+        variants[v],
+        className,
+      )}
     >
       {children}
     </div>

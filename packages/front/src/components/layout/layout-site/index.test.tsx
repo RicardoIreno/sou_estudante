@@ -20,14 +20,13 @@ describe('LayoutSite', () => {
     vi.mocked(usePathname).mockReturnValue('/')
   })
 
-  it('renders the header and footer around the page content', () => {
+  it('renders the header around the page content', () => {
     renderShell()
 
     expect(
       screen.getByRole('link', { name: /SoU_Estudante/ }),
     ).toBeInTheDocument()
     expect(screen.getByText('conteúdo da página')).toBeInTheDocument()
-    expect(screen.getByText(/SoU_Ciência · Unifesp/)).toBeInTheDocument()
   })
 
   it('renders the page content inside the main landmark', () => {

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { MapPin } from 'lucide-react'
+import MaskEnade from '@/components/enade/mask-enade/mask-enade'
 import SeloEnade from '@/components/enade/selo-enade/selo-enade'
 import { Card } from './index'
 
@@ -19,11 +20,12 @@ export const Default: Story = {
   },
   render: (args) => (
     <Card {...args}>
-      <Card.Header
-        title="ENGENHARIA METALÚRGICA E ENGENHARIA DE MATERIAISa"
-        subtitle="UFMG"
-      >
-        <SeloEnade faixa={4} />
+      <Card.Header>
+        <SeloEnade level={4} />
+        <Card.Title
+          title="ENGENHARIA METALÚRGICA E ENGENHARIA DE MATERIAISa"
+          subtitle="UFMG"
+        />
       </Card.Header>
       <Card.Tags
         source={['Gratuito', 'Presencial', 'matutino']}
@@ -42,8 +44,10 @@ export const Variant1: Story = {
   },
   render: (args) => (
     <Card {...args}>
-      <Card.Header title="Curso tal" subtitle="Instiuição"></Card.Header>
-      <SeloEnade faixa={4} />
+      <Card.Header>
+        <Card.Title title="Curso tal" subtitle="Instiuição" />
+      </Card.Header>
+      <SeloEnade level={4} />
       <Card.Tags source={['Gratuito', 'FUVEST']} className="ml-11" />
       <Card.ProgressBar title="Teste" percentage={'50%'} />
     </Card>
@@ -58,8 +62,9 @@ export const Module3: Story = {
   },
   render: (args) => (
     <Card {...args}>
-      <Card.Header title="Algum título" subtitle="algum subtítulo">
-        <SeloEnade faixa={3} />
+      <Card.Header>
+        <SeloEnade level={3} />
+        <Card.Title title="Algum título" subtitle="algum subtítulo" />
       </Card.Header>
       <Card.Tags source={['Gratuito', 'FUVEST']} className="ml-11" />
       <Card.ProgressBar title="Teste" percentage={'50%'} />
@@ -90,6 +95,22 @@ export const WithRichTags: Story = {
   ),
 }
 
+export const ProgressBarNoData: Story = {
+  args: {
+    children: '',
+    module: '2',
+  },
+  render: (args) => (
+    <Card {...args}>
+      <Card.Tags source={['Presencial', 'Tem Sisu']} />
+      <Card.ProgressBar
+        title="Taxa de desistência acumulada (5 anos)"
+        emptyHint="sem dados"
+      />
+    </Card>
+  ),
+}
+
 export const WithFields: Story = {
   args: {
     children: '',
@@ -97,10 +118,12 @@ export const WithFields: Story = {
   },
   render: (args) => (
     <Card {...args}>
-      <Card.Header
-        title="Universidade Federal do Mato Grosso"
-        subtitle="• UFMT"
-      />
+      <Card.Header>
+        <Card.Title
+          title="Universidade Federal do Mato Grosso"
+          subtitle="• UFMT"
+        />
+      </Card.Header>
       <Card.Tags
         source={['Pública Federal', 'Universidade', 'Centro-Oeste']}
         className="ml-11"
@@ -108,6 +131,32 @@ export const WithFields: Story = {
       <Card.Fields
         className="ml-11 mt-2"
         items={[{ label: 'Localização', value: 'Cuiabá - MT' }]}
+      />
+    </Card>
+  ),
+}
+
+export const WithBackdrop: Story = {
+  args: {
+    children: '',
+    module: '2',
+  },
+  render: (args) => (
+    <Card {...args}>
+      <Card.Backdrop>
+        <MaskEnade level={5} />
+      </Card.Backdrop>
+      <Card.Header>
+        <SeloEnade level={5} size="card" />
+        <Card.Title
+          title="Medicina • 16904"
+          subtitle="Universidade Federal de Roraima • Boa Vista - RR"
+        />
+      </Card.Header>
+      <Card.Tags source={['Gratuito', 'Presencial', 'Integral']} />
+      <Card.ProgressBar
+        title="Taxa de desistência acumulada (5 anos)"
+        percentage="17%"
       />
     </Card>
   ),

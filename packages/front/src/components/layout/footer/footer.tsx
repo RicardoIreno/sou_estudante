@@ -6,12 +6,7 @@ interface FooterProps {
 
 export const Footer = ({ className }: FooterProps) => {
   return (
-    <footer
-      className={cn(
-        'flex justify-center px-5 py-3.5',
-        className,
-      )}
-    >
+    <footer className={cn('flex justify-center px-5 py-3.5', className)}>
       <p
         className={cn(
           'inline-block',

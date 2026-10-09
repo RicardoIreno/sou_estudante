@@ -22,7 +22,7 @@
   --color-enade-warn-surface: #fff3e0;
   --color-enade-low: #c0392b;
   --color-enade-low-surface: #fdecea;
-  --color-progress-bar-foreground: oklch(81.5% 0.055 215.50);
+  --color-progress-bar-foreground: oklch(81.5% 0.055 215.5);
   --color-progress-bar-background: oklch(0.94 0.01 75);
 
   /* Cores · Callout (sobrescritas por [data-variant] em .callout) */
@@ -62,8 +62,7 @@
 
   /*  Tipografia · Famílias */
   --font-mono: "DM Mono", ui-monospace, monospace; /* dados numéricos */
- --font-display: "Source Sans 3", system-ui, sans-serif;
-
+  --font-display: "Source Sans 3", system-ui, sans-serif;
 
   /* Protagonista — conteúdo principal (card, callout, textos principais) */
   --font-protagonist: "Source Sans 3", system-ui, sans-serif;
@@ -73,7 +72,6 @@
   --font-title-protagonist: "Source Sans 3", system-ui, sans-serif;
   --font-title-coadjuvant: "Source Sans 3", system-ui, sans-serif;
 
- 
   /* Tipografia · Escala */
 
   /* Protagonista — conteúdo principal (card, callout, textos principais) */
@@ -225,18 +223,14 @@ body {
   }
 }
 
-/* ==========================================================================
-   Esqueleto de página profile de carregamento
-   ========================================================================== */
+/* Esqueleto de página profile de carregamento */
 .esqueleto {
   animation: pulso-esqueleto 1.2s var(--ease-tide) infinite;
   background: var(--color-plum-100);
   border-radius: 10px;
 }
 
-/* ==========================================================================
-   Transição de página (fade + leve subida)
-   ========================================================================== */
+/* Transição de página (fade + leve subida) */
 .page-transition {
   animation-name: page-transition-enter;
   animation-duration: var(--duration-page);

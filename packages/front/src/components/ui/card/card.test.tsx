@@ -41,11 +41,29 @@ describe('Card', () => {
   it('renders the header title and subtitle', () => {
     render(
       <Card>
-        <Card.Header title="Direito" subtitle="USP" />
+        <Card.Header>
+          <Card.Title title="Direito" subtitle="USP" />
+        </Card.Header>
       </Card>,
     )
     expect(screen.getByText('Direito')).toBeInTheDocument()
     expect(screen.getByText('USP')).toBeInTheDocument()
+  })
+
+  it('renders a decorative backdrop behind the content', () => {
+    const { container } = render(
+      <Card>
+        <Card.Backdrop>
+          <span>fundo</span>
+        </Card.Backdrop>
+        <span>conteúdo</span>
+      </Card>,
+    )
+
+    const backdrop = container.querySelector('[aria-hidden="true"]')
+    expect(backdrop).toBeInTheDocument()
+    expect(backdrop).toContainElement(screen.getByText('fundo'))
+    expect(screen.getByText('conteúdo')).toBeInTheDocument()
   })
 
   it('renders the progress bar title and percentage', () => {
@@ -58,13 +76,21 @@ describe('Card', () => {
     expect(screen.getByText('50%')).toBeInTheDocument()
   })
 
-  it('renders the enade score', () => {
-    render(
+  it('renders the progress bar no-data state with empty bar and hint', () => {
+    const { container } = render(
       <Card>
-        <Card.IconEnade n="4" />
+        <Card.ProgressBar
+          title="Taxa de desistência acumulada (5 anos)"
+          emptyHint="sem dados"
+        />
       </Card>,
     )
-    expect(screen.getByText('4')).toBeInTheDocument()
-    expect(screen.getByText('Enade')).toBeInTheDocument()
+    expect(
+      screen.getByText('Taxa de desistência acumulada (5 anos) • sem dados'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('—')).toBeInTheDocument()
+    expect(container.querySelector('.bg-progress-bar-foreground')).toHaveStyle({
+      width: '0%',
+    })
   })
 })

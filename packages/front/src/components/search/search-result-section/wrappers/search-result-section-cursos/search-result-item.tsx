@@ -1,7 +1,9 @@
 import { MapPin } from 'lucide-react'
 import Link from 'next/link'
+import MaskEnade from '@/components/enade/mask-enade/mask-enade'
+import SeloEnade from '@/components/enade/selo-enade/selo-enade'
 import { Card, type CardTag } from '@/components/ui/card'
-import { ENADE_FAIXAS, type EnadeFaixa } from '@/lib/enade'
+import { parseEnadeLevel } from '@/lib/enade'
 import type { Module } from '@/lib/module'
 import type { Curso } from '@/services/api/types'
 
@@ -23,7 +25,7 @@ export default function SearchResultItem({
   const uf = curso.localizacao?.sg_uf || ''
 
   // Dados de qualidade
-  const conceitoEnade = curso.enade?.conceito_faixa_enade
+  const conceitoEnade = parseEnadeLevel(curso.enade?.conceito_faixa_enade)
   const taxaDesistencia = curso.tda?.tda
 
   // Dados do SISU (primeira oferta do curso)
@@ -64,35 +66,28 @@ export default function SearchResultItem({
     tags.push({ label: vagasTag, source: 'Censo', tone: 'neutral' })
   }
 
-  // Converter conceito ENADE para tipo aceito pelo componente
-  const conceitoEnadeFormatado: EnadeFaixa | undefined =
-    conceitoEnade &&
-    ENADE_FAIXAS.includes(conceitoEnade.toString() as EnadeFaixa)
-      ? (conceitoEnade.toString() as EnadeFaixa)
-      : undefined
-
   const card = (
     <Card module={module}>
+      <Card.Backdrop>
+        <MaskEnade level={conceitoEnade} />
+      </Card.Backdrop>
       <Card.Header>
-        {conceitoEnadeFormatado && (
-          <Card.IconEnade n={conceitoEnadeFormatado} />
-        )}
-        <div className="">
-          <h4 className="px-2 font-title-protagonist font-bold text-protagonist-md">
-            {`${nomeCurso} • ${idCurso} `}
-          </h4>
-          <h5 className="px-2 font-protagonist text-fg-muted text-protagonist-sm">
-            {`${instiuicao} • ${localizacaoCompleta}`}
-          </h5>
-        </div>
+        <SeloEnade level={conceitoEnade} size="card" />
+        <Card.Title
+          title={`${nomeCurso} • ${idCurso}`}
+          subtitle={`${instiuicao} • ${localizacaoCompleta}`}
+        />
       </Card.Header>
       {tags.length > 0 && <Card.Tags source={tags} />}
-      {typeof taxaDesistencia === 'number' && (
-        <Card.ProgressBar
-          title="Taxa de desistência acumulada (5 anos)"
-          percentage={`${Math.round(taxaDesistencia)}%`}
-        />
-      )}
+      <Card.ProgressBar
+        title="Taxa de desistência acumulada (5 anos)"
+        percentage={
+          typeof taxaDesistencia === 'number'
+            ? `${Math.round(taxaDesistencia)}%`
+            : undefined
+        }
+        emptyHint="sem dados"
+      />
     </Card>
   )
 

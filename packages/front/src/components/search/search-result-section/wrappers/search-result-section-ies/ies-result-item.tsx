@@ -21,7 +21,9 @@ export default function IesResultItem({ ies, module }: IesResultItemProps) {
 
   const card = (
     <Card module={module}>
-      <Card.Header title={nome} subtitle={sigla ? `• ${sigla}` : ''} />
+      <Card.Header>
+        <Card.Title title={nome} subtitle={sigla ? `• ${sigla}` : undefined} />
+      </Card.Header>
       {tags.length > 0 && <Card.Tags source={tags} className="ml-11" />}
       <Card.Fields
         className="ml-11 mt-2"

@@ -6,9 +6,9 @@ const meta = {
   component: SeloEnade,
   tags: ['autodocs'],
   args: {
-    faixa: 5,
-    animado: false,
-    tamanho: 'card',
+    level: 5,
+    animated: false,
+    size: 'card',
   },
 } satisfies Meta<typeof SeloEnade>
 
@@ -16,46 +16,46 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Faixa5: Story = {
-  args: { faixa: 5 },
+export const Level5: Story = {
+  args: { level: 5 },
 }
 
-export const Faixa4: Story = {
-  args: { faixa: 4 },
+export const Level4: Story = {
+  args: { level: 4 },
 }
 
-export const Faixa3: Story = {
-  args: { faixa: 3 },
+export const Level3: Story = {
+  args: { level: 3 },
 }
 
-export const Faixa2: Story = {
-  args: { faixa: 2 },
+export const Level2: Story = {
+  args: { level: 2 },
 }
 
-export const Faixa1: Story = {
-  args: { faixa: 1 },
+export const Level1: Story = {
+  args: { level: 1 },
 }
 
 export const SemConceito: Story = {
-  args: { faixa: 'SC' },
+  args: { level: 'SC' },
 }
 
 export const SemAvaliacaoNoCiclo: Story = {
-  args: { faixa: null },
+  args: { level: null },
 }
 
-export const DetalheFaixa5: Story = {
-  args: { faixa: 5, tamanho: 'detalhe' },
+export const DetalheLevel5: Story = {
+  args: { level: 5, size: 'detalhe' },
 }
 
-export const DetalheFaixa2: Story = {
-  args: { faixa: 2, tamanho: 'detalhe' },
+export const DetalheLevel2: Story = {
+  args: { level: 2, size: 'detalhe' },
 }
 
 export const DetalheAnimado: Story = {
-  args: { faixa: 4, tamanho: 'detalhe', animado: true },
+  args: { level: 4, size: 'detalhe', animated: true },
 }
 
 export const DetalheNeblina: Story = {
-  args: { faixa: null, tamanho: 'detalhe' },
+  args: { level: null, size: 'detalhe' },
 }

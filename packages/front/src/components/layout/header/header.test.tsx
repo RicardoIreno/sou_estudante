@@ -48,7 +48,7 @@ describe('Header', () => {
     it('renders a back link to home', () => {
       render(<Header variant="inner" />)
 
-      expect(screen.getByRole('button', { name: 'Início' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Voltar' })).toBeInTheDocument()
     })
 
     it('renders the current module pill with its route', () => {

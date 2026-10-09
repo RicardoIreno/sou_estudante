@@ -19,7 +19,7 @@ const mockCurso: Curso = {
     no_curso: 'Medicina',
     no_grau_academico: 'Bacharelado',
     in_gratuito: false,
-    cine: undefined,
+    cine: {},
   },
   instituicao: {
     no_ies: 'Universidade Federal do Rio de Janeiro',
@@ -30,6 +30,9 @@ const mockCurso: Curso = {
     sg_uf: 'RJ',
     in_capital: false,
   },
+  censo_metricas: {},
+  enade: {},
+  tda: {},
   sisu: {
     ofertas: [
       {
