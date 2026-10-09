@@ -20,6 +20,8 @@ export const ProfileIngressoQuotas = ({
   nota,
 }: ProfileIngressoQuotasProps) => {
   const vazia = nota === null || nota === undefined
+  const semNota = nota === 0
+  const texto = semNota ? "sem nota nesta chamada" : null
 
   return (
     <div
@@ -47,6 +49,7 @@ export const ProfileIngressoQuotas = ({
             {vagas} {vagas === 1 ? 'vaga' : 'vagas'}
           </div>
         )}
+        {texto && <div className="text-coadjuvant-xs text-text-muted">{texto}</div>}
       </div>
     </div>
   )

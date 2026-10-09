@@ -90,7 +90,7 @@
   ); /* hero das páginas de módulo */
 
   /* Coadjuvante — apoio (button, tag, filtros, tips) */
-  --text-coadjuvant-xxs: 6px; /* 10px */
+  --text-coadjuvant-xxs: 6px; /* 6px */
   --text-coadjuvant-xs: 0.625rem; /* 10px */
   --text-coadjuvant-sm: 0.75rem; /* 12px */
   --text-coadjuvant: 0.875rem; /* 14px */
