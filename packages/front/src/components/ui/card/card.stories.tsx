@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { MapPin } from 'lucide-react'
 import MaskEnade from '@/components/enade/mask-enade/mask-enade'
 import SeloEnade from '@/components/enade/selo-enade/selo-enade'
+import TagEnade from '@/components/enade/tag-enade/tag-enade'
 import { Card } from './index'
 
 const meta = {
@@ -153,7 +154,14 @@ export const WithBackdrop: Story = {
           subtitle="Universidade Federal de Roraima • Boa Vista - RR"
         />
       </Card.Header>
-      <Card.Tags source={['Gratuito', 'Presencial', 'Integral']} />
+      <Card.Tags
+        source={[
+          'Gratuito',
+          'Presencial',
+          'Integral',
+          <TagEnade key="enade" level={5} />,
+        ]}
+      />
       <Card.ProgressBar
         title="Taxa de desistência acumulada (5 anos)"
         percentage="17%"

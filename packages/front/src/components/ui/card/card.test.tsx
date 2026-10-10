@@ -38,6 +38,18 @@ describe('Card', () => {
     expect(screen.getAllByText(/Censo/)).toHaveLength(2)
   })
 
+  it('renders a custom node among tags', () => {
+    render(
+      <Card module="2">
+        <Card.Tags
+          source={['Gratuito', <span key="enade">Nota 4 no Enade</span>]}
+        />
+      </Card>,
+    )
+    expect(screen.getByText('Gratuito')).toHaveAttribute('data-module', '2')
+    expect(screen.getByText('Nota 4 no Enade')).toBeInTheDocument()
+  })
+
   it('renders the header title and subtitle', () => {
     render(
       <Card>

@@ -1,4 +1,9 @@
-import type { ReactNode } from 'react'
+import {
+  Fragment,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 import { Tag } from '@/components/ui/tag/tag'
 import { cn } from '@/utils/cn'
 import { useCardModule } from './card-context'
@@ -12,18 +17,25 @@ export interface CardTag {
 
 interface Props {
   className?: string
-  source: Array<string | CardTag>
+  source: Array<string | CardTag | ReactElement>
 }
 
-const isCardTag = (item: string | CardTag): item is CardTag =>
-  typeof item !== 'string'
+const isCardTag = (item: unknown): item is CardTag =>
+  typeof item === 'object' && item !== null && !isValidElement(item)
 
 export const CardTags = ({ className, source }: Props) => {
   const module = useCardModule()
 
   return (
-    <div className={cn('flex flex-wrap gap-y-1 py-1', className)}>
-      {source.map((item) => {
+    <div className={cn(
+      'flex flex-wrap gap-y-1 py-1', 
+      className)}
+      >
+      {source.map((item, index) => {
+        if (isValidElement(item)) {
+          return <Fragment key={item.key ?? index}>{item}</Fragment>
+        }
+
         const tag: CardTag = isCardTag(item) ? item : { label: item }
         return (
           <Tag
@@ -32,6 +44,7 @@ export const CardTags = ({ className, source }: Props) => {
             icon={tag.icon}
             source={tag.source}
             module={tag.tone === 'neutral' ? undefined : module}
+            variant='curso'
           />
         )
       })}

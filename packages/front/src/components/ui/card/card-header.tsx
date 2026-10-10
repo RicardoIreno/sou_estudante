@@ -17,7 +17,7 @@ export const CardHeader = ({ v = 'prev', children, className }: Props) => {
     <div
       className={cn(
         'flex w-full',
-        'border-b-[1px] border-plum-100 pb-2 mb-2',
+        'mb-2',
         variants[v],
         className,
       )}

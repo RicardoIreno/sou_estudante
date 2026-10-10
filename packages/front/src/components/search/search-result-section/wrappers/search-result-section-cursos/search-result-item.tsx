@@ -1,7 +1,8 @@
 import { MapPin } from 'lucide-react'
 import Link from 'next/link'
+import type { ReactElement } from 'react'
 import MaskEnade from '@/components/enade/mask-enade/mask-enade'
-import SeloEnade from '@/components/enade/selo-enade/selo-enade'
+import TagEnade from '@/components/enade/tag-enade/tag-enade'
 import { Card, type CardTag } from '@/components/ui/card'
 import { parseEnadeLevel } from '@/lib/enade'
 import type { Module } from '@/lib/module'
@@ -49,7 +50,7 @@ export default function SearchResultItem({
       : undefined
 
   // Montar tags dinâmicas
-  const tags: Array<string | CardTag> = []
+  const tags: Array<string | CardTag | ReactElement> = []
   if (gratuito) tags.push('Gratuito')
   if (modalidade) tags.push(modalidade)
   if (turno) tags.push(turno)
@@ -65,6 +66,7 @@ export default function SearchResultItem({
   if (vagasTag) {
     tags.push({ label: vagasTag, source: 'Censo', tone: 'neutral' })
   }
+  tags.push(<TagEnade key="enade" level={conceitoEnade} />)
 
   const card = (
     <Card module={module}>
@@ -72,13 +74,17 @@ export default function SearchResultItem({
         <MaskEnade level={conceitoEnade} />
       </Card.Backdrop>
       <Card.Header>
-        <SeloEnade level={conceitoEnade} size="card" />
+        {/* <SeloEnade level={conceitoEnade} size="card" /> */}
         <Card.Title
           title={`${nomeCurso} • ${idCurso}`}
           subtitle={`${instiuicao} • ${localizacaoCompleta}`}
         />
       </Card.Header>
+      <hr className='border-t-[1px] border-plum-100 my-3 relative -z-20'/>
+
       {tags.length > 0 && <Card.Tags source={tags} />}
+
+      <hr className='border-t-[1px] border-plum-100 my-3 relative -z-20'/>
       <Card.ProgressBar
         title="Taxa de desistência acumulada (5 anos)"
         percentage={

@@ -144,7 +144,7 @@ describe('SearchResultSectionCursos', () => {
     )
   })
 
-  it('exibe a taxa de desistência e o selo Enade quando disponíveis', () => {
+  it('exibe a taxa de desistência e a tag do Enade quando disponíveis', () => {
     vi.mocked(useSearchCursos).mockReturnValue(
       buildSearchResult({ tda: 51 }, { conceito_faixa_enade: '4' }),
     )
@@ -152,26 +152,21 @@ describe('SearchResultSectionCursos', () => {
     render(<SearchResultSectionCursos />)
 
     expect(screen.getByText('51%')).toBeInTheDocument()
-    expect(
-      screen.getByRole('img', { name: 'Conceito Enade 4 de 5' }),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Nota 4 no Enade')).toBeInTheDocument()
     expect(screen.queryByText(/sem dados/)).not.toBeInTheDocument()
   })
 
-  it('exibe o selo "SC" quando o curso não tem conceito', () => {
+  it('exibe a tag "SC" quando o curso não tem conceito', () => {
     vi.mocked(useSearchCursos).mockReturnValue(
       buildSearchResult({}, { conceito_faixa_enade: 'SC' }),
     )
 
     render(<SearchResultSectionCursos />)
 
-    expect(
-      screen.getByRole('img', { name: 'Sem conceito (SC)' }),
-    ).toBeInTheDocument()
-    expect(screen.getByText('SC')).toBeInTheDocument()
+    expect(screen.getByText('Sem conceito no Enade')).toBeInTheDocument()
   })
 
-  it('exibe o selo sem avaliação quando não há conceito nem taxa', () => {
+  it('exibe a tag sem avaliação quando não há conceito nem taxa', () => {
     vi.mocked(useSearchCursos).mockReturnValue(buildSearchResult({}))
 
     const { container } = render(<SearchResultSectionCursos />)
@@ -179,10 +174,8 @@ describe('SearchResultSectionCursos', () => {
     expect(
       screen.getByText('Taxa de desistência acumulada (5 anos) • sem dados'),
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('img', { name: 'Sem avaliação no ciclo' }),
-    ).toBeInTheDocument()
-    expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText('Sem avaliação no Enade')).toBeInTheDocument()
+    expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(1)
     expect(container.querySelector('[data-mask="enade"]')).toBeInTheDocument()
   })
 })
