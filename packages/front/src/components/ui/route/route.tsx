@@ -19,6 +19,8 @@ interface RouteProps {
   variant?: RouteVariant
   title?: string
   description?: string
+  /** Destino do link; por padrão o `href` do módulo. */
+  href?: string
   className?: string
 }
 
@@ -35,19 +37,21 @@ export function Route({
   variant = 'card',
   title,
   description,
+  href,
   className,
 }: RouteProps) {
   const meta = MODULE_META[module]
   const Icon = ICONS[module]
   const routeTitle = title ?? meta.title
   const routeDescription = description ?? meta.description
+  const routeHref = href ?? meta.href
   const isCard = variant === 'card'
 
   if (variant === 'inline') {
     return (
       <Link
         data-module={module}
-        href={meta.href}
+        href={routeHref}
         className={cn(
           'group flex items-center gap-4 rounded-[20px] border border-card-border bg-card-surface px-4 py-4',
           'transition-transform hover:-translate-y-0.5',
@@ -75,7 +79,7 @@ export function Route({
   return (
     <Link
       data-module={module}
-      href={meta.href}
+      href={routeHref}
       className={cn(
         'group relative overflow-hidden bg-white border border-card-border',
 

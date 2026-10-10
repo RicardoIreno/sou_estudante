@@ -1,4 +1,4 @@
-import { MapPin } from 'lucide-react'
+import { ArrowRight, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import type { ReactElement } from 'react'
 import MaskEnade from '@/components/enade/mask-enade/mask-enade'
@@ -30,7 +30,7 @@ export default function SearchResultItem({
   const taxaDesistencia = curso.tda?.tda
 
   // Dados do SISU (primeira oferta do curso)
-  const temSisu = curso.sisu
+  const temSisu = curso.sisu?.tem_sisu ?? false
   const oferta = curso.sisu?.ofertas?.[0]
   const turno = oferta?.turno || ''
   const gratuito = curso.curso?.in_gratuito
@@ -80,11 +80,11 @@ export default function SearchResultItem({
           subtitle={`${instiuicao} • ${localizacaoCompleta}`}
         />
       </Card.Header>
-      <hr className='border-t-[1px] border-plum-100 my-3 relative -z-20'/>
+      <hr className="border-t-[1px] border-plum-100 my-3 relative -z-20" />
 
       {tags.length > 0 && <Card.Tags source={tags} />}
 
-      <hr className='border-t-[1px] border-plum-100 my-3 relative -z-20'/>
+      <hr className="border-t-[1px] border-plum-100 my-3 relative -z-20" />
       <Card.ProgressBar
         title="Taxa de desistência acumulada (5 anos)"
         percentage={
@@ -103,11 +103,24 @@ export default function SearchResultItem({
   }
 
   return (
-    <Link
-      href={`/cursos/${id}`}
-      className="block rounded-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
-    >
-      {card}
-    </Link>
+    <div className="space-y-2" data-module={module}>
+      <Link
+        href={`/cursos/${id}`}
+        className="block rounded-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
+      >
+        {card}
+      </Link>
+
+      {temSisu && (
+        <Link
+          href={`/ingresso/${id}`}
+          aria-label={`Ver ingresso via Sisu de ${nomeCurso}`}
+          className="inline-flex items-center gap-1 rounded-full px-1 font-coadjuvant text-coadjuvant-sm font-bold text-accent-deep hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
+        >
+          Ver ingresso via Sisu
+          <ArrowRight className="size-3" aria-hidden="true" />
+        </Link>
+      )}
+    </div>
   )
 }

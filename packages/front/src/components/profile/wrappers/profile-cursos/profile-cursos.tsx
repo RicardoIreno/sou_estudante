@@ -28,7 +28,10 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
     curso.instituicao?.sg_ies || curso.instituicao?.no_ies || undefined
   const cidade = curso.localizacao?.no_municipio
   const uf = curso.localizacao?.sg_uf
-  const temSisu = curso.sisu.tem_sisu
+  const temSisu = curso.sisu?.tem_sisu ?? false
+  const id = curso.sequencial ?? curso._id
+  const ingressoHref =
+    temSisu && id !== undefined ? `/ingresso/${id}` : undefined
 
   return (
     <Profile module={module}>
@@ -90,6 +93,15 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
       </Profile.Tabs>
 
       <Profile.Section title="Continue sua rota" className="mt-1">
+        {ingressoHref && (
+          <Route
+            module="2"
+            variant="inline"
+            href={ingressoHref}
+            title="Como ingressar neste curso"
+            description="Notas de corte, vagas e cotas no Sisu — Bússola"
+          />
+        )}
         <Route
           module="3"
           variant="inline"

@@ -41,7 +41,7 @@ export const ProfileIngressoLoader = ({ id }: ProfileIngressoLoaderProps) => {
         </p>
         <button
           type="button"
-          onClick={() => router.push('/ingressos')}
+          onClick={() => router.push('/cursos')}
           className="mt-3 inline-flex cursor-pointer items-center rounded-[10px] bg-text px-4 py-2 text-[13px] font-semibold text-white transition-transform duration-fast ease-prow active:scale-[0.97]"
         >
           Ir para a lista de cursos
@@ -64,7 +64,7 @@ export const ProfileIngressoLoader = ({ id }: ProfileIngressoLoaderProps) => {
         </p>
         <button
           type="button"
-          onClick={() => router.push('/ingressos')}
+          onClick={() => router.push('/cursos')}
           className="mt-3 inline-flex cursor-pointer items-center rounded-[10px] bg-text px-4 py-2 text-[13px] font-semibold text-white transition-transform duration-fast ease-prow active:scale-[0.97]"
         >
           Ir para a lista de cursos
@@ -88,7 +88,7 @@ export const ProfileIngressoLoader = ({ id }: ProfileIngressoLoaderProps) => {
         </p>
         <button
           type="button"
-          onClick={() => router.push('/ingressos')}
+          onClick={() => router.push('/cursos')}
           className="mt-3 inline-flex cursor-pointer items-center rounded-[10px] bg-text px-4 py-2 text-[13px] font-semibold text-white transition-transform duration-fast ease-prow active:scale-[0.97]"
         >
           Ir para a lista de cursos com ingresso por Sisu

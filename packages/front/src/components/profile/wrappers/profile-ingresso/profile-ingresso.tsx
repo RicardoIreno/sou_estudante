@@ -44,13 +44,13 @@ export const ProfileIngresso = ({
     <Profile module={module} className="p-4">
       <Profile.TopBar
         backLabel="Voltar para a lista"
-        backHref="/ingressos"
+        backHref="/cursos"
         className="p-0"
       >
         <div className="flex items-center gap-2">
           <Tag
             label={'Como ingressar'}
-            module={'2'}
+            module={module}
             className="font-semibold px-[10px] py-[3px] tracking-[0.5px] mr-0"
           />
           <Menu />
@@ -63,7 +63,7 @@ export const ProfileIngresso = ({
         subtitle={subtitulo}
         className="px-0"
       >
-        <Tag label={'Tem Sisu'} module={'2'} className="py-[2px]" />
+        <Tag label={'Tem Sisu'} module={module} className="py-[2px]" />
         {turnosUnicos.map((turno) => (
           <Tag key={turno} label={turno} className="py-[2px]" />
         ))}
@@ -77,7 +77,7 @@ export const ProfileIngresso = ({
           value={cidade}
           source="Sisu · 2026"
           tag={uf}
-          module="2"
+          module={module}
           variant={true}
           className="mb-4"
         />
