@@ -13,7 +13,7 @@ import { cn } from '@/utils/cn'
 
 // Silhueta da borda esquerda (viewBox 0 0 100 100, esticada ao box do elemento).
 const MASK_SHAPE = encodeURIComponent(
-  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M57 0C39 8 20.5 27.5 22 49.5C22 77.5 1 86 0 100H100V0H57Z' fill='white'/></svg>"
+  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M8.25 0H100V100H8.25C8.25 100 -1.3125 69.5 8.25 50C17.8125 30.5 8.25 0 8.25 0Z' fill='white'/></svg>"
   // "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M20 0C2 8 0 34 4 50C6 68 1 86 0 100H100V0Z' fill='white'/></svg>",
 )
 
