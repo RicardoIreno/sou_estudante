@@ -213,8 +213,14 @@ func TestGetByIDRetornaErrNotFound(t *testing.T) {
 
 func mustFilter(t *testing.T, body map[string]any) []map[string]any {
 	t.Helper()
-	query := body["query"].(map[string]any)
-	boolQuery := query["bool"].(map[string]any)
+	postFilter, ok := body["post_filter"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado bloco post_filter, obtido %v", body["post_filter"])
+	}
+	boolQuery, ok := postFilter["bool"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado nó bool no post_filter, obtido %v", postFilter["bool"])
+	}
 	raw, ok := boolQuery["filter"].([]any)
 	if !ok {
 		t.Fatalf("esperado bloco filter, obtido %v", boolQuery["filter"])

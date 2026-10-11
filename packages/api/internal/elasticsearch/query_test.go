@@ -122,9 +122,9 @@ func TestSearchBodyMontaQueryPaginacaoOrdenacaoEAgregacoes(t *testing.T) {
 
 	assertJSON(t, SearchBody(must, filters, sort, aggs, 3, 20), `{
 		"query": {"bool": {
-			"must": {"match": {"nome": "x"}},
-			"filter": [{"term": {"uf": "SP"}}]
+			"must": {"match": {"nome": "x"}}
 		}},
+		"post_filter": {"bool": {"filter": [{"term": {"uf": "SP"}}]}},
 		"size": 20,
 		"from": 40,
 		"sort": [{"_score": "desc"}],
@@ -135,9 +135,8 @@ func TestSearchBodyMontaQueryPaginacaoOrdenacaoEAgregacoes(t *testing.T) {
 func TestSearchBodyOmiteOFiltroQuandoNaoHaClausulas(t *testing.T) {
 	body := SearchBody(map[string]any{"match_all": map[string]any{}}, nil, nil, nil, 1, 10)
 
-	boolQuery := body["query"].(map[string]any)["bool"].(map[string]any)
-	if _, ok := boolQuery["filter"]; ok {
-		t.Errorf("filter não deveria existir sem cláusulas: %v", boolQuery)
+	if _, ok := body["post_filter"]; ok {
+		t.Errorf("post_filter não deveria existir sem cláusulas: %v", body)
 	}
 	if body["from"] != 0 {
 		t.Errorf("from = %v, esperado 0 na primeira página", body["from"])
