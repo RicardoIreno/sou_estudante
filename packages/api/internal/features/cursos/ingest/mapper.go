@@ -2,7 +2,7 @@ package ingest
 
 import (
 	"api_estudante/internal/features/cursos"
-	"api_estudante/internal/ingest/textcase"
+	"api_estudante/internal/textcase"
 )
 
 // InstituicaoInfo agrupa atributos da IES usados para enriquecer o documento

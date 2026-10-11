@@ -299,17 +299,13 @@ Os itens abaixo vieram da leitura do código. O ES real não foi consultado.
 ### Alta prioridade
 
 - [x] **P0** **Ingestão parcial é dada como completa.** Resolvido por troca atômica de índice (blue/green). A ingestão indexa num índice novo `<nome>-latest` e aponta o alias `<nome>` para ele ao final, apagando o antigo. Se a ingestão falhar, o alias continua no índice anterior, íntegro. Os dicionários seguem o mesmo fluxo (`<nome>-latest` + alias), corrigindo também a defasagem. *(Resolvido em 2026-10-11. Helpers `AliasIndices`/`PointAlias` em `internal/ingest/bulk/alias.go`.)*
-- [ ] **P0** **Filtro de turno `integral` provavelmente nunca casa (não verificado).** `cursos/repository.go:145-169`: *(Pendente por decisão sua: não dá para confirmar sem Elasticsearch real.)*
-  - `sisu.ofertas` é `nested`, mas as cláusulas são consultas comuns.
-  - O campo é `keyword` (sensível a maiúsculas). A ingestão grava `"Noturno"` via `textcase.Title`, e o código consulta `"NOTURNO"`, `"MATUTINO"` e `"INTEGRAL"`.
-  - Efeito esperado: o filtro e o bucket "Integral" ficam sempre em 0.
-  - Confirmar contra o ES real, corrigir com `nested` e a caixa certa, e testar `turno`, `grau` e `categoria` em `buildFilterClauses` (cobertura de 57,6%).
+- [x] **P0** **Filtro de turno `integral` provavelmente nunca casa.** Resolvido em código: `sisu.ofertas.turno` é `nested`, então as cláusulas viraram consultas `nested`, e os valores passaram para a caixa de título gravada (`Noturno`, `Matutino`, `Vespertino`, `Integral`), em vez de maiúsculas. `diurno` agrupa `Matutino`/`Vespertino` num único `terms` nested. *(Corrigido em 2026-10-11, com testes em `buildFilterClauses`. Falta validar o filtro e o bucket "Integral" contra um ES real.)*
 
 ### Média prioridade
 
 - [ ] **P1** **`GET /ies` exige `q`, mas o doc diz que é opcional.** O ramo `match_all` de `ies/repository.go:49-54` e o teste `TestSearchTermoVazioUsaMatchAll` são inalcançáveis pela API. Decidir o comportamento desejado e alinhar código, teste e doc. *(Decidido na seção 6 (doc segue o código). O ramo `match_all` morto do repositório continua; é da seção 10.)*
 - [ ] **P1** **Paginação profunda vira erro 500.** Nada limita `page * limit` a `index.max_result_window` (10.000). O erro 4xx do ES chega ao cliente como 500. Devolver 400. *(Não selecionado nesta rodada.)*
-- [ ] **P1** Sem `exact`, `grau=bacharelado` em minúsculas pode não casar com `"Bacharelado"` gravado. Normalizar a caixa dos filtros no mesmo lugar em que se normaliza na ingestão **(não verificado)**. *(Pendente: não selecionado e não verificado.)*
+- [x] **P1** Sem `exact`, `grau=bacharelado` em minúsculas pode não casar com `"Bacharelado"` gravado. Resolvido: o filtro de `grau` normaliza a caixa com `textcase.Title` (o mesmo usado na ingestão). O nome de modalidade também passou de maiúsculas para a caixa de título. *(Corrigido em 2026-10-11. O `textcase` foi movido de `internal/ingest/textcase` para `internal/textcase`, para a API poder usá-lo sem importar o lado de escrita.)*
 
 ### Baixa prioridade
 
@@ -507,7 +503,7 @@ Esta seção foi conferida contra o estado real do repositório. Os itens conclu
 
 ### Fase 3: corrigir risco funcional
 
-- [ ] Filtro de turno e caixa dos filtros (seção 9, P0 e P1). Confirmar primeiro com um ES real.
+- [ ] Validar contra um ES real o filtro de turno (nested) e o bucket "Integral" (seção 9). O código já está corrigido; falta a confirmação de dados.
 
 ### Fase 4: alinhar documentação
 

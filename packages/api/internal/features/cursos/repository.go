@@ -8,6 +8,7 @@ import (
 	es "github.com/elastic/go-elasticsearch/v8"
 
 	"api_estudante/internal/elasticsearch"
+	"api_estudante/internal/textcase"
 )
 
 // ErrNotFound indica que o curso solicitado não existe no índice.
@@ -104,36 +105,51 @@ func (r *ElasticsearchRepository) hasExactCourseName(ctx context.Context, name s
 }
 
 // modalidadeShouldClauses retorna as cláusulas que identificam uma modalidade.
+// O código `tp_modalidade_ensino` é o identificador confiável; o nome é uma
+// segunda via (já normalizada na caixa de título, como na ingestão).
 func modalidadeShouldClauses(modalidade string) []map[string]any {
 	if strings.EqualFold(modalidade, "EaD") || strings.Contains(strings.ToLower(modalidade), "distância") {
 		return []map[string]any{
 			{"term": map[string]any{"curso.tp_modalidade_ensino": "2"}},
-			{"match": map[string]any{"curso.no_modalidade_ensino": "DISTÂNCIA"}},
+			{"match": map[string]any{"curso.no_modalidade_ensino": "Distância"}},
 		}
 	}
 	return []map[string]any{
 		{"term": map[string]any{"curso.tp_modalidade_ensino": "1"}},
-		{"match": map[string]any{"curso.no_modalidade_ensino": "PRESENCIAL"}},
+		{"match": map[string]any{"curso.no_modalidade_ensino": "Presencial"}},
 	}
 }
 
-// turnoShouldClauses retorna as cláusulas que identificam um turno.
+// turnoNestedTerms monta um filtro nested sobre as ofertas do Sisu cujo turno
+// esteja entre os valores informados, já no formato gravado (caixa de título).
+func turnoNestedTerms(turnos ...string) map[string]any {
+	return map[string]any{
+		"nested": map[string]any{
+			"path": "sisu.ofertas",
+			"query": map[string]any{
+				"terms": map[string]any{"sisu.ofertas.turno": turnos},
+			},
+		},
+	}
+}
+
+// turnoShouldClauses retorna as cláusulas que identificam um turno, combinando
+// a contagem de vagas do censo com as ofertas do Sisu (nested).
 func turnoShouldClauses(turno string) []map[string]any {
 	switch strings.ToLower(turno) {
 	case "noturno":
 		return []map[string]any{
 			{"range": map[string]any{"censo_metricas.qt_vg_total_noturno": map[string]any{"gt": 0}}},
-			{"match": map[string]any{"sisu.ofertas.turno": "NOTURNO"}},
+			turnoNestedTerms("Noturno"),
 		}
 	case "diurno":
 		return []map[string]any{
 			{"range": map[string]any{"censo_metricas.qt_vg_total_diurno": map[string]any{"gt": 0}}},
-			{"match": map[string]any{"sisu.ofertas.turno": "MATUTINO"}},
-			{"match": map[string]any{"sisu.ofertas.turno": "VESPERTINO"}},
+			turnoNestedTerms("Matutino", "Vespertino"),
 		}
 	case "integral":
 		return []map[string]any{
-			{"match": map[string]any{"sisu.ofertas.turno": "INTEGRAL"}},
+			turnoNestedTerms("Integral"),
 		}
 	case "ead":
 		return []map[string]any{
@@ -159,7 +175,8 @@ func buildFilterClauses(filters SearchFilterParams) []map[string]any {
 		for _, grau := range filters.Grau {
 			should = append(should, map[string]any{
 				"match": map[string]any{
-					"curso.no_grau_academico": grau,
+					// O grau é gravado em caixa de título; normaliza aqui igual à ingestão.
+					"curso.no_grau_academico": textcase.Title(grau),
 				},
 			})
 		}

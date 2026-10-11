@@ -343,3 +343,68 @@ func TestBuildSortClausesDesistenciaOrdenaPeloMenorTda(t *testing.T) {
 		t.Errorf("ordenação = %v, esperado asc com ausentes por último", spec)
 	}
 }
+
+func TestBuildFilterClausesTurnoIntegralUsaNestedNasOfertas(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Turno: []string{"integral"}})
+	should := shouldClausesFrom(t, clauses[0])
+	if len(should) != 1 {
+		t.Fatalf("esperado 1 cláusula should para integral, obtido %d", len(should))
+	}
+
+	nested, ok := should[0]["nested"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado nó nested, obtido %v", should[0])
+	}
+	if nested["path"] != "sisu.ofertas" {
+		t.Errorf("path = %v, esperado sisu.ofertas", nested["path"])
+	}
+	terms := nested["query"].(map[string]any)["terms"].(map[string]any)["sisu.ofertas.turno"]
+	if !reflect.DeepEqual(terms, []string{"Integral"}) {
+		t.Errorf("termos = %v, esperado [Integral]", terms)
+	}
+}
+
+func TestBuildFilterClausesTurnoDiurnoAgrupaMatutinoEVespertino(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Turno: []string{"diurno"}})
+	should := shouldClausesFrom(t, clauses[0])
+	if len(should) != 2 {
+		t.Fatalf("esperado 2 cláusulas (censo + sisu), obtido %d", len(should))
+	}
+
+	nested := should[1]["nested"].(map[string]any)
+	terms := nested["query"].(map[string]any)["terms"].(map[string]any)["sisu.ofertas.turno"]
+	if !reflect.DeepEqual(terms, []string{"Matutino", "Vespertino"}) {
+		t.Errorf("termos = %v, esperado [Matutino Vespertino]", terms)
+	}
+}
+
+func TestBuildFilterClausesTurnoNoturnoNaoUsaMaiusculas(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Turno: []string{"noturno"}})
+	should := shouldClausesFrom(t, clauses[0])
+
+	nested := should[1]["nested"].(map[string]any)
+	terms := nested["query"].(map[string]any)["terms"].(map[string]any)["sisu.ofertas.turno"]
+	if !reflect.DeepEqual(terms, []string{"Noturno"}) {
+		t.Errorf("termos = %v, esperado [Noturno]", terms)
+	}
+}
+
+func TestBuildFilterClausesGrauNormalizaCaixaDeTitulo(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Grau: []string{"bacharelado"}})
+	should := shouldClausesFrom(t, clauses[0])
+
+	match := should[0]["match"].(map[string]any)
+	if got := match["curso.no_grau_academico"]; got != "Bacharelado" {
+		t.Errorf("grau = %v, esperado Bacharelado", got)
+	}
+}
+
+func TestBuildFilterClausesModalidadeNormalizaNome(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Modalidade: []string{"EaD"}})
+	should := shouldClausesFrom(t, clauses[0])
+
+	match := should[1]["match"].(map[string]any)
+	if got := match["curso.no_modalidade_ensino"]; got != "Distância" {
+		t.Errorf("modalidade = %v, esperado Distância", got)
+	}
+}

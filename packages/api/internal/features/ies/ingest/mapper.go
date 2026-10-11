@@ -2,7 +2,7 @@ package ingest
 
 import (
 	"api_estudante/internal/features/ies"
-	"api_estudante/internal/ingest/textcase"
+	"api_estudante/internal/textcase"
 )
 
 // ToDocument converte um registro de origem no documento indexado.

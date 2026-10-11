@@ -16,11 +16,11 @@ Para o container de desenvolvimento (Dev) onde roda o agente: Go disponível via
     - httpx             # respostas JSON, paginação e parsing de query
     - middlewares       # CORS, recover, request-id, access log
     - testutil          # helpers de teste (cliente ES sobre httptest, JSON e arquivos temporários)
+    - textcase          # normalização de caixa de texto (compartilhado pela API e ingestão)
     - ingest            # lado de escrita (não importado pela API)
         - bulk          # motor de bulk + operações de índice
         - dictionary    # construção dos índices de dicionário
         - mappings      # mappings dos índices (embeds centralizados)
-        - textcase      # normalização de caixa de texto na ingestão
         - seed          # orquestração da ingestão (troca atômica por alias -latest)
     - features
         - cursos        # model + repository/service/handler (leitura) + ingest/
