@@ -76,7 +76,7 @@ export function FiltersPanel({
     <div
       data-module={module}
       className={cn(
-        'flex flex-col gap-6 rounded-card border border-card-border bg-card-surface p-6 font-sans text-fg shadow-sm',
+        'flex flex-col gap-6 rounded-card border border-card-border bg-filter-surface p-6 font-sans text-fg shadow-sm',
         className,
       )}
     >
@@ -102,7 +102,7 @@ export function FiltersPanel({
               : 'cursor-not-allowed text-fg-muted',
           )}
         >
-          <Typo s="sm">Limpar tudo</Typo>
+          <span className="text-xs">Limpar tudo</span>
         </button>
       </header>
 
@@ -171,7 +171,6 @@ function FilterSection({
             <FilterGroup.Option
               key={item.value}
               label={item.label}
-              value={item.value}
               resultCount={resultCount}
               checked={isActive}
               disabled={resultCount === 0 && !isActive}

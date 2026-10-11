@@ -2,18 +2,21 @@
 
 @theme {
   /* Cores · Acentos por módulo */
-  --color-m1-accent: #d4ff00; /* M1 Carta Náutica — neon-lime  */
-  --color-m2-accent: #00e5ff; /* M2 Bússola      — cyan        */
+  --color-m1-accent: #00e5ff; /* M1 Carta Náutica — neon-lime  */
+  --color-m2-accent: #d4ff00; /* M2 Bússola      — cyan        */
   --color-m3-accent: #ff67be; /* M3 Âncora       — neon-pink   */
   --color-m4-accent: #ae64fe; /* M4 Telescópio   — ultraviolet */
   --color-m5-accent: #ff8d3b; /* M5 Sextante     — mango       */
 
   /* Tons companheiros (texto legível sobre claro) */
-  --color-m1-deep: #5a6e00;
-  --color-m2-deep: #006b78;
+  --color-m1-deep: #006b78;
+  --color-m2-deep: #5a6e00;
   --color-m3-deep: #a61e6b;
   --color-m4-deep: #5b21a8;
   --color-m5-deep: #a34a00;
+
+  --color-filter-surface: #f9f9f9;
+  --color-filter-title: #707070;
 
   /* Cores · Feedback (faixas do Enade e progresso) */
   --color-enade-ok: #1b8a5a;
@@ -77,13 +80,13 @@
   /* Corpo. O `next/font` sobrescreve esta variável no <body> (layout.tsx). */
   --font-sans: "Source Sans 3", system-ui, sans-serif;
 
-  /* Tipografia · Escala
-     Usa a escala padrão do Tailwind: text-xs (12px, piso), text-sm (14px),
-     text-base (16px), text-xl (20px) e text-4xl (36px, números de destaque).
-     Tamanhos próprios: `text-display` (título de página de módulo) e
-     `text-2xs` (10px, abaixo do piso de 12px; só para texto complementar). */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-xl: 1.25rem;
+  --text-4xl: 2.25rem;
+  --text-2xs: 0.688rem;
   --text-display: clamp(2rem, 4vw, 2.75rem);
-  --text-2xs: 0.625rem; /* 10px */
 
   /* Formas */
   --radius-card: 20px;

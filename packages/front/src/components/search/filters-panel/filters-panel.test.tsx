@@ -26,9 +26,10 @@ describe('FiltersPanel', () => {
     )
 
     expect(screen.getByText('Estado')).toBeInTheDocument()
-    expect(screen.getByText('São Paulo')).toBeInTheDocument()
     expect(screen.getByText('10')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: 'São Paulo' })).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: 'São Paulo, 10 resultados' }),
+    ).toBeChecked()
   })
 
   it('dispara onToggle com a chave do filtro e o valor', () => {

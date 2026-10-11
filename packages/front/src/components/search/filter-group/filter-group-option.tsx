@@ -1,69 +1,63 @@
-import { type ChangeEvent, useId } from 'react'
-import { Checkbox } from '@/components/ui/checkbox/checkbox'
-import { Typo } from '@/components/ui/typo'
 import { cn } from '@/utils/cn'
 import { useFilterGroupContext } from './filter-group-context'
 
 export interface FilterGroupOptionProps {
   label: string
-  value?: string
   resultCount?: number
   checked?: boolean
-  defaultChecked?: boolean
   disabled?: boolean
   className?: string
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void
+  onChange?: () => void
 }
 
 export function FilterGroupOption({
   label,
-  value,
   resultCount,
   checked,
-  defaultChecked = false,
   disabled = false,
   className,
   onChange,
 }: FilterGroupOptionProps) {
   // `useFilterGroupContext` garante que a opção está dentro de `FilterGroup.Root`.
   useFilterGroupContext('FilterGroup.Option')
-  const optionInputId = useId()
   const hasResultCount = typeof resultCount === 'number'
+  const countPhrase = hasResultCount
+    ? `${resultCount} ${resultCount === 1 ? 'resultado' : 'resultados'}`
+    : null
+  const accessibleLabel = countPhrase ? `${label}, ${countPhrase}` : label
 
   return (
-    <li className={cn('flex items-center justify-between gap-3', className)}>
+    <li className={className}>
       <label
-        htmlFor={optionInputId}
         className={cn(
-          'group flex items-center gap-4',
-          disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+          'inline-flex cursor-pointer items-center gap-1 rounded-full border px-2 py-1 transition duration-300',
+          'focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-deep',
+          'font-sans text-xs font-semibold tracking-wide uppercase',
+          checked
+            ? 'border-accent/70 bg-accent/10 text-accent-fg'
+            : 'border-transparent bg-muted text-fg-muted',
+          disabled && 'cursor-not-allowed opacity-50',
         )}
       >
-        <Checkbox
-          id={optionInputId}
-          value={value ?? label}
+        <input
+          type="checkbox"
           checked={checked}
-          defaultChecked={checked !== undefined ? undefined : defaultChecked}
           disabled={disabled}
-          readOnly={!onChange && checked !== undefined}
+          readOnly={checked !== undefined && !onChange}
           onChange={onChange}
-          className={cn(
-            'border-fg-muted/40',
-            !disabled && 'group-hover:border-fg-muted',
-          )}
+          aria-label={accessibleLabel}
+          className="sr-only"
         />
-        <Typo s="sm" className={cn(disabled && 'text-fg-muted')}>
-          {label}
-        </Typo>
+        <span aria-hidden="true">{label}</span>
+        {hasResultCount && (
+          <span
+            aria-hidden="true"
+            className="font-normal tabular-nums text-xs opacity-70"
+          >
+            {resultCount}
+          </span>
+        )}
       </label>
-      {hasResultCount && (
-        <Typo
-          s="sm"
-          className={cn('tabular-nums', disabled ? 'text-fg-muted' : 'text-fg')}
-        >
-          {resultCount}
-        </Typo>
-      )}
     </li>
   )
 }
