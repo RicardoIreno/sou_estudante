@@ -17,6 +17,8 @@ interface LayoutSearchPageProps {
   activeFilters?: ReactNode
   filtersPanel?: ReactNode
   toolbar?: ReactNode
+  /** Resumo dos resultados (ex.: contagem + tag), exibido ao lado da ordenação. */
+  resultsSummary?: ReactNode
   results?: ReactNode
   /** Aviso exibido logo abaixo do cabeçalho (ex.: módulo em construção). */
   notice?: ReactNode
@@ -33,6 +35,7 @@ export function LayoutSearchPage({
   activeFilters,
   filtersPanel,
   toolbar,
+  resultsSummary,
   results,
   notice,
   minQueryLength,
@@ -40,7 +43,9 @@ export function LayoutSearchPage({
 }: LayoutSearchPageProps) {
   const meta = module ? MODULE_META[module] : undefined
   const hasSearch = Boolean(searchHeader)
-  const hasResults = Boolean(filtersPanel || toolbar || results)
+  const hasResults = Boolean(
+    filtersPanel || toolbar || resultsSummary || results,
+  )
   const showPrompt = hasSearch || hasResults
 
   return (
@@ -123,7 +128,16 @@ export function LayoutSearchPage({
                     'md:col-span-4': !filtersPanel,
                   })}
                 >
-                  {toolbar && <Suspense fallback={null}>{toolbar}</Suspense>}
+                  {(resultsSummary || toolbar) && (
+                    <div className="flex items-center justify-between">
+                      {resultsSummary && (
+                        <Suspense fallback={null}>{resultsSummary}</Suspense>
+                      )}
+                      {toolbar && (
+                        <Suspense fallback={null}>{toolbar}</Suspense>
+                      )}
+                    </div>
+                  )}
 
                   {results && (
                     <Suspense
