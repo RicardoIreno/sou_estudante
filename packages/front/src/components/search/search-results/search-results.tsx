@@ -33,6 +33,8 @@ export interface SearchResultsProps<TItem> {
   /** Exibe a linha de contagem de resultados. Desative quando a contagem for
    *  renderizada fora da lista (ex.: no layout, ao lado da ordenação). */
   showCount?: boolean
+  /** Conteúdo extra exibido após a lista, logo antes da paginação. */
+  footer?: ReactNode
 }
 
 /**
@@ -55,6 +57,7 @@ export function SearchResults<TItem>({
   emptyMessage,
   skeletonCount = 3,
   showCount = true,
+  footer,
 }: SearchResultsProps<TItem>) {
   if (isLoading) {
     return (
@@ -107,6 +110,8 @@ export function SearchResults<TItem>({
           </Fragment>
         ))}
       </div>
+
+      {footer}
 
       {links && onNavigate && (
         <Pagination

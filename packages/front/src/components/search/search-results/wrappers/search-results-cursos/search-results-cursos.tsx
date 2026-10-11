@@ -5,6 +5,7 @@ import type { Module } from '@/lib/module'
 import type { Curso } from '@/services/api/types'
 import { useSearchCursos } from '@/services/api/use-search-cursos'
 import { SearchResultItem } from './search-result-item'
+import { SearchResultsCursosSummary } from './search-results-cursos-summary'
 
 interface SearchResultsCursosProps {
   module?: Module
@@ -35,6 +36,7 @@ export function SearchResultsCursos({ module }: SearchResultsCursosProps) {
       labels={{ singular: 'curso', plural: 'cursos' }}
       emptyMessage="Nenhum curso encontrado"
       showCount={false}
+      footer={<SearchResultsCursosSummary module={module} />}
       getItemKey={(curso, index) =>
         curso.sequencial
           ? `seq-${curso.sequencial}`

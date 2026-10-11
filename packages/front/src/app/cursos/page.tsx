@@ -3,7 +3,6 @@ import { ActiveFiltersCursos } from '@/components/search/active-filters/wrappers
 import { FiltersPanelCursos } from '@/components/search/filters-panel/wrappers/filters-panel-cursos/filters-panel-cursos'
 import { SearchHeaderCursos } from '@/components/search/search-header/wrappers/search-header-cursos/search-header-cursos'
 import { SearchResultsCursos } from '@/components/search/search-results/wrappers/search-results-cursos/search-results-cursos'
-import { SearchResultsCursosSummary } from '@/components/search/search-results/wrappers/search-results-cursos/search-results-cursos-summary'
 import { SortingOptionsCursos } from '@/components/search/sorting-options/wrappers/sorting-options-cursos/sorting-options-cursos'
 import type { Module } from '@/lib/module'
 import { API_CONFIG } from '@/services/api'
@@ -19,7 +18,6 @@ export default function CursosPage() {
       activeFilters={<ActiveFiltersCursos module={module} />}
       filtersPanel={<FiltersPanelCursos module={module} />}
       toolbar={<SortingOptionsCursos module={module} />}
-      resultsSummary={<SearchResultsCursosSummary module={module} />}
       results={<SearchResultsCursos module={module} />}
       minQueryLength={API_CONFIG.SEARCH_MIN_CHARS}
       emptyPrompt="Busque um curso para ver os resultados"
