@@ -1,6 +1,6 @@
 import { TrendingUp } from 'lucide-react'
-import MarLegenda from '@/components/enade/formas-enade/mar-jegenda'
-import SeloEnade from '@/components/enade/selo-enade/selo-enade'
+import { MarLegenda } from '@/components/enade/formas-enade/mar-legenda'
+import { SeloEnade } from '@/components/enade/selo-enade/selo-enade'
 import { Callout } from '@/components/ui/callout'
 import { parseEnadeLevel } from '@/lib/enade'
 import type { Module } from '@/lib/module'
@@ -32,23 +32,23 @@ export const ProfileCursosQuality = ({
       className={cn('flex flex-col gap-6 p-4', className)}
     >
       <section className="flex flex-col gap-3">
-        <span className="font-coadjuvant text-coadjuvant-xs font-bold uppercase tracking-wide text-fg-muted">
+        <span className="font-sans text-xs font-bold uppercase tracking-wide text-fg-muted">
           Conceito Enade
         </span>
 
         <div className="flex items-start gap-4">
           <SeloEnade level={faixa} size="detalhe" />
           <div className="flex flex-1 flex-col gap-1">
-            <span className="font-coadjuvant text-coadjuvant-xs font-bold uppercase tracking-wide text-fg-muted">
+            <span className="font-sans text-xs font-bold uppercase tracking-wide text-fg-muted">
               Ciclo avaliativo
             </span>
-            <span className="font-protagonist text-protagonist font-bold text-fg-protagonist">
+            <span className="font-sans text-base font-bold text-fg">
               {ano ?? '—'}
             </span>
-            <p className="font-protagonist text-coadjuvant-sm text-text-muted">
+            <p className="font-sans text-xs text-fg-muted">
               Nota oficial mais recente para este curso, na escala de 1 a 5.
             </p>
-            <span className="font-coadjuvant text-coadjuvant-xs text-fg-muted">
+            <span className="font-sans text-xs text-fg-muted">
               Fonte: Inep · Enade {ano ?? '—'}
             </span>
           </div>

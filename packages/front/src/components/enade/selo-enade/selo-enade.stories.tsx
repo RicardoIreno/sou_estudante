@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import SeloEnade from './selo-enade'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { SeloEnade } from './selo-enade'
 
 const meta = {
   title: 'Components/Enade/SeloEnade',
@@ -7,7 +7,6 @@ const meta = {
   tags: ['autodocs'],
   args: {
     level: 5,
-    animated: false,
     size: 'card',
   },
 } satisfies Meta<typeof SeloEnade>
@@ -50,10 +49,6 @@ export const DetalheLevel5: Story = {
 
 export const DetalheLevel2: Story = {
   args: { level: 2, size: 'detalhe' },
-}
-
-export const DetalheAnimado: Story = {
-  args: { level: 4, size: 'detalhe', animated: true },
 }
 
 export const DetalheNeblina: Story = {

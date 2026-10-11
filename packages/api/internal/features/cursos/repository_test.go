@@ -12,7 +12,7 @@ func TestBuildTextQueryExigeTodosOsTermosNoNomeECINE(t *testing.T) {
 	query := "CIÊNCIAS DA NATUREZA: CIÊNCIAS E QUÍMICA"
 	built := buildTextQuery(query)
 
-	multi, ok := built["multi_match"].(map[string]interface{})
+	multi, ok := built["multi_match"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó multi_match, obtido %T", built["multi_match"])
 	}
@@ -40,7 +40,7 @@ func TestBuildTextQueryExigeTodosOsTermosNoNomeECINE(t *testing.T) {
 func TestBuildExactNameQueryCasaNomeIdêntico(t *testing.T) {
 	built := buildExactNameQuery("MEDICINA VETERINARIA")
 
-	term, ok := built["term"].(map[string]interface{})
+	term, ok := built["term"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó term, obtido %T", built["term"])
 	}
@@ -55,7 +55,7 @@ func TestBuildExactNameQueryCasaNomeIdêntico(t *testing.T) {
 func TestCategoriaFilterUsaCategoriaAdministrativaDaIES(t *testing.T) {
 	built := categoriaFilter("Privada")
 
-	terms, ok := built["terms"].(map[string]interface{})
+	terms, ok := built["terms"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó terms, obtido %T", built["terms"])
 	}
@@ -106,19 +106,19 @@ func TestBuildAggregationsIncluiTodosOsGrupos(t *testing.T) {
 func TestBuildAggregationsGratuitosFiltraInGratuito(t *testing.T) {
 	aggs := buildAggregations()
 
-	agg, ok := aggs["gratuitos"].(map[string]interface{})
+	agg, ok := aggs["gratuitos"].(map[string]any)
 	if !ok {
 		t.Fatalf("agregação gratuitos ausente ou com tipo inesperado: %v", aggs["gratuitos"])
 	}
-	filters, ok := agg["filters"].(map[string]interface{})["filters"].(map[string]interface{})
+	filters, ok := agg["filters"].(map[string]any)["filters"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó filters.filters, obtido %v", agg["filters"])
 	}
-	gratuito, ok := filters["Gratuito"].(map[string]interface{})
+	gratuito, ok := filters["Gratuito"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado bucket Gratuito, obtido %v", filters)
 	}
-	term, ok := gratuito["term"].(map[string]interface{})
+	term, ok := gratuito["term"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó term, obtido %v", gratuito)
 	}
@@ -160,10 +160,10 @@ func TestBuildFilterClausesModalidadeEaDUsaCamposSemSufixo(t *testing.T) {
 	if len(should) != 2 {
 		t.Fatalf("esperado 2 cláusulas should, obtido %d", len(should))
 	}
-	if _, ok := should[0]["term"].(map[string]interface{})["curso.tp_modalidade_ensino"]; !ok {
+	if _, ok := should[0]["term"].(map[string]any)["curso.tp_modalidade_ensino"]; !ok {
 		t.Errorf("esperado campo curso.tp_modalidade_ensino, obtido %v", should[0])
 	}
-	if _, ok := should[1]["match"].(map[string]interface{})["curso.no_modalidade_ensino"]; !ok {
+	if _, ok := should[1]["match"].(map[string]any)["curso.no_modalidade_ensino"]; !ok {
 		t.Errorf("esperado campo curso.no_modalidade_ensino, obtido %v", should[1])
 	}
 }
@@ -188,14 +188,14 @@ func TestBuildSortClausesPadraoUsaScore(t *testing.T) {
 	}
 }
 
-func termsAggField(t *testing.T, aggs map[string]interface{}, group string) string {
+func termsAggField(t *testing.T, aggs map[string]any, group string) string {
 	t.Helper()
 
-	agg, ok := aggs[group].(map[string]interface{})
+	agg, ok := aggs[group].(map[string]any)
 	if !ok {
 		t.Fatalf("agregação %q ausente ou com tipo inesperado: %v", group, aggs[group])
 	}
-	terms, ok := agg["terms"].(map[string]interface{})
+	terms, ok := agg["terms"].(map[string]any)
 	if !ok {
 		t.Fatalf("agregação %q não é terms (%T)", group, agg["terms"])
 	}
@@ -203,26 +203,143 @@ func termsAggField(t *testing.T, aggs map[string]interface{}, group string) stri
 	return field
 }
 
-func termsNodeFrom(t *testing.T, clause map[string]interface{}) map[string]interface{} {
+func termsNodeFrom(t *testing.T, clause map[string]any) map[string]any {
 	t.Helper()
 
-	terms, ok := clause["terms"].(map[string]interface{})
+	terms, ok := clause["terms"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó terms, obtido %T", clause["terms"])
 	}
 	return terms
 }
 
-func shouldClausesFrom(t *testing.T, clause map[string]interface{}) []map[string]interface{} {
+func shouldClausesFrom(t *testing.T, clause map[string]any) []map[string]any {
 	t.Helper()
 
-	boolNode, ok := clause["bool"].(map[string]interface{})
+	boolNode, ok := clause["bool"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó bool, obtido %T", clause["bool"])
 	}
-	should, ok := boolNode["should"].([]map[string]interface{})
+	should, ok := boolNode["should"].([]map[string]any)
 	if !ok {
 		t.Fatalf("esperado should []map, obtido %T", boolNode["should"])
 	}
 	return should
+}
+
+func TestBuildFilterClausesGrauCombinaValoresComOu(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Grau: []string{"Bacharelado", "Licenciatura"}})
+	if len(clauses) != 1 {
+		t.Fatalf("esperado 1 cláusula, obtido %d", len(clauses))
+	}
+
+	should := shouldClausesFrom(t, clauses[0])
+	if len(should) != 2 {
+		t.Fatalf("esperado 2 cláusulas should, obtido %d", len(should))
+	}
+	for i, want := range []string{"Bacharelado", "Licenciatura"} {
+		match := should[i]["match"].(map[string]any)
+		if got := match["curso.no_grau_academico"]; got != want {
+			t.Errorf("should[%d] = %v, esperado %q", i, got, want)
+		}
+	}
+}
+
+func TestBuildFilterClausesCategoriaPrivadaIncluiComESemFinsLucrativos(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Categoria: []string{"privada"}})
+	if len(clauses) != 1 {
+		t.Fatalf("esperado 1 cláusula, obtido %d", len(clauses))
+	}
+
+	should := shouldClausesFrom(t, clauses[0])
+	terms := should[0]["terms"].(map[string]any)["instituicao.categoria_administrativa"]
+	want := []string{"Privada com fins lucrativos", "Privada sem fins lucrativos"}
+	if !reflect.DeepEqual(terms, want) {
+		t.Errorf("categorias = %v, esperado %v", terms, want)
+	}
+}
+
+func TestBuildFilterClausesCategoriaDesconhecidaNaoGeraFiltro(t *testing.T) {
+	if clauses := buildFilterClauses(SearchFilterParams{Categoria: []string{"inexistente"}}); len(clauses) != 0 {
+		t.Errorf("esperado nenhuma cláusula, obtido %v", clauses)
+	}
+}
+
+func TestBuildFilterClausesModalidadePresencial(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Modalidade: []string{"Presencial"}})
+	should := shouldClausesFrom(t, clauses[0])
+	if got := should[0]["term"].(map[string]any)["curso.tp_modalidade_ensino"]; got != "1" {
+		t.Errorf("tp_modalidade_ensino = %v, esperado \"1\"", got)
+	}
+}
+
+func TestBuildFilterClausesTurnoUsaVagasDoCenso(t *testing.T) {
+	cases := []struct {
+		turno string
+		field string
+	}{
+		{"noturno", "censo_metricas.qt_vg_total_noturno"},
+		{"DIURNO", "censo_metricas.qt_vg_total_diurno"},
+		{"ead", "censo_metricas.qt_vg_total_ead"},
+	}
+	for _, c := range cases {
+		t.Run(c.turno, func(t *testing.T) {
+			clauses := buildFilterClauses(SearchFilterParams{Turno: []string{c.turno}})
+			should := shouldClausesFrom(t, clauses[0])
+			rng, ok := should[0]["range"].(map[string]any)
+			if !ok {
+				t.Fatalf("esperado cláusula range, obtido %v", should[0])
+			}
+			if _, ok := rng[c.field]; !ok {
+				t.Errorf("esperado campo %s, obtido %v", c.field, rng)
+			}
+		})
+	}
+}
+
+func TestBuildFilterClausesTurnosSeCombinamNumaUnicaClausulaOu(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Turno: []string{"noturno", "ead"}})
+	if len(clauses) != 1 {
+		t.Fatalf("esperado 1 cláusula, obtido %d", len(clauses))
+	}
+	if should := shouldClausesFrom(t, clauses[0]); len(should) < 2 {
+		t.Errorf("esperado cláusulas de ambos os turnos, obtido %v", should)
+	}
+}
+
+func TestBuildFilterClausesFiltrosDiferentesSeCombinamComE(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{
+		UF: []string{"SP"}, Grau: []string{"Bacharelado"}, Enade: []string{"5"},
+	})
+	if len(clauses) != 3 {
+		t.Errorf("esperado 3 cláusulas (uma por filtro), obtido %d", len(clauses))
+	}
+}
+
+func TestBuildFilterClausesSemFiltrosNaoGeraClausulas(t *testing.T) {
+	if clauses := buildFilterClauses(SearchFilterParams{}); len(clauses) != 0 {
+		t.Errorf("esperado nenhuma cláusula, obtido %v", clauses)
+	}
+}
+
+func TestBuildSortClausesEnadeOrdenaPeloContinuoDecrescente(t *testing.T) {
+	clauses := buildSortClauses("enade")
+	spec, ok := clauses[0]["enade.conceito_continuo_enade"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado ordenação por enade.conceito_continuo_enade, obtido %v", clauses[0])
+	}
+	if spec["order"] != "desc" || spec["missing"] != "_last" {
+		t.Errorf("ordenação = %v, esperado desc com ausentes por último", spec)
+	}
+}
+
+func TestBuildSortClausesDesistenciaOrdenaPeloMenorTda(t *testing.T) {
+	clauses := buildSortClauses("desistencia")
+	spec, ok := clauses[0]["tda.tda"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado ordenação por tda.tda, obtido %v", clauses[0])
+	}
+	if spec["order"] != "asc" || spec["missing"] != "_last" {
+		t.Errorf("ordenação = %v, esperado asc com ausentes por último", spec)
+	}
 }

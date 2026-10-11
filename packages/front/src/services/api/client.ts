@@ -14,6 +14,15 @@ function createApiError(
 }
 
 /**
+ * Aplica o timeout padrão da API ao `signal` da chamada, preservando um
+ * `signal` recebido do chamador (o que disparar primeiro cancela o fetch).
+ */
+function withTimeout(signal?: AbortSignal | null): AbortSignal {
+  const timeout = AbortSignal.timeout(API_CONFIG.TIMEOUT_MS)
+  return signal ? AbortSignal.any([signal, timeout]) : timeout
+}
+
+/**
  * Cliente HTTP genérico reutilizável
  *
  * Encapsula lógica de:
@@ -32,16 +41,10 @@ export async function apiClient<T>(
 ): Promise<Result<T>> {
   const url = `${API_CONFIG.BASE_URL}${endpoint}`
 
-  // Debug: log da URL que está sendo chamada
-  console.log('[apiClient] Chamando URL:', url)
-  console.log(
-    '[apiClient] Ambiente:',
-    typeof window === 'undefined' ? 'SERVER' : 'CLIENT',
-  )
-
   try {
     const response = await fetch(url, {
       ...options,
+      signal: withTimeout(options?.signal),
       // Merge com configurações padrão do Next.js
       next: {
         revalidate: API_CONFIG.CACHE.REVALIDATE_SECONDS,

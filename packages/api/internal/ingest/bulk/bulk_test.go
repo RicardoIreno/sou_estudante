@@ -265,3 +265,52 @@ func TestRunIgnoraErroDeStreamEProssegue(t *testing.T) {
 		t.Errorf("indexados = %d, esperado 1", indexed)
 	}
 }
+
+// failingStream devolve sempre o mesmo erro, como um decoder JSON que repete
+// um erro de sintaxe a cada chamada.
+type failingStream struct {
+	calls int
+}
+
+func (s *failingStream) Next() (*Document, error) {
+	s.calls++
+	if s.calls > 10_000 {
+		return nil, io.EOF // evita travar o teste se a proteção não existir
+	}
+	return nil, errors.New("invalid character 'x'")
+}
+
+func (s *failingStream) Close() error { return nil }
+
+func TestRunAbortaAposErrosConsecutivosDeLeitura(t *testing.T) {
+	client := testutil.NewESClient(t, bulkHandler(t, nil))
+	stream := &failingStream{}
+
+	_, err := Run(context.Background(), client, "cursos", testConfig(), stream)
+	if err == nil {
+		t.Fatal("esperado erro após erros consecutivos de leitura, obtido nil")
+	}
+	if stream.calls > maxConsecutiveReadErrors+1 {
+		t.Errorf("Next chamado %d vezes; esperado parar perto de %d", stream.calls, maxConsecutiveReadErrors)
+	}
+}
+
+func TestRunZeraContadorDeErrosAoLerComSucesso(t *testing.T) {
+	client := testutil.NewESClient(t, bulkHandler(t, nil))
+
+	var items []scriptedItem
+	for i := 0; i < 3; i++ {
+		for j := 0; j < maxConsecutiveReadErrors-1; j++ {
+			items = append(items, scriptedItem{err: errors.New("registro corrompido")})
+		}
+		items = append(items, scriptedItem{doc: &Document{ID: fmt.Sprint(i), Body: map[string]string{"k": "v"}}})
+	}
+
+	indexed, err := Run(context.Background(), client, "cursos", testConfig(), &scriptedStream{items: items})
+	if err != nil {
+		t.Fatalf("erros isolados não devem abortar: %v", err)
+	}
+	if indexed != 3 {
+		t.Errorf("indexados = %d, esperado 3", indexed)
+	}
+}

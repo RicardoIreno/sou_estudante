@@ -98,7 +98,7 @@ func TestExecuteSearchDecodificaHitsEAgregacoes(t *testing.T) {
 		}`))
 	})
 
-	query := map[string]interface{}{"query": map[string]interface{}{"match_all": map[string]interface{}{}}}
+	query := map[string]any{"query": map[string]any{"match_all": map[string]any{}}}
 	resp, err := ExecuteSearch[testDoc](context.Background(), client, "ies", query)
 	if err != nil {
 		t.Fatalf("erro inesperado: %v", err)
@@ -121,7 +121,7 @@ func TestExecuteSearchRetornaErroEmStatusDeErro(t *testing.T) {
 		_, _ = w.Write([]byte(`{"error": "boom"}`))
 	})
 
-	_, err := ExecuteSearch[testDoc](context.Background(), client, "ies", map[string]interface{}{})
+	_, err := ExecuteSearch[testDoc](context.Background(), client, "ies", map[string]any{})
 	if err == nil || !strings.Contains(err.Error(), "erro ES [500") {
 		t.Fatalf("esperado erro ES [500, obtido %v", err)
 	}
@@ -130,7 +130,7 @@ func TestExecuteSearchRetornaErroEmStatusDeErro(t *testing.T) {
 func TestExecuteSearchRetornaErroDeSerializacao(t *testing.T) {
 	client := testutil.NewESClient(t, func(http.ResponseWriter, *http.Request) {})
 
-	query := map[string]interface{}{"invalido": make(chan int)}
+	query := map[string]any{"invalido": make(chan int)}
 	_, err := ExecuteSearch[testDoc](context.Background(), client, "ies", query)
 	if err == nil || !strings.Contains(err.Error(), "erro ao montar query") {
 		t.Fatalf("esperado erro ao montar query, obtido %v", err)
@@ -148,7 +148,7 @@ func TestExecuteSearchRetornaErroDeTransporte(t *testing.T) {
 		t.Fatalf("criar cliente: %v", err)
 	}
 
-	_, err = ExecuteSearch[testDoc](context.Background(), client, "ies", map[string]interface{}{})
+	_, err = ExecuteSearch[testDoc](context.Background(), client, "ies", map[string]any{})
 	if err == nil || !strings.Contains(err.Error(), "erro ao executar search") {
 		t.Fatalf("esperado erro ao executar search, obtido %v", err)
 	}
@@ -160,7 +160,7 @@ func TestExecuteSearchRetornaErroDeDecodificacao(t *testing.T) {
 		_, _ = w.Write([]byte(`{nao-e-json`))
 	})
 
-	_, err := ExecuteSearch[testDoc](context.Background(), client, "ies", map[string]interface{}{})
+	_, err := ExecuteSearch[testDoc](context.Background(), client, "ies", map[string]any{})
 	if err == nil || !strings.Contains(err.Error(), "erro ao decodificar resposta") {
 		t.Fatalf("esperado erro ao decodificar resposta, obtido %v", err)
 	}
@@ -232,5 +232,37 @@ func TestNewClientCriaClienteSemContatoComServidor(t *testing.T) {
 	}
 	if client == nil {
 		t.Fatal("cliente não deveria ser nil")
+	}
+}
+
+func TestParseBucketsFormatoMapaTemOrdemDeterministica(t *testing.T) {
+	raw := map[string]json.RawMessage{
+		"turnos": json.RawMessage(`{"buckets":{"Noturno":{"doc_count":5},"Diurno":{"doc_count":9},"Integral":{"doc_count":5},"EaD":{"doc_count":0}}}`),
+	}
+
+	// Maior contagem primeiro; empate desempatado pela chave. Repetir várias
+	// vezes detecta a ordem aleatória da iteração de mapas.
+	want := []string{"Diurno", "Integral", "Noturno", "EaD"}
+	for i := 0; i < 50; i++ {
+		buckets := ParseBuckets(raw, "turnos")
+		got := make([]string, len(buckets))
+		for j, b := range buckets {
+			got[j] = b.Key
+		}
+		if strings.Join(got, ",") != strings.Join(want, ",") {
+			t.Fatalf("iteração %d: ordem = %v, esperado %v", i, got, want)
+		}
+	}
+}
+
+func TestExecuteSearchErroIncluiCorpoDaRespostaDeErro(t *testing.T) {
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(`not-json: result window is too large`))
+	})
+
+	_, err := ExecuteSearch[testDoc](context.Background(), client, "ies", map[string]any{})
+	if err == nil || !strings.Contains(err.Error(), "result window is too large") {
+		t.Fatalf("esperado erro com o corpo bruto quando não é JSON, obtido %v", err)
 	}
 }

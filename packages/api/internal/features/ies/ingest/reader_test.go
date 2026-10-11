@@ -3,19 +3,11 @@ package ingest
 import (
 	"errors"
 	"io"
-	"os"
 	"path/filepath"
 	"testing"
-)
 
-func writeSourceFile(t *testing.T, content string) string {
-	t.Helper()
-	path := filepath.Join(t.TempDir(), "ies.ndjson")
-	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-		t.Fatalf("preparar arquivo de teste: %v", err)
-	}
-	return path
-}
+	"api_estudante/internal/testutil"
+)
 
 func TestReaderSkipsBulkMetadataAndReturnsSources(t *testing.T) {
 	content := `{"index": {"_index": "ies", "_id": "376"}}
@@ -23,7 +15,7 @@ func TestReaderSkipsBulkMetadataAndReturnsSources(t *testing.T) {
 {"index": {"_index": "ies", "_id": "383"}}
 {"co_ies": "383", "no_ies": "UNAMA", "uf": "PA"}
 `
-	reader, err := Open(writeSourceFile(t, content))
+	reader, err := Open(testutil.WriteTempFile(t, "ies.ndjson", content))
 	if err != nil {
 		t.Fatalf("abrir origem: %v", err)
 	}
@@ -51,7 +43,7 @@ func TestReaderSkipsBulkMetadataAndReturnsSources(t *testing.T) {
 }
 
 func TestReaderReturnsEOFForEmptyFile(t *testing.T) {
-	reader, err := Open(writeSourceFile(t, ""))
+	reader, err := Open(testutil.WriteTempFile(t, "ies.ndjson", ""))
 	if err != nil {
 		t.Fatalf("abrir origem: %v", err)
 	}
@@ -68,7 +60,7 @@ func TestReaderIgnoraOutrasAcoesDeBulk(t *testing.T) {
 {"update": {"_index": "ies", "_id": "3"}}
 {"co_ies": "3", "no_ies": "UNAMA", "uf": "PA"}
 `
-	reader, err := Open(writeSourceFile(t, content))
+	reader, err := Open(testutil.WriteTempFile(t, "ies.ndjson", content))
 	if err != nil {
 		t.Fatalf("abrir origem: %v", err)
 	}
@@ -116,7 +108,7 @@ func TestOpenRetornaErroParaArquivoInexistente(t *testing.T) {
 }
 
 func TestReaderRetornaErroParaJsonInvalido(t *testing.T) {
-	reader, err := Open(writeSourceFile(t, "{nao-e-json"))
+	reader, err := Open(testutil.WriteTempFile(t, "ies.ndjson", "{nao-e-json"))
 	if err != nil {
 		t.Fatalf("abrir origem: %v", err)
 	}
@@ -124,5 +116,27 @@ func TestReaderRetornaErroParaJsonInvalido(t *testing.T) {
 
 	if _, err := reader.Next(); err == nil {
 		t.Fatal("esperado erro para JSON inválido")
+	}
+}
+
+func TestReaderArquivoTruncadoNaoRepeteErroIndefinidamente(t *testing.T) {
+	path := testutil.WriteTempFile(t, "ies.ndjson", "{\"index\":{}}\n{\"co_ies\":\"1\",\"no_ies\":\"A\"}\n{\"index\":{}}\n{\"co_ies\":\"2\",\"no_i")
+	reader, err := Open(path)
+	if err != nil {
+		t.Fatalf("abrir origem: %v", err)
+	}
+	defer reader.Close()
+
+	if _, err := reader.Next(); err != nil {
+		t.Fatalf("primeiro registro deveria ser lido: %v", err)
+	}
+
+	// O erro do arquivo truncado precisa ser estável e nunca virar EOF
+	// (sucesso silencioso): o chamador decide abortar.
+	for i := 0; i < 3; i++ {
+		_, err := reader.Next()
+		if err == nil || errors.Is(err, io.EOF) {
+			t.Fatalf("chamada %d: esperado erro de truncamento, obtido %v", i, err)
+		}
 	}
 }

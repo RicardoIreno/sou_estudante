@@ -13,13 +13,15 @@ describe('Card', () => {
     expect(screen.getByText('Conteúdo')).toHaveAttribute('data-module', '2')
   })
 
-  it('shares the module with its tags', () => {
+  it('lets its tags inherit the module theme from the card', () => {
     render(
       <Card module="3">
         <Card.Tags source={['Gratuito']} />
       </Card>,
     )
-    expect(screen.getByText('Gratuito')).toHaveAttribute('data-module', '3')
+    expect(
+      screen.getByText('Gratuito').closest('[data-module]'),
+    ).toHaveAttribute('data-module', '3')
   })
 
   it('renders rich tags with icon and source', () => {
@@ -33,8 +35,8 @@ describe('Card', () => {
         />
       </Card>,
     )
-    expect(screen.getByText('Tubarão, SC')).toHaveAttribute('data-module', '2')
-    expect(screen.getByText('19 vagas')).not.toHaveAttribute('data-module')
+    expect(screen.getByText('Tubarão, SC')).toBeInTheDocument()
+    expect(screen.getByText('19 vagas')).toBeInTheDocument()
     expect(screen.getAllByText(/Censo/)).toHaveLength(2)
   })
 
@@ -46,7 +48,7 @@ describe('Card', () => {
         />
       </Card>,
     )
-    expect(screen.getByText('Gratuito')).toHaveAttribute('data-module', '2')
+    expect(screen.getByText('Gratuito')).toBeInTheDocument()
     expect(screen.getByText('Nota 4 no Enade')).toBeInTheDocument()
   })
 

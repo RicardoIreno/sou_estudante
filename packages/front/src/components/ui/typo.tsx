@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 
 type TypographyVariant = 'title' | 'normal' | 'mute' | 'accent'
-type TypographySize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+type TypographySize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 type TypographyTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p' | 'span'
 
 interface TypoProps extends HTMLAttributes<HTMLElement> {
@@ -13,19 +13,18 @@ interface TypoProps extends HTMLAttributes<HTMLElement> {
 }
 
 const variantStyles: Record<TypographyVariant, string> = {
-  title: 'font-title-protagonist font-bold',
+  title: 'font-display font-bold',
   normal: '',
-  mute: 'text-fg-muted cursor-not-allowed',
+  mute: 'text-fg-muted',
   accent: 'text-accent-deep',
 }
 
 const sizeStyles: Record<TypographySize, string> = {
-  xs: 'text-coadjuvant-sm',
-  sm: 'text-coadjuvant',
-  md: 'text-protagonist',
-  lg: 'text-coadjuvant-lg',
-  xl: 'text-protagonist-lg',
-  '2xl': 'text-protagonist-lg',
+  xs: 'text-xs',
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-base',
+  xl: 'text-xl',
 }
 
 export const Typo = ({
@@ -42,6 +41,3 @@ export const Typo = ({
     </Tag>
   )
 }
-
-// <Typo tag="h2" size="xl" variant="title">
-// <Typo size="sm"

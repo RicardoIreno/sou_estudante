@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"api_estudante/internal/features/cursos"
+	"api_estudante/internal/testutil"
 )
 
 func TestNewStreamRetornaErroParaArquivoInexistente(t *testing.T) {
@@ -16,7 +17,7 @@ func TestNewStreamRetornaErroParaArquivoInexistente(t *testing.T) {
 }
 
 func TestStreamNextDerivaIDDoSequencialEEnriquece(t *testing.T) {
-	path := writeSourceFile(t, `[{"sequencial":10,"ies_co_ies":42,"curso_no_curso":"DIREITO"}]`)
+	path := testutil.WriteTempFile(t, "origem.json", `[{"sequencial":10,"ies_co_ies":42,"curso_no_curso":"DIREITO"}]`)
 	lookup := map[string]InstituicaoInfo{
 		"42": {NoIES: "UNIVERSIDADE DA AMAZÔNIA", OrganizacaoAcademica: "Universidade"},
 	}
@@ -52,7 +53,7 @@ func TestStreamNextDerivaIDDoSequencialEEnriquece(t *testing.T) {
 }
 
 func TestStreamNextSemSequencialDeixaIDVazio(t *testing.T) {
-	stream, err := NewStream(writeSourceFile(t, `[{"curso_no_curso":"DIREITO"}]`), nil)
+	stream, err := NewStream(testutil.WriteTempFile(t, "origem.json", `[{"curso_no_curso":"DIREITO"}]`), nil)
 	if err != nil {
 		t.Fatalf("abrir stream: %v", err)
 	}

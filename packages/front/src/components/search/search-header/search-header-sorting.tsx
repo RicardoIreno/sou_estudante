@@ -1,8 +1,5 @@
-'use client'
-
 import type { ReactNode } from 'react'
 import { cn } from '@/utils/cn'
-import { useSearchHeaderContext } from './search-header-context'
 
 export interface SearchHeaderSortingProps {
   children: ReactNode
@@ -14,9 +11,8 @@ export function SearchHeaderSorting({
   children,
   className,
 }: SearchHeaderSortingProps) {
-  useSearchHeaderContext('SearchHeader.Sorting')
   return (
-    <div className={cn('my-4 border-t border-gray-200 pt-4', className)}>
+    <div className={cn('my-4 border-t border-card-border pt-4', className)}>
       {children}
     </div>
   )

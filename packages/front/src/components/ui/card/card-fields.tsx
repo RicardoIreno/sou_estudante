@@ -29,10 +29,8 @@ export const CardFields = ({ items, className }: Props) => {
     >
       {visible.map((item) => (
         <div key={item.label} className="flex gap-1">
-          <dt className="font-coadjuvant text-coadjuvant-sm text-fg-muted">
-            {item.label}:
-          </dt>
-          <dd className="font-protagonist text-protagonist-sm">{item.value}</dd>
+          <dt className="font-sans text-xs text-fg-muted">{item.label}:</dt>
+          <dd className="font-sans text-sm">{item.value}</dd>
         </div>
       ))}
     </dl>

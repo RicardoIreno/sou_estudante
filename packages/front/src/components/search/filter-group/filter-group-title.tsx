@@ -23,10 +23,7 @@ export function FilterGroupTitle({
       t={t}
       s="lg"
       id={`${groupId}-title`}
-      className={cn(
-        'mb-5 font-title-coadjuvant font-bold text-fg-protagonist',
-        className,
-      )}
+      className={cn('mb-5 font-display font-bold text-fg', className)}
     >
       {children}
     </Typo>

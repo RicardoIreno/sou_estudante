@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import MaskEnade from './mask-enade'
+import { MaskEnade } from './mask-enade'
 
 describe('MaskEnade', () => {
   it('é decorativo e renderiza o mar em svg', () => {

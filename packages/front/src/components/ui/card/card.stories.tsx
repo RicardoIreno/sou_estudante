@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { MapPin } from 'lucide-react'
-import MaskEnade from '@/components/enade/mask-enade/mask-enade'
-import SeloEnade from '@/components/enade/selo-enade/selo-enade'
-import TagEnade from '@/components/enade/tag-enade/tag-enade'
+import { MaskEnade } from '@/components/enade/mask-enade/mask-enade'
+import { SeloEnade } from '@/components/enade/selo-enade/selo-enade'
+import { TagEnade } from '@/components/enade/tag-enade/tag-enade'
 import { Card } from './index'
 
 const meta = {

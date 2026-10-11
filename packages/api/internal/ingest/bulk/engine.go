@@ -18,6 +18,12 @@ import (
 
 const progressInterval = 500
 
+// maxConsecutiveReadErrors é o limite de erros de leitura seguidos tolerados
+// antes de abortar a ingestão. Erros isolados (um registro inválido) são
+// ignorados; uma sequência longa indica fonte corrompida ou truncada, em que o
+// leitor repete o mesmo erro e a ingestão nunca terminaria.
+const maxConsecutiveReadErrors = 10
+
 // Document é um registro já mapeado, pronto para ser indexado.
 type Document struct {
 	ID   string
@@ -42,6 +48,7 @@ func Run(ctx context.Context, client *elasticsearch.Client, index string, cfg *c
 	}
 
 	var indexed, failed uint64
+	consecutiveReadErrors := 0
 
 	for {
 		if err := ctx.Err(); err != nil {
@@ -54,9 +61,17 @@ func Run(ctx context.Context, client *elasticsearch.Client, index string, cfg *c
 			break
 		}
 		if err != nil {
+			consecutiveReadErrors++
+			if consecutiveReadErrors >= maxConsecutiveReadErrors {
+				_ = indexer.Close(context.Background())
+				return atomic.LoadUint64(&indexed), fmt.Errorf(
+					"abortando após %d erros de leitura consecutivos (fonte corrompida ou truncada?): %w",
+					consecutiveReadErrors, err)
+			}
 			slog.Warn("registro ignorado", "error", err)
 			continue
 		}
+		consecutiveReadErrors = 0
 
 		item, err := newItem(*doc, &indexed, &failed)
 		if err != nil {

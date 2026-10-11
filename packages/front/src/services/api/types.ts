@@ -1,3 +1,5 @@
+import { API_CONFIG } from './config'
+
 /**
  * Response genérico da API do backend Go
  */
@@ -6,8 +8,8 @@ export type ApiResponse<T> = {
   // Pode ter outros campos no futuro: pagination, total, etc.
 }
 
-// Resposta do endpoint de sugestões de nomes de curso (autocomplete)
-export interface SugestoesCursosResponse {
+// Resposta dos endpoints de sugestões (autocomplete de cursos e IES)
+export interface SugestoesResponse {
   results: string[]
 }
 
@@ -32,7 +34,7 @@ export type ApiError = {
 export const ERROR_MESSAGES: Record<ApiErrorType, string> = {
   network: 'Sem conexão com a internet 📡',
   server: 'Serviço temporariamente indisponível ⚙️',
-  client: 'Busca inválida. Digite pelo menos 5 caracteres 🔍',
+  client: `Busca inválida. Digite pelo menos ${API_CONFIG.SEARCH_MIN_CHARS} caracteres 🔍`,
   parse: 'Erro ao processar resposta do servidor 🔧',
   validation: 'Nenhum resultado encontrado 🤷',
 }
@@ -94,7 +96,6 @@ export type CursoListResponse = SearchListResponse<Curso, SearchAggregations>
 // Tipos da estrutura do índice de cursos
 
 export interface Curso {
-  _id?: string
   sequencial?: number
   nu_ano_censo?: number
   edicao?: string
@@ -227,8 +228,3 @@ export interface IesSearchAggregations {
 }
 
 export type IesListResponse = SearchListResponse<IES, IesSearchAggregations>
-
-// Resposta do endpoint de sugestões de nomes de IES (autocomplete)
-export interface SugestoesIesResponse {
-  results: string[]
-}

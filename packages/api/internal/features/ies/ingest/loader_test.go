@@ -3,6 +3,8 @@ package ingest
 import (
 	"path/filepath"
 	"testing"
+
+	"api_estudante/internal/testutil"
 )
 
 func TestDocumentsIndexaPorCoIESEIgnoraVazios(t *testing.T) {
@@ -13,7 +15,7 @@ func TestDocumentsIndexaPorCoIESEIgnoraVazios(t *testing.T) {
 {"index": {"_index": "ies"}}
 {"no_ies": "SEM CO_IES"}
 `
-	docs, err := Documents(writeSourceFile(t, content))
+	docs, err := Documents(testutil.WriteTempFile(t, "ies.ndjson", content))
 	if err != nil {
 		t.Fatalf("carregar documentos: %v", err)
 	}

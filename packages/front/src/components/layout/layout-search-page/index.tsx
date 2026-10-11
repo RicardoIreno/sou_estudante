@@ -1,7 +1,9 @@
 import { type ReactNode, Suspense } from 'react'
 import { RoutesBar } from '@/components/layout/routes-bar/routes-bar'
+// Dependência deliberada de `search/`: o layout da página de busca precisa saber
+// se há um termo em `q` (SearchGate) para decidir entre os blocos e o estado vazio.
 import { SearchGate } from '@/components/search/search-gate/search-gate'
-import IconModule from '@/components/ui/icon-module/iconModule'
+import { IconModule } from '@/components/ui/icon-module/icon-module'
 import { Typo } from '@/components/ui/typo'
 import { MODULE_META, type Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
@@ -16,10 +18,10 @@ interface LayoutSearchPageProps {
   filtersPanel?: ReactNode
   toolbar?: ReactNode
   results?: ReactNode
+  /** Aviso exibido logo abaixo do cabeçalho (ex.: módulo em construção). */
+  notice?: ReactNode
   /** Mínimo de caracteres em `q` para considerar que houve busca. */
   minQueryLength?: number
-  /** Override de "houve busca" — usado em testes e stories. */
-  hasSearched?: boolean
   /** Mensagem exibida enquanto nenhuma busca foi realizada. */
   emptyPrompt?: ReactNode
 }
@@ -32,8 +34,8 @@ export function LayoutSearchPage({
   filtersPanel,
   toolbar,
   results,
+  notice,
   minQueryLength,
-  hasSearched,
   emptyPrompt,
 }: LayoutSearchPageProps) {
   const meta = module ? MODULE_META[module] : undefined
@@ -48,27 +50,29 @@ export function LayoutSearchPage({
       <div className="mx-auto w-full max-w-pages px-5 py-8">
         {meta && module && (
           <header className="mb-6">
-            <div className="mb-2 flex items-center gap-2 font-coadjuvant text-coadjuvant-xs font-bold tracking-[0.9px] text-accent-deep uppercase">
+            <div className="mb-2 flex items-center gap-2 font-sans text-xs font-bold tracking-[0.9px] text-accent-deep uppercase">
               <IconModule module={module} />
               {meta.badge}
             </div>
 
-            <h1 className="block font-protagonist text-protagonist-2xl font-bold leading-[1.08] tracking-[-0.02em] text-fg-protagonist">
+            <h1 className="block font-sans text-display font-bold leading-[1.08] tracking-[-0.02em] text-fg">
               {meta.page.lead}{' '}
               <em className="font-bold text-accent-deep italic">
                 {meta.page.accent}
               </em>
             </h1>
 
-            <p className="mt-1.5 font-protagonist text-protagonist text-fg-muted">
+            <p className="mt-1.5 font-sans text-base text-fg-muted">
               {meta.page.subtitle}
             </p>
           </header>
         )}
 
+        {notice && <div className="mb-6">{notice}</div>}
+
         {hasSearch && (
           <>
-            <div className="mb-2 font-coadjuvant text-coadjuvant-xs font-bold tracking-[0.9px] text-accent-deep uppercase">
+            <div className="mb-2 font-sans text-xs font-bold tracking-[0.9px] text-accent-deep uppercase">
               {searchLabel}
             </div>
 
@@ -86,11 +90,10 @@ export function LayoutSearchPage({
 
         {showPrompt && (
           <SearchRegion
-            hasSearched={hasSearched}
             minQueryLength={minQueryLength}
             fallback={
               <div className="py-8 text-center">
-                <Typo v="mute" s="sm" t="p" className="cursor-auto">
+                <Typo v="mute" s="sm" t="p">
                   {emptyPrompt ?? DEFAULT_EMPTY_PROMPT}
                 </Typo>
               </div>
@@ -114,7 +117,7 @@ export function LayoutSearchPage({
                   </aside>
                 )}
 
-                <main
+                <div
                   className={cn('space-y-4', {
                     'md:col-span-3': Boolean(filtersPanel),
                     'md:col-span-4': !filtersPanel,
@@ -133,7 +136,7 @@ export function LayoutSearchPage({
                       {results}
                     </Suspense>
                   )}
-                </main>
+                </div>
               </div>
             )}
           </SearchRegion>
@@ -144,27 +147,20 @@ export function LayoutSearchPage({
 }
 
 interface SearchRegionProps {
-  hasSearched?: boolean
   minQueryLength?: number
   fallback: ReactNode
   children: ReactNode
 }
 
 /**
- * Decide se a região de busca (filtros, ordenação e resultados) deve aparecer.
- * Quando `hasSearched` é informado (testes/stories), usa o valor direto;
- * caso contrário, lê `q` da URL via `SearchGate`.
+ * Decide se a região de busca (filtros, ordenação e resultados) deve aparecer:
+ * só depois de haver um termo em `q` na URL (via `SearchGate`).
  */
 function SearchRegion({
-  hasSearched,
   minQueryLength,
   fallback,
   children,
 }: SearchRegionProps) {
-  if (hasSearched !== undefined) {
-    return hasSearched ? children : fallback
-  }
-
   return (
     <Suspense fallback={fallback}>
       <SearchGate minQueryLength={minQueryLength} fallback={fallback}>

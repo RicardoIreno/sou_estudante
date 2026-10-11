@@ -23,7 +23,7 @@ export const CardProgressBar = ({
 
   return (
     <div className="m-1 max-w-[20rem]">
-      <div className="flex justify-between font-coadjuvant text-coadjuvant-sm text-fg-muted">
+      <div className="flex justify-between font-sans text-xs text-fg-muted">
         <p>{displayTitle}</p>
         <p>{displayValue}</p>
       </div>

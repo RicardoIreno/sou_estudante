@@ -13,7 +13,6 @@ function RouteLineIcon({ className }: { className?: string }) {
       viewBox="0 0 16 16"
       fill="none"
       className={className}
-      role="img"
       aria-hidden="true"
     >
       <path
@@ -44,7 +43,7 @@ export function RoutesBar({ module, className }: RoutesBarProps) {
       )}
     >
       <div className="mx-auto flex w-full max-w-pages items-center gap-5 overflow-x-auto px-5">
-        <span className="flex shrink-0 items-center gap-[7px] py-3 text-coadjuvant-xs font-bold uppercase tracking-[0.9px] text-fg-muted">
+        <span className="flex shrink-0 items-center gap-[7px] py-3 text-xs font-bold uppercase tracking-[0.9px] text-fg-muted">
           <RouteLineIcon className="size-[14px]" />
           Rota
         </span>
@@ -62,10 +61,10 @@ export function RoutesBar({ module, className }: RoutesBarProps) {
                   href={meta.href}
                   aria-current={isActive ? 'page' : undefined}
                   className={cn(
-                    'flex items-center gap-2 border-b-2 py-3 text-coadjuvant-sm transition-colors duration-fast',
+                    'flex items-center gap-2 border-b-2 py-3 text-xs transition-colors duration-fast',
                     isActive
                       ? 'border-accent font-semibold text-accent-deep'
-                      : 'border-transparent text-fg-muted hover:text-fg-protagonist',
+                      : 'border-transparent text-fg-muted hover:text-fg',
                   )}
                 >
                   <span

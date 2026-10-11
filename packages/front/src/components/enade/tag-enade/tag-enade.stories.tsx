@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import TagEnade from './tag-enade'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { TagEnade } from './tag-enade'
 
 const meta = {
   title: 'Components/Enade/TagEnade',

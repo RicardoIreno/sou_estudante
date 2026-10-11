@@ -20,7 +20,7 @@ export function ProfileSection({
     <section className={cn('flex flex-col gap-2 p-4', className)}>
       <div className="mb-2 flex items-center gap-[5px]">
         <Signpost className="size-3" aria-hidden="true" />
-        <h2 className="font-coadjuvant text-coadjuvant-xs font-bold uppercase tracking-wide text-text-muted">
+        <h2 className="font-sans text-xs font-bold uppercase tracking-wide text-fg-muted">
           {title}
         </h2>
       </div>

@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import MaskEnade from './mask-enade'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { MaskEnade } from './mask-enade'
 
 const meta = {
   title: 'Components/Enade/MaskEnade',

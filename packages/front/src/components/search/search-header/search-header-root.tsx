@@ -1,9 +1,6 @@
-'use client'
-
 import type { ReactNode } from 'react'
 import type { Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
-import { SearchHeaderContext } from './search-header-context'
 
 export interface SearchHeaderRootProps {
   children: ReactNode
@@ -17,13 +14,8 @@ export function SearchHeaderRoot({
   className,
 }: SearchHeaderRootProps) {
   return (
-    <SearchHeaderContext.Provider value={{ module }}>
-      <div
-        data-module={module}
-        className={cn('font-coadjuvant text-fg-coadjuvant', className)}
-      >
-        {children}
-      </div>
-    </SearchHeaderContext.Provider>
+    <div data-module={module} className={cn('font-sans text-fg', className)}>
+      {children}
+    </div>
   )
 }

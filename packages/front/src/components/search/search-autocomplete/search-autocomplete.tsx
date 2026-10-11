@@ -11,7 +11,6 @@ import {
 } from 'react'
 import type { Module } from '@/lib/module'
 import { API_CONFIG } from '@/services/api'
-import { useSugestoesCursos } from '@/services/api/use-sugestoes-cursos'
 import { cn } from '@/utils/cn'
 
 export interface SearchAutocompleteProps {
@@ -20,14 +19,16 @@ export interface SearchAutocompleteProps {
   debounceMs?: number
   module?: Module
   className?: string
-  /** Hook de sugestões (default: cursos). Permite reuso por outros domínios. */
-  useSuggestions?: (termo: string) => {
+  /** Hook de sugestões do domínio (o agnóstico não conhece nenhum). */
+  useSuggestions: (termo: string) => {
     sugestoes: string[]
     isLoading: boolean
   }
-  placeholder?: string
-  searchLabel?: string
-  listLabel?: string
+  placeholder: string
+  /** Rótulo acessível do campo de busca. */
+  searchLabel: string
+  /** Rótulo acessível da lista de sugestões. */
+  listLabel: string
   minChars?: number
   /** Quando informado, exibe um botão de envio com este rótulo. */
   submitLabel?: string
@@ -39,10 +40,10 @@ export function SearchAutocomplete({
   debounceMs = API_CONFIG.SEARCH_DEBOUNCE_MS,
   module,
   className,
-  useSuggestions = useSugestoesCursos,
-  placeholder = 'Busque pelo nome do curso',
-  searchLabel = 'Buscar curso pelo nome',
-  listLabel = 'Sugestões de cursos',
+  useSuggestions,
+  placeholder,
+  searchLabel,
+  listLabel,
   minChars = API_CONFIG.SUGGEST_MIN_CHARS,
   submitLabel,
 }: SearchAutocompleteProps) {
@@ -53,13 +54,14 @@ export function SearchAutocomplete({
   const [value, setValue] = useState(defaultValue)
   const [termo, setTermo] = useState(defaultValue)
   const [open, setOpen] = useState(false)
-  const [focused, setFocused] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
 
-  const { sugestoes } = useSuggestions(termo)
+  const { sugestoes, isLoading } = useSuggestions(termo)
 
   const hasTermo = termo.trim().length >= minChars
-  const isOpen = open && focused && hasTermo && sugestoes.length > 0
+  // Estado derivado calculado na renderização: `open` guarda a intenção do
+  // usuário (foco/digitação/Escape) e as demais condições vêm das props atuais.
+  const isOpen = open && hasTermo && sugestoes.length > 0
 
   useEffect(() => {
     return () => {
@@ -68,16 +70,6 @@ export function SearchAutocomplete({
       }
     }
   }, [])
-
-  // Abre/fecha o menu conforme foco, termo e sugestões disponíveis
-  useEffect(() => {
-    if (!focused || !hasTermo || sugestoes.length === 0) {
-      setOpen(false)
-      setActiveIndex(-1)
-      return
-    }
-    setOpen(true)
-  }, [focused, hasTermo, sugestoes])
 
   const selectOption = (option: string) => {
     setValue(option)
@@ -97,6 +89,7 @@ export function SearchAutocomplete({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const nextValue = e.target.value
     setValue(nextValue)
+    setOpen(true)
     setActiveIndex(-1)
 
     if (timerRef.current) {
@@ -114,11 +107,12 @@ export function SearchAutocomplete({
   }
 
   const handleFocus = (_e: FocusEvent<HTMLInputElement>) => {
-    setFocused(true)
+    setOpen(true)
   }
 
   const handleBlur = (_e: FocusEvent<HTMLInputElement>) => {
-    setFocused(false)
+    setOpen(false)
+    setActiveIndex(-1)
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -202,13 +196,26 @@ export function SearchAutocomplete({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={cn(
-          'w-full rounded-full border border-gray-300 bg-white py-3.5 pl-11',
+          'w-full rounded-full border border-input-border bg-card-surface py-3.5 pl-11',
           submitLabel ? 'pr-28' : 'pr-4',
-          'font-protagonist text-protagonist text-fg-protagonist placeholder:text-fg-muted',
-          'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20',
+          'font-sans text-base text-fg placeholder:text-fg-muted',
+          'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-deep',
           'transition-colors duration-200',
         )}
       />
+
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {isLoading && hasTermo
+          ? 'Carregando sugestões'
+          : isOpen
+            ? `${sugestoes.length} sugestões disponíveis`
+            : ''}
+      </div>
 
       {submitLabel && (
         <button
@@ -216,7 +223,7 @@ export function SearchAutocomplete({
           onClick={submitCurrentValue}
           className={cn(
             'absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-navy-900 px-5 py-2.5',
-            'font-coadjuvant text-coadjuvant-sm font-semibold text-white',
+            'font-sans text-xs font-semibold text-on-dark',
             'transition-colors duration-200 hover:bg-navy-950',
             'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
           )}
@@ -230,7 +237,7 @@ export function SearchAutocomplete({
           id={listboxId}
           role="listbox"
           aria-label={listLabel}
-          className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-gray-200 bg-white py-1 shadow-lg"
+          className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-card-border bg-card-surface py-1 shadow-lg"
         >
           {sugestoes.map((sugestao, index) => (
             <div
@@ -241,7 +248,7 @@ export function SearchAutocomplete({
               tabIndex={-1}
               onMouseDown={(e) => handleOptionMouseDown(e, sugestao)}
               className={cn(
-                'cursor-pointer px-4 py-2 font-coadjuvant text-coadjuvant text-fg-coadjuvant',
+                'cursor-pointer px-4 py-2 font-sans text-sm text-fg',
                 'hover:bg-accent/10',
                 activeIndex === index && 'bg-accent/10 text-accent-deep',
               )}

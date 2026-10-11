@@ -6,12 +6,12 @@ import {
 } from 'react'
 import { Tag } from '@/components/ui/tag/tag'
 import { cn } from '@/utils/cn'
-import { useCardModule } from './card-context'
 
 export interface CardTag {
   label: string
   icon?: ReactNode
   source?: string
+  /** Reservado para a estilização em andamento: hoje não altera o visual. */
   tone?: 'accent' | 'neutral'
 }
 
@@ -24,13 +24,8 @@ const isCardTag = (item: unknown): item is CardTag =>
   typeof item === 'object' && item !== null && !isValidElement(item)
 
 export const CardTags = ({ className, source }: Props) => {
-  const module = useCardModule()
-
   return (
-    <div className={cn(
-      'flex flex-wrap gap-y-1 py-1', 
-      className)}
-      >
+    <div className={cn('flex flex-wrap gap-y-1 py-1', className)}>
       {source.map((item, index) => {
         if (isValidElement(item)) {
           return <Fragment key={item.key ?? index}>{item}</Fragment>
@@ -43,8 +38,7 @@ export const CardTags = ({ className, source }: Props) => {
             label={tag.label}
             icon={tag.icon}
             source={tag.source}
-            module={tag.tone === 'neutral' ? undefined : module}
-            variant='curso'
+            variant="curso"
           />
         )
       })}

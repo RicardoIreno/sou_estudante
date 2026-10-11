@@ -305,3 +305,49 @@ func TestEnsureDataIgnoraQuandoIndicePopulado(t *testing.T) {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 }
+
+func TestRunParaNaFalhaDeIngestaoDeCursosSemTocarNoRestante(t *testing.T) {
+	var touchedOthers int32
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch {
+		case r.Method == http.MethodHead && r.URL.Path == "/cursos":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodPut && r.URL.Path == "/cursos":
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_bulk"):
+			body, _ := io.ReadAll(r.Body)
+			actions := testutil.CountBulkActions(string(body))
+			items := make([]string, actions)
+			for i := range items {
+				items[i] = `{"index":{"status":400,"error":{"type":"mapper_parsing_exception","reason":"boom"}}}`
+			}
+			_, _ = w.Write([]byte(`{"took":1,"errors":true,"items":[` + strings.Join(items, ",") + `]}`))
+		case strings.HasSuffix(r.URL.Path, "/_refresh"):
+			w.WriteHeader(http.StatusOK)
+		default:
+			atomic.AddInt32(&touchedOthers, 1)
+			w.WriteHeader(http.StatusOK)
+		}
+	})
+
+	deps := defaultDeps()
+	deps.Stat = func(string) error { return nil }
+	deps.NewClient = func(string, string) (*es.Client, error) { return client, nil }
+	deps.LoadIES = func(string) (map[string]ies.IES, error) { return nil, nil }
+	deps.OpenCursos = func(string, map[string]cursosingest.InstituicaoInfo) (bulk.Stream, error) {
+		return &sliceStream{docs: []bulk.Document{{ID: "1", Body: map[string]string{"no_curso": "DIREITO"}}}}, nil
+	}
+	deps.OpenIES = func(string) (bulk.Stream, error) {
+		t.Error("a ingestão de IES não deveria começar depois da falha em cursos")
+		return nil, errors.New("não deveria abrir")
+	}
+
+	err := run(context.Background(), testConfig(), deps)
+	if err == nil || !strings.Contains(err.Error(), "rejeitado") {
+		t.Fatalf("esperado erro de rejeição, obtido %v", err)
+	}
+	if got := atomic.LoadInt32(&touchedOthers); got != 0 {
+		t.Errorf("%d requisições a outros índices após a falha; esperado 0", got)
+	}
+}

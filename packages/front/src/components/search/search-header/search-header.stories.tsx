@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { SearchHeader } from './index'
 
+const autocompleteProps = {
+  useSuggestions: () => ({ sugestoes: [], isLoading: false }),
+  placeholder: 'Busque pelo nome',
+  searchLabel: 'Buscar pelo nome',
+  listLabel: 'Sugestões',
+}
+
 const meta = {
   title: 'Components/Search/SearchHeader',
   component: SearchHeader,
@@ -15,14 +22,15 @@ export const Default: Story = {
     module: '1',
     children: (
       <>
-        <SearchHeader.Autocomplete onSearchSubmit={() => {}} />
+        <SearchHeader.Autocomplete
+          {...autocompleteProps}
+          onSearchSubmit={() => {}}
+        />
         <SearchHeader.Actions>
-          <span className="font-coadjuvant text-coadjuvant">
-            Controles extras
-          </span>
+          <span className="font-sans text-sm">Controles extras</span>
         </SearchHeader.Actions>
         <SearchHeader.Sorting>
-          <span className="font-coadjuvant text-coadjuvant">Ordenação</span>
+          <span className="font-sans text-sm">Ordenação</span>
         </SearchHeader.Sorting>
       </>
     ),

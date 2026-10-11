@@ -57,7 +57,11 @@ export function SearchResults<TItem>({
 }: SearchResultsProps<TItem>) {
   if (isLoading) {
     return (
-      <div className="grid gap-4">
+      <div
+        className="grid gap-4"
+        role="status"
+        aria-label="Carregando resultados"
+      >
         {Array.from({ length: skeletonCount }).map((_, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: skeletons estáticos
           <SkeletonCard key={index} />
@@ -73,7 +77,7 @@ export function SearchResults<TItem>({
   if (!items || items.length === 0) {
     return (
       <div className="text-center py-8">
-        <Typo v="mute" s="sm" t="p" className="cursor-auto">
+        <Typo v="mute" s="sm" t="p">
           {emptyMessage ?? `Nenhum ${labels.singular} encontrado`}
         </Typo>
       </div>
@@ -83,7 +87,7 @@ export function SearchResults<TItem>({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Typo v="mute" s="sm" t="p" className="cursor-auto">
+        <Typo v="mute" s="sm" t="p">
           {total > 0
             ? `${total} ${
                 total === 1

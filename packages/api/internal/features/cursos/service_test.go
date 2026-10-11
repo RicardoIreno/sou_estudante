@@ -213,3 +213,79 @@ func TestBuscarCursoPorIDRetornaCurso(t *testing.T) {
 		t.Errorf("esperado id '123', recebido '%s'", mockRepo.CapturedID)
 	}
 }
+
+func TestLinksDePaginacaoPreservamExactDesligado(t *testing.T) {
+	cases := []struct {
+		name  string
+		exact bool
+		want  string
+	}{
+		{"desligado aparece nos links", false, "false"},
+		{"ligado e o padrao, omitido", true, ""},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			mockRepo := &MockRepository{ReturnResult: &SearchResult{Total: 100}}
+			service := NewService(mockRepo)
+
+			resp, err := service.BuscarCursos(context.Background(), "medicina", SearchFilterParams{Exact: c.exact}, 2, 10)
+			if err != nil {
+				t.Fatalf("erro inesperado: %v", err)
+			}
+
+			links := map[string]string{
+				"self": resp.Links.Self, "first": resp.Links.First, "last": resp.Links.Last,
+				"prev": *resp.Links.Prev, "next": *resp.Links.Next,
+			}
+			for name, link := range links {
+				parsed, err := url.Parse(link)
+				if err != nil {
+					t.Fatalf("link %s inválido %q: %v", name, link, err)
+				}
+				if got := parsed.Query().Get("exact"); got != c.want {
+					t.Errorf("link %s: exact = %q, esperado %q", name, got, c.want)
+				}
+			}
+		})
+	}
+}
+
+func TestBuscarCursosRejeitaSortDesconhecido(t *testing.T) {
+	mockRepo := &MockRepository{ReturnResult: &SearchResult{}}
+	service := NewService(mockRepo)
+
+	_, err := service.BuscarCursos(context.Background(), "medicina", SearchFilterParams{Sort: "preco"}, 1, 10)
+	if !errors.Is(err, apperr.ErrInvalidInput) {
+		t.Fatalf("esperado ErrInvalidInput, recebido %v", err)
+	}
+	if mockRepo.CapturedQuery != "" {
+		t.Error("o repositório não deveria ser consultado com sort inválido")
+	}
+}
+
+func TestBuscarCursosAceitaSortsConhecidos(t *testing.T) {
+	for _, sort := range []string{"", "_score", "relevancia", "enade", "desistencia", "az"} {
+		t.Run("sort="+sort, func(t *testing.T) {
+			service := NewService(&MockRepository{ReturnResult: &SearchResult{}})
+			if _, err := service.BuscarCursos(context.Background(), "medicina", SearchFilterParams{Sort: sort}, 1, 10); err != nil {
+				t.Fatalf("sort %q deveria ser aceito: %v", sort, err)
+			}
+		})
+	}
+}
+
+func TestBuscarCursoPorIDRejeitaIDNaoNumerico(t *testing.T) {
+	for _, id := range []string{"abc", "1/_search", "12 3", "-1", "1.5", "../x"} {
+		t.Run(id, func(t *testing.T) {
+			mockRepo := &MockRepository{}
+			service := NewService(mockRepo)
+
+			if _, err := service.BuscarCursoPorID(context.Background(), id); !errors.Is(err, apperr.ErrInvalidInput) {
+				t.Fatalf("esperado ErrInvalidInput para %q, recebido %v", id, err)
+			}
+			if mockRepo.CapturedID != "" {
+				t.Error("o repositório não deveria ser consultado com id inválido")
+			}
+		})
+	}
+}

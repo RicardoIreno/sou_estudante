@@ -13,42 +13,35 @@
 
 ⚠️​ Whenever your write code, format it according to the rules in the `.editorconfig` file and `biome.json`.
 
-### Organização de componentes
-O padrão completo (Compound Component Pattern + Componentes Agnósticos com Wrappers de Especialização) está em [`docs/03.frontend.md`](../../docs/03.frontend.md). Resumo:
-- Agrupar por domínio em `src/components/`: `ui`, `layout`, `search`, `profile`, `enade`, `home`.
-- Subcomponentes na pasta do pai, expostos por namespace (ex.: `<Profile.Header>`). Use Contexto (com validação de uso) apenas quando houver estado compartilhado entre subcomponentes; para coordenação puramente visual, prefira o **Scoped-Variable Pattern**, sem Context.
-- Especializações de domínio em `<agnóstico>/wrappers/<wrapper>/` (ex.: `profile/wrappers/profile-cursos`), nomeadas `<Agnóstico><Domínio>` (ex.: `ProfileCursos`, `SearchHeaderIes`).
-
-### Compound Components para componentes robustos
-
-Ao criar componentes robustos e expansíveis, utilize o **Compound Component Pattern**. Todos os subcomponentes pertencem estritamente ao diretório e ao *namespace* do seu componente pai (ex.: `<Select.Option>` reside na mesma pasta do `<Select>`). Exponha APIs flexíveis e expressivas onde os subcomponentes compartilham estado implícito via *React Context* (ex.: `<Select>`, `<Select.Trigger>`, `<Select.Option>`). Implemente de forma a dar controle total sobre a composição, o layout e a ordem de renderização.
-
-**Contexto é opcional.** Crie um `<componente>-context.ts` (com hook de validação) somente quando os subcomponentes precisarem **coordenar estado** que o CSS não consegue propagar. Quando o único eixo compartilhado for **visual/estilização** (variante, tema, tom), use o **Scoped-Variable Pattern**: o root define uma variável escopada (via `data-*` ou classe) e os subcomponentes a consomem — sem React Context. Ex.: `Callout`, que troca a variante por `.callout[data-variant]`.
-
-### DRY (Don't Repeat Yourself)
-Cada fragmento de conhecimento, regra de negócio ou lógica de código deve ter uma representação única, inequívoca e oficial dentro do sistema.
-- Evite duplicação de lógica, estilos e funções.
-- Se um comportamento se repete em múltiplos lugares, abstraia-o em uma função utilitária, *custom hook* ou componente reutilizável.
-
+### Componentes
+Detalhes em [`docs/30.frontend.md`](../../docs/30.frontend.md) (convenções do projeto) e [`docs/01.component-composition.md`](../../docs/01.component-composition.md) (quando usar cada padrão). Leia-os antes de criar ou estruturar componentes. Resumo:
+- Pastas por domínio em `src/components/`: `ui`, `layout`, `search`, `profile`, `enade`.
+- Comece com props simples; Compound, Context e Agnóstico + Wrapper só com caso de uso real.
+- Wrappers em `<agnóstico>/wrappers/<wrapper>/`, nomeados `<Agnóstico><Domínio>`.
+- Só variação visual: Scoped-Variable (`data-*`), sem Context.
+- DRY a partir do segundo uso real.
 
 ### Semantic Tokens & CSS Architecture
 - **File Reference:** Always consult `/packages/front/src/app/globals.css` first to search for existing semantic tokens or to define new ones when needed.
 - Reference semantic tokens only.
-- **Naming:** `--{component}-{property}-module-{N}`, or `--{component}-{property}` if the component is generic and takes the module number as a passed-in variable at the call site.
-- **Scoped-Variable Pattern:** Prefer the scoped-variable pattern over generating 5x every component token by hand. Set `--module-color` locally per card/section, then have shared component rules reference that single variable.
+- **Naming:** acento por módulo `--color-m{N}-accent` / `--color-m{N}-deep`; acento escopado `--color-accent`, `--color-accent-deep`, `--color-accent-fg`; demais tokens por categoria (ver [`docs/30.frontend.md`](../../docs/30.frontend.md)). Não crie tokens `--{component}-{property}-module-{N}` por módulo.
+- **Scoped-Variable Pattern:** o componente recebe `module` e emite `data-module` no elemento raiz; `[data-module="N"]` em `globals.css` reatribui `--color-accent*` para toda a subárvore, e os descendentes usam `bg-accent`, `text-accent-deep`, `border-accent` (transparência com `/NN`), sem cor fixa e sem repetir tokens 5x.
 
 **Example:**
 ```css
-  .module-card[data-module="3"] {
-    --module-color: var(--color-module-3);
+  /* globals.css */
+  [data-module="3"] {
+    --color-accent: var(--color-m3-accent);
+    --color-accent-deep: var(--color-m3-deep);
+    --color-accent-fg: var(--color-m3-deep);
   }
-
-  .module-card .icon-tile   { background: var(--module-color); }
-  .module-card .badge       { background: var(--module-color); color: var(--color-navy-900); }
-  .module-card .accent-bar  { background: var(--module-color); }
 ```
-- When writing `className` prop use `/tailwind-cn-utility`.
-- Always use `cn()` from `@/lib/utils` (or equivalent path) for dynamic, conditional, or forwarded `className` attributes. Never use manual concatenation, template literals, or raw `clsx`/`classnames`.
+```tsx
+  <article data-module={module} className="bg-accent/10 border-accent">
+    <h3 className="text-accent-deep">...</h3>
+  </article>
+```
+- Always use `cn()` from `@/utils/cn` for dynamic, conditional, or forwarded `className` attributes. Never use manual concatenation, template literals, or raw `clsx`/`classnames`.
 - **Conditional Classes & Props:** Pass conditions directly as arguments. Always place the forwarded `className` last to allow overrides.
   ```tsx
   <div className={cn('p-4 rounded-md', isActive ? 'bg-blue-500' : 'bg-gray-200', className)} />

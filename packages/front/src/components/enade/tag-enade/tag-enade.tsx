@@ -1,10 +1,10 @@
 /**
  * Molécula TagEnade — versão em formato de tag (pílula) do conceito Enade.
- * Reaproveita a paleta do mar (paletaMar) para colorir fundo/borda/texto
+ * Reaproveita a paleta do mar (marPalette) para colorir fundo/borda/texto
  * conforme a faixa, mantendo coerência com o SeloEnade. A informação
  * acessível vive no próprio texto ("Nota 4 no Enade").
  */
-import { paletaMar } from '@/components/enade/formas-enade/geometria-mar'
+import { marPalette } from '@/components/enade/formas-enade/geometria-mar'
 import { Tag } from '@/components/ui/tag/tag'
 import type { EnadeLevel } from '@/lib/enade'
 
@@ -13,24 +13,24 @@ export interface TagEnadeProps {
   className?: string
 }
 
-const rotuloEnade = (level: EnadeLevel): string => {
+const enadeLabel = (level: EnadeLevel): string => {
   if (typeof level === 'number') return `Nota ${level} no Enade`
   if (level === 'SC') return 'Sem conceito no Enade'
   return 'Sem avaliação no Enade'
 }
 
-export default function TagEnade({ level, className }: TagEnadeProps) {
-  const numerica = typeof level === 'number' ? level : null
-  const paleta = paletaMar(numerica)
+export function TagEnade({ level, className }: TagEnadeProps) {
+  const numericLevel = typeof level === 'number' ? level : null
+  const palette = marPalette(numericLevel)
 
   return (
     <Tag
-      label={rotuloEnade(level)}
+      label={enadeLabel(level)}
       className={className}
       style={{
-        background: paleta.fundo,
-        borderColor: paleta.cor,
-        color: paleta.cor,
+        background: palette.background,
+        borderColor: palette.color,
+        color: palette.color,
       }}
     />
   )

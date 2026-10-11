@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import TagEnade from './tag-enade'
+import { TagEnade } from './tag-enade'
 
 describe('TagEnade', () => {
   it('renderiza o rótulo numérico da nota', () => {

@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { useId } from 'react'
+import { searchAutocompleteCursosConfig } from '@/components/search/search-autocomplete/wrappers/search-autocomplete-cursos/search-autocomplete-cursos'
 import { SearchHeader } from '@/components/search/search-header'
 import { Switch } from '@/components/ui/switch/switch'
 import { Typo } from '@/components/ui/typo'
@@ -10,7 +11,7 @@ import { useSearchCursos } from '@/services/api/use-search-cursos'
 
 function isExactEnabled(searchParams: URLSearchParams | null): boolean {
   const raw = searchParams?.get('exact')
-  return raw === null || raw === '' || raw !== 'false'
+  return raw !== 'false'
 }
 
 interface SearchHeaderCursosProps {
@@ -31,6 +32,7 @@ export function SearchHeaderCursos({ module }: SearchHeaderCursosProps) {
   return (
     <SearchHeader module={module}>
       <SearchHeader.Autocomplete
+        {...searchAutocompleteCursosConfig}
         defaultValue={query}
         onSearchSubmit={setQuery}
         placeholder="Ex.: Pedagogia, Enfermagem, Engenharia Civil…"
@@ -39,12 +41,7 @@ export function SearchHeaderCursos({ module }: SearchHeaderCursosProps) {
 
       <SearchHeader.Actions>
         <div className="flex items-center gap-2">
-          <Typo
-            s="sm"
-            t="span"
-            id={exactLabelId}
-            className="cursor-auto text-fg-coadjuvant"
-          >
+          <Typo s="sm" t="span" id={exactLabelId} className="text-fg">
             Busca exata
           </Typo>
           <Switch
@@ -56,7 +53,7 @@ export function SearchHeaderCursos({ module }: SearchHeaderCursosProps) {
             onCheckedChange={handleExactChange}
           />
         </div>
-        <Typo s="xs" t="span" v="mute" id={exactHintId} className="cursor-auto">
+        <Typo s="xs" t="span" v="mute" id={exactHintId}>
           {exact
             ? 'Retorna somente o curso com esse nome exato'
             : 'Também inclui cursos com nome parecido'}

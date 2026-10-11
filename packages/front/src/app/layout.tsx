@@ -3,10 +3,12 @@ import { DM_Mono, Source_Sans_3 } from 'next/font/google'
 import { WavesShape } from '@/assets/waves'
 import { Footer } from '@/components/layout/footer/footer'
 import { LayoutSite } from '@/components/layout/layout-site'
+import { cn } from '@/utils/cn'
+import { Providers } from './providers'
 import './globals.css'
 
 const sourceSans = Source_Sans_3({
-  variable: '--font-protagonist',
+  variable: '--font-sans',
   subsets: ['latin'],
   style: ['normal', 'italic'],
 })
@@ -31,11 +33,17 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`bg-site-background relative ${sourceSans.variable} ${dmMono.variable} antialiased`}
+        className={cn(
+          'bg-site-background relative antialiased',
+          sourceSans.variable,
+          dmMono.variable,
+        )}
       >
-        <LayoutSite className="z-10">{children}</LayoutSite>
-        <Footer className="z-10" />
-        <WavesShape className="fixed bottom-0 -z-10" />
+        <Providers>
+          <LayoutSite className="z-10">{children}</LayoutSite>
+          <Footer className="z-10" />
+          <WavesShape className="fixed bottom-0 -z-10" />
+        </Providers>
       </body>
     </html>
   )

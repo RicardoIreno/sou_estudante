@@ -7,7 +7,6 @@ import (
 
 	es "github.com/elastic/go-elasticsearch/v8"
 
-	"api_estudante/internal/domain"
 	"api_estudante/internal/elasticsearch"
 )
 
@@ -33,11 +32,12 @@ type SearchResult struct {
 	Aggregations *SearchAggregations
 }
 
-// NewElasticsearchRepository cria nova instância do repository
-func NewElasticsearchRepository(client *es.Client) Repository {
+// NewElasticsearchRepository cria nova instância do repository sobre o índice
+// de cursos informado (config.CursosIndexName).
+func NewElasticsearchRepository(client *es.Client, index string) Repository {
 	return &ElasticsearchRepository{
 		client: client,
-		index:  "cursos", // Índice de cursos
+		index:  index,
 	}
 }
 
@@ -45,9 +45,9 @@ func NewElasticsearchRepository(client *es.Client) Repository {
 // Usa operator "and" para exigir que todos os termos digitados estejam
 // presentes em um mesmo campo, evitando que conectivos (ex.: "de", "e")
 // ou termos isolados correspondam a documentos irrelevantes e inflem o total.
-func buildTextQuery(query string) map[string]interface{} {
-	return map[string]interface{}{
-		"multi_match": map[string]interface{}{
+func buildTextQuery(query string) map[string]any {
+	return map[string]any{
+		"multi_match": map[string]any{
 			"query": query,
 			"fields": []string{
 				"curso.no_curso^3",
@@ -64,36 +64,32 @@ func buildTextQuery(query string) map[string]interface{} {
 // Usado quando o termo digitado corresponde ao nome de um curso existente,
 // para que nomes parecidos (ex.: "MEDICINA VETERINÁRIA") não apareçam juntos.
 // O campo "exato" usa um normalizer que ignora caixa e acentos.
-func buildExactNameQuery(name string) map[string]interface{} {
-	return map[string]interface{}{
-		"term": map[string]interface{}{
+func buildExactNameQuery(name string) map[string]any {
+	return map[string]any{
+		"term": map[string]any{
 			"curso.no_curso.exato": name,
 		},
 	}
 }
 
+// categoriaField é o campo keyword da categoria administrativa da IES dentro
+// do documento de curso.
+const categoriaField = "instituicao.categoria_administrativa"
+
 // categoriaFilter monta a cláusula de filtro por categoria administrativa,
 // traduzindo o rótulo da UI para os valores de categoria_administrativa da IES.
-func categoriaFilter(categoria string) map[string]interface{} {
-	terms := domain.CategoriaTerms(categoria)
-	if len(terms) == 0 {
-		return nil
-	}
-	return map[string]interface{}{
-		"terms": map[string]interface{}{
-			"instituicao.categoria_administrativa": terms,
-		},
-	}
+func categoriaFilter(categoria string) map[string]any {
+	return elasticsearch.CategoriaFilter(categoriaField, categoria)
 }
 
 // hasExactCourseName verifica se existe ao menos um documento cujo nome de
 // curso seja exatamente igual a name (ignorando caixa).
 func (r *ElasticsearchRepository) hasExactCourseName(ctx context.Context, name string) (bool, error) {
-	esQuery := map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"filter": []map[string]interface{}{
-					{"term": map[string]interface{}{"curso.no_curso.exato": name}},
+	esQuery := map[string]any{
+		"query": map[string]any{
+			"bool": map[string]any{
+				"filter": []map[string]any{
+					{"term": map[string]any{"curso.no_curso.exato": name}},
 				},
 			},
 		},
@@ -107,61 +103,41 @@ func (r *ElasticsearchRepository) hasExactCourseName(ctx context.Context, name s
 	return resp.Total > 0, nil
 }
 
-// shouldClause monta um bool query que exige ao menos uma das cláusulas.
-func shouldClause(clauses []map[string]interface{}) map[string]interface{} {
-	return map[string]interface{}{
-		"bool": map[string]interface{}{
-			"should":               clauses,
-			"minimum_should_match": 1,
-		},
-	}
-}
-
-// termsAggregation monta uma agregação de termos para um campo keyword.
-func termsAggregation(field string, size int) map[string]interface{} {
-	return map[string]interface{}{
-		"terms": map[string]interface{}{
-			"field": field,
-			"size":  size,
-		},
-	}
-}
-
 // modalidadeShouldClauses retorna as cláusulas que identificam uma modalidade.
-func modalidadeShouldClauses(modalidade string) []map[string]interface{} {
+func modalidadeShouldClauses(modalidade string) []map[string]any {
 	if strings.EqualFold(modalidade, "EaD") || strings.Contains(strings.ToLower(modalidade), "distância") {
-		return []map[string]interface{}{
-			{"term": map[string]interface{}{"curso.tp_modalidade_ensino": "2"}},
-			{"match": map[string]interface{}{"curso.no_modalidade_ensino": "DISTÂNCIA"}},
+		return []map[string]any{
+			{"term": map[string]any{"curso.tp_modalidade_ensino": "2"}},
+			{"match": map[string]any{"curso.no_modalidade_ensino": "DISTÂNCIA"}},
 		}
 	}
-	return []map[string]interface{}{
-		{"term": map[string]interface{}{"curso.tp_modalidade_ensino": "1"}},
-		{"match": map[string]interface{}{"curso.no_modalidade_ensino": "PRESENCIAL"}},
+	return []map[string]any{
+		{"term": map[string]any{"curso.tp_modalidade_ensino": "1"}},
+		{"match": map[string]any{"curso.no_modalidade_ensino": "PRESENCIAL"}},
 	}
 }
 
 // turnoShouldClauses retorna as cláusulas que identificam um turno.
-func turnoShouldClauses(turno string) []map[string]interface{} {
+func turnoShouldClauses(turno string) []map[string]any {
 	switch strings.ToLower(turno) {
 	case "noturno":
-		return []map[string]interface{}{
-			{"range": map[string]interface{}{"censo_metricas.qt_vg_total_noturno": map[string]interface{}{"gt": 0}}},
-			{"match": map[string]interface{}{"sisu.ofertas.turno": "NOTURNO"}},
+		return []map[string]any{
+			{"range": map[string]any{"censo_metricas.qt_vg_total_noturno": map[string]any{"gt": 0}}},
+			{"match": map[string]any{"sisu.ofertas.turno": "NOTURNO"}},
 		}
 	case "diurno":
-		return []map[string]interface{}{
-			{"range": map[string]interface{}{"censo_metricas.qt_vg_total_diurno": map[string]interface{}{"gt": 0}}},
-			{"match": map[string]interface{}{"sisu.ofertas.turno": "MATUTINO"}},
-			{"match": map[string]interface{}{"sisu.ofertas.turno": "VESPERTINO"}},
+		return []map[string]any{
+			{"range": map[string]any{"censo_metricas.qt_vg_total_diurno": map[string]any{"gt": 0}}},
+			{"match": map[string]any{"sisu.ofertas.turno": "MATUTINO"}},
+			{"match": map[string]any{"sisu.ofertas.turno": "VESPERTINO"}},
 		}
 	case "integral":
-		return []map[string]interface{}{
-			{"match": map[string]interface{}{"sisu.ofertas.turno": "INTEGRAL"}},
+		return []map[string]any{
+			{"match": map[string]any{"sisu.ofertas.turno": "INTEGRAL"}},
 		}
 	case "ead":
-		return []map[string]interface{}{
-			{"range": map[string]interface{}{"censo_metricas.qt_vg_total_ead": map[string]interface{}{"gt": 0}}},
+		return []map[string]any{
+			{"range": map[string]any{"censo_metricas.qt_vg_total_ead": map[string]any{"gt": 0}}},
 		}
 	default:
 		return nil
@@ -171,138 +147,101 @@ func turnoShouldClauses(turno string) []map[string]interface{} {
 // buildFilterClauses monta as cláusulas de filtro cumulativas da busca de cursos.
 // Os campos de agregação/filtro já são keyword no índice, portanto não levam o
 // sufixo ".keyword" (que resultaria em campo inexistente e buckets vazios).
-func buildFilterClauses(filters SearchFilterParams) []map[string]interface{} {
-	clauses := []map[string]interface{}{}
+func buildFilterClauses(filters SearchFilterParams) []map[string]any {
+	clauses := []map[string]any{}
 
 	if len(filters.UF) > 0 {
-		ufs := make([]string, len(filters.UF))
-		for i, uf := range filters.UF {
-			ufs[i] = strings.ToUpper(uf)
-		}
-		clauses = append(clauses, map[string]interface{}{
-			"terms": map[string]interface{}{
-				"localizacao.sg_uf": ufs,
-			},
-		})
+		clauses = append(clauses, elasticsearch.UpperTermsFilter("localizacao.sg_uf", filters.UF))
 	}
 
 	if len(filters.Grau) > 0 {
-		should := make([]map[string]interface{}, 0, len(filters.Grau))
+		should := make([]map[string]any, 0, len(filters.Grau))
 		for _, grau := range filters.Grau {
-			should = append(should, map[string]interface{}{
-				"match": map[string]interface{}{
+			should = append(should, map[string]any{
+				"match": map[string]any{
 					"curso.no_grau_academico": grau,
 				},
 			})
 		}
-		clauses = append(clauses, shouldClause(should))
+		clauses = append(clauses, elasticsearch.AnyOf(should))
 	}
 
 	if len(filters.Modalidade) > 0 {
-		should := []map[string]interface{}{}
+		should := []map[string]any{}
 		for _, mod := range filters.Modalidade {
 			should = append(should, modalidadeShouldClauses(mod)...)
 		}
-		clauses = append(clauses, shouldClause(should))
+		clauses = append(clauses, elasticsearch.AnyOf(should))
 	}
 
-	if len(filters.Categoria) > 0 {
-		should := []map[string]interface{}{}
-		for _, cat := range filters.Categoria {
-			if clause := categoriaFilter(cat); clause != nil {
-				should = append(should, clause)
-			}
-		}
-		if len(should) > 0 {
-			clauses = append(clauses, shouldClause(should))
-		}
+	if clause := elasticsearch.CategoriaAnyOf(categoriaField, filters.Categoria); clause != nil {
+		clauses = append(clauses, clause)
 	}
 
 	if len(filters.Enade) > 0 {
-		clauses = append(clauses, map[string]interface{}{
-			"terms": map[string]interface{}{
-				"enade.conceito_faixa_enade": filters.Enade,
-			},
-		})
+		clauses = append(clauses, elasticsearch.TermsFilter("enade.conceito_faixa_enade", filters.Enade))
 	}
 
 	if len(filters.Turno) > 0 {
-		should := []map[string]interface{}{}
+		should := []map[string]any{}
 		for _, turno := range filters.Turno {
 			should = append(should, turnoShouldClauses(turno)...)
 		}
-		clauses = append(clauses, shouldClause(should))
+		clauses = append(clauses, elasticsearch.AnyOf(should))
 	}
 
 	return clauses
 }
 
 // buildSortClauses define a ordenação: Enade, desistência, alfabética ou relevância (padrão).
-func buildSortClauses(sort string) []map[string]interface{} {
+func buildSortClauses(sort string) []map[string]any {
 	switch sort {
 	case "enade":
-		return []map[string]interface{}{
-			{"enade.conceito_continuo_enade": map[string]interface{}{
+		return []map[string]any{
+			{"enade.conceito_continuo_enade": map[string]any{
 				"order":   "desc",
 				"missing": "_last",
 			}},
 		}
 	case "desistencia":
-		return []map[string]interface{}{
-			{"tda.tda": map[string]interface{}{
+		return []map[string]any{
+			{"tda.tda": map[string]any{
 				"order":   "asc",
 				"missing": "_last",
 			}},
 		}
 	case "az":
-		return []map[string]interface{}{
-			{"curso.no_curso.keyword": map[string]interface{}{
+		return []map[string]any{
+			{"curso.no_curso.keyword": map[string]any{
 				"order": "asc",
 			}},
 		}
 	default:
-		return []map[string]interface{}{
+		return []map[string]any{
 			{"_score": "desc"},
 		}
 	}
 }
 
 // buildAggregations monta as agregações usadas pelos filtros da UI.
-func buildAggregations() map[string]interface{} {
-	return map[string]interface{}{
-		"ufs":         termsAggregation("localizacao.sg_uf", 30),
-		"graus":       termsAggregation("curso.no_grau_academico", 10),
-		"modalidades": termsAggregation("curso.no_modalidade_ensino", 10),
-		"enades":      termsAggregation("enade.conceito_faixa_enade", 10),
-		"categorias": map[string]interface{}{
-			"filters": map[string]interface{}{
-				"filters": map[string]interface{}{
-					"Privada":   categoriaFilter("privada"),
-					"Federal":   categoriaFilter("federal"),
-					"Estadual":  categoriaFilter("estadual"),
-					"Municipal": categoriaFilter("municipal"),
-				},
+func buildAggregations() map[string]any {
+	return map[string]any{
+		"ufs":         elasticsearch.TermsAgg("localizacao.sg_uf", 30),
+		"graus":       elasticsearch.TermsAgg("curso.no_grau_academico", 10),
+		"modalidades": elasticsearch.TermsAgg("curso.no_modalidade_ensino", 10),
+		"enades":      elasticsearch.TermsAgg("enade.conceito_faixa_enade", 10),
+		"categorias":  elasticsearch.CategoriasAgg(categoriaField),
+		"turnos": elasticsearch.FiltersAgg(map[string]any{
+			"Diurno":   elasticsearch.AnyOf(turnoShouldClauses("diurno")),
+			"Noturno":  elasticsearch.AnyOf(turnoShouldClauses("noturno")),
+			"Integral": elasticsearch.AnyOf(turnoShouldClauses("integral")),
+			"EaD":      elasticsearch.AnyOf(turnoShouldClauses("ead")),
+		}),
+		"gratuitos": elasticsearch.FiltersAgg(map[string]any{
+			"Gratuito": map[string]any{
+				"term": map[string]any{"curso.in_gratuito": true},
 			},
-		},
-		"turnos": map[string]interface{}{
-			"filters": map[string]interface{}{
-				"filters": map[string]interface{}{
-					"Diurno":   shouldClause(turnoShouldClauses("diurno")),
-					"Noturno":  shouldClause(turnoShouldClauses("noturno")),
-					"Integral": shouldClause(turnoShouldClauses("integral")),
-					"EaD":      shouldClause(turnoShouldClauses("ead")),
-				},
-			},
-		},
-		"gratuitos": map[string]interface{}{
-			"filters": map[string]interface{}{
-				"filters": map[string]interface{}{
-					"Gratuito": map[string]interface{}{
-						"term": map[string]interface{}{"curso.in_gratuito": true},
-					},
-				},
-			},
-		},
+		}),
 	}
 }
 
@@ -313,13 +252,6 @@ func (r *ElasticsearchRepository) Search(
 	filters SearchFilterParams,
 	page, limit int,
 ) (*SearchResult, error) {
-	// 1. Calcular offset para paginação
-	from := (page - 1) * limit
-
-	// 2. Construir cláusulas de filtro
-	filterClauses := buildFilterClauses(filters)
-
-	// 3. Montar bool query
 	mustQuery := buildTextQuery(query)
 
 	if filters.Exact {
@@ -335,32 +267,21 @@ func (r *ElasticsearchRepository) Search(
 		}
 	}
 
-	boolQuery := map[string]interface{}{
-		"must": mustQuery,
-	}
+	esQuery := elasticsearch.SearchBody(
+		mustQuery,
+		buildFilterClauses(filters),
+		buildSortClauses(filters.Sort),
+		buildAggregations(),
+		page, limit,
+	)
 
-	if len(filterClauses) > 0 {
-		boolQuery["filter"] = filterClauses
-	}
-
-	// 4. Query DSL completa com ordenação e agregações
-	esQuery := map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": boolQuery,
-		},
-		"size": limit,
-		"from": from,
-		"sort": buildSortClauses(filters.Sort),
-		"aggs": buildAggregations(),
-	}
-
-	// 5. Executar search no Elasticsearch
+	// Executar search no Elasticsearch
 	resp, err := elasticsearch.ExecuteSearch[Curso](ctx, r.client, r.index, esQuery)
 	if err != nil {
 		return nil, err
 	}
 
-	// 6. Montar resultado
+	// Montar resultado
 	var searchAggs *SearchAggregations
 	if len(resp.Aggregations) > 0 {
 		searchAggs = &SearchAggregations{

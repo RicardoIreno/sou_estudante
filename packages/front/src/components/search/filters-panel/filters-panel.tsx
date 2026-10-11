@@ -73,7 +73,7 @@ export function FiltersPanel({
     <div
       data-module={module}
       className={cn(
-        'flex flex-col gap-6 rounded-card border border-card-border bg-card-surface p-6 font-coadjuvant text-fg-coadjuvant shadow-sm',
+        'flex flex-col gap-6 rounded-card border border-card-border bg-card-surface p-6 font-sans text-fg shadow-sm',
         className,
       )}
     >
@@ -82,7 +82,7 @@ export function FiltersPanel({
           t="h2"
           s="sm"
           className={cn(
-            'font-title-coadjuvant font-bold uppercase tracking-[0.14em] text-fg-protagonist',
+            'font-display font-bold uppercase tracking-[0.14em] text-fg',
           )}
         >
           Filtros
@@ -175,7 +175,7 @@ function FilterSection({
           type="button"
           onClick={() => setExpanded((prev) => !prev)}
           className={cn(
-            'mt-2 text-left text-coadjuvant text-accent-deep hover:underline cursor-pointer',
+            'mt-2 text-left text-sm text-accent-deep hover:underline cursor-pointer',
           )}
         >
           <Typo s="sm" className={cn('text-accent-deep')}>

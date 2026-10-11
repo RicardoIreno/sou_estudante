@@ -1,30 +1,15 @@
 import { type ClassValue, clsx } from 'clsx'
 import { extendTailwindMerge } from 'tailwind-merge'
 
-const FONT_SIZES = [
-  'protagonist-sm',
-  'protagonist',
-  'protagonist-lg',
-  'protagonist-xl',
-  'protagonist-2xl',
-  'coadjuvant-xs',
-  'coadjuvant-sm',
-  'coadjuvant',
-  'coadjuvant-lg',
-] as const
+const RADII = ['card', 'callout', 'panel', 'control'] as const
 
-const FONT_FAMILIES = [
-  'protagonist',
-  'coadjuvant',
-  'title-protagonist',
-  'title-coadjuvant',
-] as const
-
+// `text-display` é o único tamanho de fonte próprio; sem registrá-lo o
+// tailwind-merge o trataria como cor. `font-display` já é reconhecido.
 const twMerge = extendTailwindMerge({
   extend: {
+    theme: { text: ['display'] },
     classGroups: {
-      'font-size': [{ text: [...FONT_SIZES] }],
-      'font-family': [{ font: [...FONT_FAMILIES] }],
+      rounded: [{ rounded: [...RADII] }],
     },
   },
 })

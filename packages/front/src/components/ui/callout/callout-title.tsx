@@ -15,7 +15,7 @@ export const CalloutTitle = ({
   return (
     <Component
       className={cn(
-        'font-semibold text-protagonist tracking-tight text-fg-protagonist [&_em]:font-normal [&_em]:italic',
+        'font-semibold text-base tracking-tight text-fg [&_em]:font-normal [&_em]:italic',
         className,
       )}
       {...props}

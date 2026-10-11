@@ -25,6 +25,8 @@ export function ProfileTabPanel({
       role="tabpanel"
       id={`${idBase}-panel-${value}`}
       aria-labelledby={`${idBase}-tab-${value}`}
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: padrão ARIA (APG) para tabpanel sem elemento focável, para o teclado alcançar o conteúdo
+      tabIndex={0}
       className={className}
     >
       {children}

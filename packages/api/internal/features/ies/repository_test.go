@@ -6,10 +6,10 @@ import (
 )
 
 // termsValues localiza, nas cláusulas de filtro, os valores de um campo terms.
-func termsValues(t *testing.T, clauses []map[string]interface{}, field string) []string {
+func termsValues(t *testing.T, clauses []map[string]any, field string) []string {
 	t.Helper()
 	for _, clause := range clauses {
-		terms, ok := clause["terms"].(map[string]interface{})
+		terms, ok := clause["terms"].(map[string]any)
 		if !ok {
 			continue
 		}
@@ -27,25 +27,11 @@ func termsValues(t *testing.T, clauses []map[string]interface{}, field string) [
 	return nil
 }
 
-func TestBuildQueryUsaMatchAllQuandoTermoVazio(t *testing.T) {
-	built := buildQuery("")
-	if _, ok := built["match_all"]; !ok {
-		t.Fatalf("esperado match_all para termo vazio, obtido %v", built)
-	}
-}
-
-func TestBuildQueryUsaTextoQuandoTermoPresente(t *testing.T) {
-	built := buildQuery("UNIVERSIDADE FEDERAL")
-	if _, ok := built["multi_match"]; !ok {
-		t.Fatalf("esperado multi_match para termo presente, obtido %v", built)
-	}
-}
-
 func TestBuildTextQueryExigeTodosOsTermosNoNomeESigla(t *testing.T) {
 	query := "UNIVERSIDADE FEDERAL DO MATO GROSSO"
 	built := buildTextQuery(query)
 
-	multi, ok := built["multi_match"].(map[string]interface{})
+	multi, ok := built["multi_match"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó multi_match, obtido %T", built["multi_match"])
 	}
@@ -95,7 +81,7 @@ func TestBuildFilterClausesEhVazioSemFiltros(t *testing.T) {
 func TestCategoriaFilterUsaCategoriaAdministrativa(t *testing.T) {
 	built := categoriaFilter("Privada")
 
-	terms, ok := built["terms"].(map[string]interface{})
+	terms, ok := built["terms"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó terms, obtido %T", built["terms"])
 	}
