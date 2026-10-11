@@ -1,11 +1,32 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  CompareProvider,
+  useCompareCursos,
+} from '@/components/compare/compare-provider'
 import { useSearchCursos } from '@/services/api/use-search-cursos'
 import { SearchResultsCursos } from './search-results-cursos'
 
 vi.mock('@/services/api/use-search-cursos', () => ({
   useSearchCursos: vi.fn(),
 }))
+
+function renderWithProvider() {
+  return render(
+    <CompareProvider>
+      <SearchResultsCursos />
+    </CompareProvider>,
+  )
+}
+
+function CompararSeeder() {
+  const { setComparing } = useCompareCursos()
+  return (
+    <button type="button" onClick={() => setComparing(true)}>
+      enable-compare
+    </button>
+  )
+}
 
 const buildSearchResult = (
   tda: { tda?: number },
@@ -78,7 +99,7 @@ describe('SearchResultsCursos', () => {
       aggregations: null,
     })
 
-    render(<SearchResultsCursos />)
+    renderWithProvider()
 
     expect(screen.getByText(/Ciência da Computação/)).toBeInTheDocument()
   })
@@ -100,7 +121,7 @@ describe('SearchResultsCursos', () => {
       aggregations: null,
     })
 
-    const { container } = render(<SearchResultsCursos />)
+    const { container } = renderWithProvider()
     expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
       0,
     )
@@ -111,7 +132,7 @@ describe('SearchResultsCursos', () => {
       buildSearchResult({ tda: 51 }, { conceito_faixa_enade: '4' }),
     )
 
-    render(<SearchResultsCursos />)
+    renderWithProvider()
 
     expect(screen.getByText('51%')).toBeInTheDocument()
     expect(screen.getByText('Nota 4 no Enade')).toBeInTheDocument()
@@ -123,7 +144,7 @@ describe('SearchResultsCursos', () => {
       buildSearchResult({}, { conceito_faixa_enade: 'SC' }),
     )
 
-    render(<SearchResultsCursos />)
+    renderWithProvider()
 
     expect(screen.getByText('Sem conceito no Enade')).toBeInTheDocument()
   })
@@ -131,7 +152,7 @@ describe('SearchResultsCursos', () => {
   it('exibe a tag sem avaliação quando não há conceito nem taxa', () => {
     vi.mocked(useSearchCursos).mockReturnValue(buildSearchResult({}))
 
-    const { container } = render(<SearchResultsCursos />)
+    const { container } = renderWithProvider()
 
     expect(
       screen.getByText('Taxa de desistência acumulada (5 anos) • sem dados'),
@@ -139,5 +160,28 @@ describe('SearchResultsCursos', () => {
     expect(screen.getByText('Sem avaliação no Enade')).toBeInTheDocument()
     expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(1)
     expect(container.querySelector('[data-mask="enade"]')).toBeInTheDocument()
+  })
+
+  it('exibe os checkboxes quando o modo de comparação está ativo', () => {
+    vi.mocked(useSearchCursos).mockReturnValue(buildSearchResult({}))
+
+    render(
+      <CompareProvider>
+        <CompararSeeder />
+        <SearchResultsCursos />
+      </CompareProvider>,
+    )
+
+    expect(
+      screen.queryByRole('checkbox', {
+        name: /Comparar Ciência da Computação/,
+      }),
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'enable-compare' }))
+
+    expect(
+      screen.getByRole('checkbox', { name: /Comparar Ciência da Computação/ }),
+    ).toBeInTheDocument()
   })
 })

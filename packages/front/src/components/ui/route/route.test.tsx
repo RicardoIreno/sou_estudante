@@ -54,12 +54,12 @@ const routes = [
   {
     module: '5',
     title: 'Comparar cursos',
-    description: 'Analise até 4 cursos lado a lado',
+    description: 'Analise até 5 cursos lado a lado',
     badge: 'SEXTANTE',
     list: {
       title: 'Compare lado a lado',
       description:
-        'O sextante mede posições para orientar a escolha: até quatro cursos comparados pelos mesmos critérios, sem ranking.',
+        'O sextante mede posições para orientar a escolha: até cinco cursos comparados pelos mesmos critérios, sem ranking.',
     },
     href: '/comparar',
   },
