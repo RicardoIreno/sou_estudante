@@ -98,41 +98,6 @@ func TestNewItemDefineDocumentID(t *testing.T) {
 	}
 }
 
-func TestExists(t *testing.T) {
-	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/cursos" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-		w.WriteHeader(http.StatusNotFound)
-	})
-
-	exists, err := Exists(context.Background(), client, "cursos")
-	if err != nil || !exists {
-		t.Fatalf("Exists(cursos) = %v, %v; esperado true", exists, err)
-	}
-
-	exists, err = Exists(context.Background(), client, "inexistente")
-	if err != nil || exists {
-		t.Fatalf("Exists(inexistente) = %v, %v; esperado false", exists, err)
-	}
-}
-
-func TestDocCount(t *testing.T) {
-	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"count":42}`))
-	})
-
-	count, err := DocCount(context.Background(), client, "cursos")
-	if err != nil {
-		t.Fatalf("erro inesperado: %v", err)
-	}
-	if count != 42 {
-		t.Errorf("count = %d, esperado 42", count)
-	}
-}
-
 func TestCreateRetornaErroEmFalha(t *testing.T) {
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
@@ -173,17 +138,6 @@ func TestRefreshRetornaErroEmFalha(t *testing.T) {
 
 	if err := Refresh(context.Background(), client, "cursos"); err == nil {
 		t.Fatal("esperado erro para refresh com status 500")
-	}
-}
-
-func TestDocCountRetornaErroEmFalha(t *testing.T) {
-	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(`{"error":"boom"}`))
-	})
-
-	if _, err := DocCount(context.Background(), client, "cursos"); err == nil {
-		t.Fatal("esperado erro para contagem com status 500")
 	}
 }
 

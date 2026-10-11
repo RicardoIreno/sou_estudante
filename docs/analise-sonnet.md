@@ -298,7 +298,7 @@ Os itens abaixo vieram da leitura do código. O ES real não foi consultado.
 
 ### Alta prioridade
 
-- [ ] **P0** **Ingestão parcial é dada como completa.** `seed.go:122-129` só reingere se o índice não existe ou está vazio. Se o bulk falhar no meio, a próxima execução pula. O dicionário também só é reconstruído quando vazio (`seed.go:174-182`), e fica defasado se os cursos mudarem. Corrigir: ingerir em índice novo e trocar por alias, ou gravar um marcador de "ingestão completa". *(Pendente por decisão sua: exige decisão de desenho (alias ou marcador).)*
+- [x] **P0** **Ingestão parcial é dada como completa.** Resolvido por troca atômica de índice (blue/green). A ingestão indexa num índice novo `<nome>-latest` e aponta o alias `<nome>` para ele ao final, apagando o antigo. Se a ingestão falhar, o alias continua no índice anterior, íntegro. Os dicionários seguem o mesmo fluxo (`<nome>-latest` + alias), corrigindo também a defasagem. *(Resolvido em 2026-10-11. Helpers `AliasIndices`/`PointAlias` em `internal/ingest/bulk/alias.go`.)*
 - [ ] **P0** **Filtro de turno `integral` provavelmente nunca casa (não verificado).** `cursos/repository.go:145-169`: *(Pendente por decisão sua: não dá para confirmar sem Elasticsearch real.)*
   - `sisu.ofertas` é `nested`, mas as cláusulas são consultas comuns.
   - O campo é `keyword` (sensível a maiúsculas). A ingestão grava `"Noturno"` via `textcase.Title`, e o código consulta `"NOTURNO"`, `"MATUTINO"` e `"INTEGRAL"`.
@@ -317,7 +317,7 @@ Os itens abaixo vieram da leitura do código. O ES real não foi consultado.
 - [ ] **P2** `main.go:44`: usar `errors.Is(err, http.ErrServerClosed)`. O nível do log é fixo em Info. *(Adiado por decisão sua: baixa prioridade.)*
 - [ ] **P2** CORS: `Allow-Origin: *` fixo, sem `Vary`, preflight com 200 em vez de 204, sem `Max-Age`. *(Adiado por decisão sua: baixa prioridade.)*
 - [ ] **P2** Middlewares: o `statusRecorder` não implementa `Flush`/`Unwrap`. O `recover` não trata `http.ErrAbortHandler` e pode chamar `WriteHeader` duas vezes. O `X-Request-Id` recebido não é validado nem limitado. O `AccessLog` não registra a query. Os logs de erro dos handlers não incluem o `request_id`. *(Adiado por decisão sua: baixa prioridade.)*
-- [ ] **P2** `seed`: se faltar a IES de um curso, `info` vem vazio sem aviso (`cursos/ingest/stream.go:32`). O dicionário é apagado e recriado sem alias, então fica vazio durante a reconstrução. *(Adiado por decisão sua: baixa prioridade.)*
+- [ ] **P2** `seed`: se faltar a IES de um curso, `info` vem vazio sem aviso (`cursos/ingest/stream.go:32`). *(Adiado por decisão sua: baixa prioridade. A janela vazia do dicionário foi resolvida junto com o P0 de ingestão, na troca por alias.)*
 
 ---
 
@@ -507,7 +507,6 @@ Esta seção foi conferida contra o estado real do repositório. Os itens conclu
 
 ### Fase 3: corrigir risco funcional
 
-- [ ] Ingestão parcial dada como completa (seção 9, P0). Exige decisão de desenho: índice novo com troca por alias, ou marcador de "ingestão completa".
 - [ ] Filtro de turno e caixa dos filtros (seção 9, P0 e P1). Confirmar primeiro com um ES real.
 
 ### Fase 4: alinhar documentação

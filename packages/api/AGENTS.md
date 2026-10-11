@@ -21,7 +21,7 @@ Para o container de desenvolvimento (Dev) onde roda o agente: Go disponível via
         - dictionary    # construção dos índices de dicionário
         - mappings      # mappings dos índices (embeds centralizados)
         - textcase      # normalização de caixa de texto na ingestão
-        - seed          # orquestração idempotente da ingestão
+        - seed          # orquestração da ingestão (troca atômica por alias -latest)
     - features
         - cursos        # model + repository/service/handler (leitura) + ingest/
         - ies           # idem

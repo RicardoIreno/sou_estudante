@@ -21,10 +21,18 @@ type Spec struct {
 	Mapping     []byte
 }
 
-// Build recria o índice de dicionário a partir dos termos únicos do índice de
-// origem. Retorna a quantidade de termos inseridos.
+// Build constrói o índice de dicionário a partir dos termos únicos do índice
+// de origem, por troca atômica: indexa num índice novo (<TargetIndex>-latest) e
+// aponta o alias TargetIndex para ele ao final. Retorna a quantidade de termos
+// inseridos.
 func Build(ctx context.Context, client *elasticsearch.Client, cfg *config.Config, spec Spec) (int, error) {
-	if err := recreateIndex(ctx, client, spec); err != nil {
+	concrete := spec.TargetIndex + "-latest"
+
+	// Remove um "-latest" de uma execução anterior que falhou no meio.
+	if err := bulk.Delete(ctx, client, concrete); err != nil {
+		return 0, err
+	}
+	if err := bulk.Create(ctx, client, concrete, spec.Mapping); err != nil {
 		return 0, err
 	}
 
@@ -34,14 +42,29 @@ func Build(ctx context.Context, client *elasticsearch.Client, cfg *config.Config
 	}
 
 	stream := &termStream{field: spec.DocField, terms: terms}
-	inserted, err := bulk.Run(ctx, client, spec.TargetIndex, cfg, stream)
+	inserted, err := bulk.Run(ctx, client, concrete, cfg, stream)
 	if err != nil {
 		return 0, fmt.Errorf("indexar termos do dicionário: %w", err)
 	}
-
-	if err := bulk.Refresh(ctx, client, spec.TargetIndex); err != nil {
+	if err := bulk.Refresh(ctx, client, concrete); err != nil {
 		return 0, err
 	}
+
+	previous, err := bulk.AliasIndices(ctx, client, spec.TargetIndex)
+	if err != nil {
+		return 0, err
+	}
+	if err := bulk.PointAlias(ctx, client, spec.TargetIndex, concrete, previous); err != nil {
+		return 0, err
+	}
+	for _, old := range previous {
+		if old != concrete {
+			if err := bulk.Delete(ctx, client, old); err != nil {
+				return 0, err
+			}
+		}
+	}
+
 	return int(inserted), nil
 }
 

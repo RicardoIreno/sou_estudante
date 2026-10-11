@@ -616,7 +616,7 @@ build_bulk_role_descriptors() {
     "indices": [
       {
         "names": ${names},
-        "privileges": ["read", "write", "create_index", "delete_index", "view_index_metadata", "maintenance"]
+        "privileges": ["read", "write", "create_index", "delete_index", "view_index_metadata", "maintenance", "manage"]
       }
     ]
   }
