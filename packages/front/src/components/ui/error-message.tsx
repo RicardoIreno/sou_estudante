@@ -1,5 +1,3 @@
-'use client'
-
 import { AlertCircle } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
@@ -18,14 +16,13 @@ export function ErrorMessage({ message, className }: ErrorMessageProps) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4 font-protagonist text-red-800',
+        'flex items-center gap-2 rounded-lg border border-error/30 bg-error-surface p-4 font-sans text-error',
         className,
       )}
       role="alert"
-      aria-live="polite"
     >
       <AlertCircle className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-      <p className="text-protagonist-sm">{message}</p>
+      <p className="text-sm">{message}</p>
     </div>
   )
 }

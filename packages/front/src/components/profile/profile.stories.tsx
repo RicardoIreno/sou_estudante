@@ -19,7 +19,7 @@ export const Default: Story = {
         <Profile.TopBar backLabel="Resultados" backHref="/cursos">
           <button
             type="button"
-            className="rounded-full bg-accent px-4 py-1 font-coadjuvant text-coadjuvant font-bold text-accent-fg"
+            className="rounded-full bg-accent px-4 py-1 font-sans text-sm font-bold text-accent-fg"
           >
             Escolher curso
           </button>
@@ -55,14 +55,12 @@ export const Default: Story = {
             />
           </Profile.TabPanel>
           <Profile.TabPanel value="quality">
-            <p className="font-protagonist text-protagonist">
-              Conteúdo da aba Qualidade.
-            </p>
+            <p className="font-sans text-base">Conteúdo da aba Qualidade.</p>
           </Profile.TabPanel>
         </Profile.Tabs>
 
         <Profile.Section title="Continue sua rota">
-          <p className="font-protagonist text-protagonist text-fg-muted">
+          <p className="font-sans text-base text-fg-muted">
             Cards de rota entram aqui.
           </p>
         </Profile.Section>

@@ -14,7 +14,7 @@ export interface ProfileRootProps {
 export function ProfileRoot({ children, module, className }: ProfileRootProps) {
   return (
     <ProfileContext.Provider value={{ module }}>
-      <main
+      <div
         data-module={module}
         className={cn(
           'mx-auto min-h-screen max-w-2xl bg-site-background pb-10',
@@ -22,7 +22,7 @@ export function ProfileRoot({ children, module, className }: ProfileRootProps) {
         )}
       >
         {children}
-      </main>
+      </div>
     </ProfileContext.Provider>
   )
 }

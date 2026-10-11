@@ -1,6 +1,11 @@
 package config
 
-import "testing"
+import (
+	"bytes"
+	"log/slog"
+	"strings"
+	"testing"
+)
 
 // envVars lista todas as variáveis lidas por Load, para isolar os testes do
 // ambiente real.
@@ -164,5 +169,59 @@ func assertConfig(t *testing.T, cfg *Config, checks map[string]any) {
 		if got := actual[field]; got != want {
 			t.Errorf("%s = %v, esperado %v", field, got, want)
 		}
+	}
+}
+
+func TestGetEnvIntRejeitaZeroENegativos(t *testing.T) {
+	casos := []struct{ value string }{{"0"}, {"-1"}, {"-500"}}
+	for _, caso := range casos {
+		t.Run(caso.value, func(t *testing.T) {
+			clearEnv(t)
+			t.Setenv("ES_NUM_WORKERS", caso.value)
+			if got := Load().NumWorkers; got != defaultNumWorkers {
+				t.Errorf("ES_NUM_WORKERS=%q => %d, esperado o padrão %d", caso.value, got, defaultNumWorkers)
+			}
+		})
+	}
+}
+
+func TestGetEnvIntAvisaQuandoValorInvalido(t *testing.T) {
+	var buf bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewTextHandler(&buf, nil)))
+	t.Cleanup(func() { slog.SetDefault(previous) })
+
+	clearEnv(t)
+	t.Setenv("ES_FLUSH_BYTES", "abc")
+	_ = Load()
+
+	if out := buf.String(); !strings.Contains(out, "ES_FLUSH_BYTES") {
+		t.Errorf("esperado aviso citando ES_FLUSH_BYTES, log = %q", out)
+	}
+}
+
+func TestValidateAPIExigeChaveDeLeitura(t *testing.T) {
+	cfg := &Config{ESURL: "http://es:9200"}
+	err := cfg.ValidateAPI()
+	if err == nil || !strings.Contains(err.Error(), "ES_APIKEY") {
+		t.Fatalf("esperado erro citando ES_APIKEY, obtido %v", err)
+	}
+
+	cfg.ESAPIKey = "chave"
+	if err := cfg.ValidateAPI(); err != nil {
+		t.Errorf("config válida rejeitada: %v", err)
+	}
+}
+
+func TestValidateSeedExigeChaveDeIngestao(t *testing.T) {
+	cfg := &Config{ESURL: "http://es:9200"}
+	err := cfg.ValidateSeed()
+	if err == nil || !strings.Contains(err.Error(), "ES_INGEST_APIKEY") {
+		t.Fatalf("esperado erro citando ES_INGEST_APIKEY, obtido %v", err)
+	}
+
+	cfg.ESIngestAPIKey = "chave"
+	if err := cfg.ValidateSeed(); err != nil {
+		t.Errorf("config válida rejeitada: %v", err)
 	}
 }

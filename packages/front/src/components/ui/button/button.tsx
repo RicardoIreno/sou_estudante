@@ -12,7 +12,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const BASE =
-  'inline-flex items-center gap-1 rounded-full border px-4 py-1 font-coadjuvant text-coadjuvant font-bold transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep'
+  'inline-flex items-center gap-1 rounded-full border px-4 py-1 font-sans text-sm font-bold transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep'
 
 const variantStyles = (v: ButtonVariant, active: boolean) => {
   switch (v) {
@@ -30,7 +30,7 @@ const variantStyles = (v: ButtonVariant, active: boolean) => {
 export const Button = ({
   children,
   module,
-  active = true,
+  active = false,
   v = 'chip',
   className,
   ...props

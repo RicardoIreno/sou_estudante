@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react'
+import { type ChangeEvent, useId } from 'react'
 import { Checkbox } from '@/components/ui/checkbox/checkbox'
 import { Typo } from '@/components/ui/typo'
 import { cn } from '@/utils/cn'
@@ -25,8 +25,9 @@ export function FilterGroupOption({
   className,
   onChange,
 }: FilterGroupOptionProps) {
-  const { groupId } = useFilterGroupContext('FilterGroup.Option')
-  const optionInputId = `${groupId}-option-${label}`
+  // `useFilterGroupContext` garante que a opção está dentro de `FilterGroup.Root`.
+  useFilterGroupContext('FilterGroup.Option')
+  const optionInputId = useId()
   const hasResultCount = typeof resultCount === 'number'
 
   return (
@@ -58,10 +59,7 @@ export function FilterGroupOption({
       {hasResultCount && (
         <Typo
           s="sm"
-          className={cn(
-            'tabular-nums',
-            disabled ? 'text-fg-muted' : 'text-fg-protagonist',
-          )}
+          className={cn('tabular-nums', disabled ? 'text-fg-muted' : 'text-fg')}
         >
           {resultCount}
         </Typo>

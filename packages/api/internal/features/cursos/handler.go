@@ -38,15 +38,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	if page < 1 {
-		page = 1
-	}
-
-	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
-	if limit < 1 || limit > httpx.MaxPageSize {
-		limit = httpx.DefaultPageSize
-	}
+	page, limit := httpx.ParsePagination(r.URL.Query())
 
 	filters := SearchFilterParams{
 		UF:         httpx.SplitCSV(r.URL.Query()["uf"]),

@@ -21,7 +21,7 @@ export function FilterGroupRoot({
       <section
         data-module={module}
         className={cn(
-          'flex w-70 flex-col bg-card-surface font-coadjuvant text-fg-coadjuvant',
+          'flex w-70 flex-col bg-card-surface font-sans text-fg',
           className,
         )}
         aria-labelledby={`${groupId}-title`}

@@ -26,11 +26,11 @@ export function ProfileTab({ value, children, className }: ProfileTabProps) {
       data-tab-value={value}
       onClick={() => setActiveTab(value)}
       className={cn(
-        'h-[38px] flex-1 cursor-pointer whitespace-nowrap rounded-[10px] font-coadjuvant text-coadjuvant-sm font-semibold transition-colors',
+        'h-[38px] flex-1 cursor-pointer whitespace-nowrap rounded-control font-sans text-xs font-semibold transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
         selected
           ? 'bg-card-surface text-accent-deep shadow-sm'
-          : 'bg-transparent text-fg-muted hover:text-fg-coadjuvant',
+          : 'bg-transparent text-fg-muted hover:text-fg',
         className,
       )}
     >

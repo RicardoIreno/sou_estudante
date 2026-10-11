@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createQueryWrapper } from '@/test/query-client'
 import { iesService } from './ies.service'
 import type { IES } from './types'
 import { useIes } from './use-ies'
@@ -25,7 +26,9 @@ describe('useIes', () => {
       data: makeIes(),
     })
 
-    const { result } = renderHook(() => useIes('376'))
+    const { result } = renderHook(() => useIes('376'), {
+      wrapper: createQueryWrapper(),
+    })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.ies?.co_ies).toBe('376')
@@ -38,7 +41,9 @@ describe('useIes', () => {
       error: { type: 'client', message: 'Not Found', statusCode: 404 },
     })
 
-    const { result } = renderHook(() => useIes('999'))
+    const { result } = renderHook(() => useIes('999'), {
+      wrapper: createQueryWrapper(),
+    })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.notFound).toBe(true)
@@ -51,7 +56,9 @@ describe('useIes', () => {
       error: { type: 'network', message: 'offline' },
     })
 
-    const { result } = renderHook(() => useIes('376'))
+    const { result } = renderHook(() => useIes('376'), {
+      wrapper: createQueryWrapper(),
+    })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.error).not.toBeNull()

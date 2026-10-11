@@ -44,10 +44,10 @@ export const ProfileCursosRetentionCard = ({
       )}
     >
       <div className="flex items-end justify-between gap-4">
-        <span className="font-coadjuvant text-coadjuvant-xs font-bold uppercase tracking-wide text-fg-muted">
+        <span className="font-sans text-xs font-bold uppercase tracking-wide text-fg-muted">
           Desistência acumulada — 5 anos
         </span>
-        <span className="font-mono text-protagonist-lg font-bold leading-none text-fg-protagonist">
+        <span className="font-mono text-xl font-bold leading-none text-fg">
           {hasTaxa ? formatPercent(taxa) : '—'}
         </span>
       </div>
@@ -61,45 +61,44 @@ export const ProfileCursosRetentionCard = ({
         )}
         {mediaBrasil !== undefined && (
           <span
-            className="absolute top-1/2 h-5 w-0.5 -translate-y-1/2 bg-fg-protagonist"
+            className="absolute top-1/2 h-5 w-0.5 -translate-y-1/2 bg-fg"
             style={{ left: `${clampPercent(mediaBrasil)}%` }}
             aria-hidden="true"
           />
         )}
       </div>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-1 font-protagonist text-coadjuvant-xs text-fg-muted">
+      <div className="flex flex-wrap gap-x-6 gap-y-1 font-sans text-xs text-fg-muted">
         <span>
           Este curso:{' '}
-          <strong className="font-bold text-text">
+          <strong className="font-bold text-fg">
             {hasTaxa ? formatPercent(taxa) : '—'}
           </strong>
         </span>
         {mediaBrasil !== undefined && (
           <span className="text-fg-muted">
             Média Brasil:{' '}
-            <strong className="font-bold text-fg-protagonist">
+            <strong className="font-bold text-fg">
               {formatPercent(mediaBrasil)}
             </strong>
           </span>
         )}
         {coorte && (
           <span className="text-fg-muted">
-            Coorte:{' '}
-            <strong className="font-bold text-fg-protagonist">{coorte}</strong>
+            Coorte: <strong className="font-bold text-fg">{coorte}</strong>
           </span>
         )}
       </div>
 
       {coorte && (
-        <p className="font-coadjuvant text-coadjuvant-xs text-fg-muted">
+        <p className="font-sans text-xs text-fg-muted">
           Base de Fluxo/INEP, coorte {anoInicio}-{anoFim}
         </p>
       )}
 
       <hr className="border-dashed border-card-border" />
 
-      <p className="font-protagonist text-coadjuvant-xs text-fg-muted">
+      <p className="font-sans text-xs text-fg-muted">
         A taxa varia muito conforme a área. Ela ganha sentido lado a lado com
         cursos parecidos — Pedagogia com Pedagogia, Medicina com Medicina.
       </p>
@@ -108,7 +107,7 @@ export const ProfileCursosRetentionCard = ({
         v="outline"
         module="5"
         onClick={onComparar}
-        className="cursor-pointer self-start px-3 py-[6px] rounded-[10px] text-coadjuvant-xs bg-accent/10 border-accent/70 font-semibold"
+        className="cursor-pointer self-start px-3 py-[6px] rounded-control text-xs bg-accent/10 border-accent/70 font-semibold"
       >
         Comparar com outros cursos
         <ArrowRight className="size-3 -translate-y-0.2" aria-hidden="true" />

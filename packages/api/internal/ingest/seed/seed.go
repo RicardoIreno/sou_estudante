@@ -52,8 +52,9 @@ func defaultDeps() Deps {
 	}
 }
 
-// Run executa a ingestão de forma idempotente: garante os índices e seus dados
-// e encerra. Se os dados já existirem, nada é reindexado.
+// Run executa a ingestão por troca atômica de índice: ingere os dados num
+// índice novo (<nome>-latest) e aponta o alias <nome> para ele ao final.
+// Se qualquer etapa falhar, o alias continua apontando para o índice anterior.
 func Run(ctx context.Context, cfg *config.Config) error {
 	return run(ctx, cfg, defaultDeps())
 }
@@ -116,22 +117,20 @@ func run(ctx context.Context, cfg *config.Config, deps Deps) error {
 	return ensureIESDicionario(ctx, client, cfg)
 }
 
-// ensureData cria o índice (se necessário) e ingere os documentos do arquivo
-// de origem caso o índice ainda não possua dados.
+// ensureData ingere os documentos do arquivo de origem num índice novo
+// (<name>-latest) e, ao final, troca o alias <name> para ele de forma atômica,
+// apagando o índice anterior. Se a ingestão falhar antes da troca, o alias
+// continua apontando para o índice antigo, que permanece íntegro: nunca há
+// dados parciais dados como completos.
 func ensureData(ctx context.Context, client *es.Client, cfg *config.Config, spec indexSpec) error {
-	exists, count, err := indexState(ctx, client, spec.name)
-	if err != nil {
+	concrete := spec.name + "-latest"
+
+	// Remove um "-latest" de uma execução anterior que falhou no meio.
+	if err := bulk.Delete(ctx, client, concrete); err != nil {
 		return err
 	}
-	if !needsIndexing(exists, count) {
-		slog.Info("índice já possui dados; ingestão ignorada", "index", spec.name)
-		return nil
-	}
-
-	if !exists {
-		if err := bulk.Create(ctx, client, spec.name, spec.mapping); err != nil {
-			return err
-		}
+	if err := bulk.Create(ctx, client, concrete, spec.mapping); err != nil {
+		return err
 	}
 
 	stream, err := spec.open(spec.path)
@@ -139,15 +138,32 @@ func ensureData(ctx context.Context, client *es.Client, cfg *config.Config, spec
 		return fmt.Errorf("abrir arquivo de origem %s: %w", spec.path, err)
 	}
 
-	slog.Info("iniciando ingestão", "file", spec.path, "index", spec.name)
-	total, err := bulk.Run(ctx, client, spec.name, cfg, stream)
+	slog.Info("iniciando ingestão", "file", spec.path, "index", concrete)
+	total, err := bulk.Run(ctx, client, concrete, cfg, stream)
 	if err != nil {
 		return fmt.Errorf("ingerir documentos (%d indexados): %w", total, err)
 	}
-	if err := bulk.Refresh(ctx, client, spec.name); err != nil {
+	if err := bulk.Refresh(ctx, client, concrete); err != nil {
 		return err
 	}
-	slog.Info("ingestão concluída", "documentos", total, "index", spec.name)
+
+	previous, err := bulk.AliasIndices(ctx, client, spec.name)
+	if err != nil {
+		return err
+	}
+	if err := bulk.PointAlias(ctx, client, spec.name, concrete, previous); err != nil {
+		return err
+	}
+
+	for _, old := range previous {
+		if old != concrete {
+			if err := bulk.Delete(ctx, client, old); err != nil {
+				return err
+			}
+		}
+	}
+
+	slog.Info("ingestão concluída", "documentos", total, "index", concrete)
 	return nil
 }
 
@@ -172,41 +188,10 @@ func ensureIESDicionario(ctx context.Context, client *es.Client, cfg *config.Con
 }
 
 func ensureDicionario(ctx context.Context, client *es.Client, cfg *config.Config, spec dictionary.Spec) error {
-	exists, count, err := indexState(ctx, client, spec.TargetIndex)
-	if err != nil {
-		return err
-	}
-	if !needsIndexing(exists, count) {
-		slog.Info("dicionário já possui dados; reconstrução ignorada", "index", spec.TargetIndex)
-		return nil
-	}
-
 	terms, err := dictionary.Build(ctx, client, cfg, spec)
 	if err != nil {
 		return fmt.Errorf("construir dicionário %s: %w", spec.TargetIndex, err)
 	}
 	slog.Info("dicionário construído", "termos_unicos", terms, "index", spec.TargetIndex)
 	return nil
-}
-
-// needsIndexing indica se o índice precisa ser populado, ou seja, se ainda não
-// existe ou se existe sem documentos.
-func needsIndexing(exists bool, count int64) bool {
-	return !exists || count == 0
-}
-
-func indexState(ctx context.Context, client *es.Client, index string) (bool, int64, error) {
-	exists, err := bulk.Exists(ctx, client, index)
-	if err != nil {
-		return false, 0, err
-	}
-	if !exists {
-		return false, 0, nil
-	}
-
-	count, err := bulk.DocCount(ctx, client, index)
-	if err != nil {
-		return true, 0, err
-	}
-	return true, count, nil
 }

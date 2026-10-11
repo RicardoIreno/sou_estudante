@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -47,4 +49,29 @@ func CountBulkActions(body string) int {
 		}
 	}
 	return count
+}
+
+// DecodeJSONObject decodifica raw (por exemplo, o corpo de uma requisição ao
+// Elasticsearch capturada pelo handler de NewESClient) em um objeto JSON
+// genérico, falhando o teste se não for JSON válido.
+func DecodeJSONObject(t testing.TB, raw string) map[string]any {
+	t.Helper()
+
+	var body map[string]any
+	if err := json.Unmarshal([]byte(raw), &body); err != nil {
+		t.Fatalf("corpo da requisição inválido: %v (%s)", err, raw)
+	}
+	return body
+}
+
+// WriteTempFile grava content em um arquivo chamado name dentro de um diretório
+// temporário do teste e devolve o caminho, para exercitar leitores de arquivo.
+func WriteTempFile(t testing.TB, name, content string) string {
+	t.Helper()
+
+	path := filepath.Join(t.TempDir(), name)
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		t.Fatalf("preparar arquivo de teste: %v", err)
+	}
+	return path
 }

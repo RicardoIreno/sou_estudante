@@ -5,10 +5,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"sort"
+	"strings"
 
 	es "github.com/elastic/go-elasticsearch/v8"
 )
+
+// maxErrorBodyBytes limita quanto do corpo de erro do Elasticsearch entra na mensagem.
+const maxErrorBodyBytes = 2048
 
 // AggregationBucket representa um item de contagem de uma agregação do
 // Elasticsearch, tanto de terms (array) quanto de filters (map).
@@ -29,8 +35,8 @@ func ParseBuckets(aggregations map[string]json.RawMessage, name string) []Aggreg
 	// 1. Tentar array buckets (ex: terms aggregation).
 	var arrayAgg struct {
 		Buckets []struct {
-			Key      interface{} `json:"key"`
-			DocCount int         `json:"doc_count"`
+			Key      any `json:"key"`
+			DocCount int `json:"doc_count"`
 		} `json:"buckets"`
 	}
 	if err := json.Unmarshal(raw, &arrayAgg); err == nil && len(arrayAgg.Buckets) > 0 {
@@ -58,6 +64,14 @@ func ParseBuckets(aggregations map[string]json.RawMessage, name string) []Aggreg
 				Count: b.DocCount,
 			})
 		}
+		// A iteração de mapas é aleatória: ordena por contagem (como a terms
+		// aggregation) e desempata pela chave, para a resposta ser estável.
+		sort.Slice(buckets, func(i, j int) bool {
+			if buckets[i].Count != buckets[j].Count {
+				return buckets[i].Count > buckets[j].Count
+			}
+			return buckets[i].Key < buckets[j].Key
+		})
 		return buckets
 	}
 
@@ -78,7 +92,7 @@ func ExecuteSearch[T any](
 	ctx context.Context,
 	client *es.Client,
 	index string,
-	esQuery map[string]interface{},
+	esQuery map[string]any,
 ) (*SearchResponse[T], error) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(esQuery); err != nil {
@@ -97,9 +111,10 @@ func ExecuteSearch[T any](
 	defer res.Body.Close()
 
 	if res.IsError() {
-		var errResp map[string]interface{}
-		json.NewDecoder(res.Body).Decode(&errResp)
-		return nil, fmt.Errorf("erro ES [%s]: %v", res.Status(), errResp)
+		// Lê o corpo bruto: se não for JSON válido, ainda assim vai para o erro
+		// (que só é logado; a API não o expõe ao cliente).
+		body, _ := io.ReadAll(io.LimitReader(res.Body, maxErrorBodyBytes))
+		return nil, fmt.Errorf("erro ES [%s]: %s", res.Status(), strings.TrimSpace(string(body)))
 	}
 
 	var esResp struct {

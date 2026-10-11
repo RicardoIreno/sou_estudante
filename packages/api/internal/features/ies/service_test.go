@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"api_estudante/internal/apperr"
+	"api_estudante/internal/httpx"
 )
 
 // MockRepository implementa Repository para os testes do service.
@@ -55,10 +56,10 @@ func TestBuscarIESAplicaDefaultsDePaginacao(t *testing.T) {
 	if mockRepo.CapturedPage != 1 {
 		t.Errorf("esperado page 1, recebido %d", mockRepo.CapturedPage)
 	}
-	if mockRepo.CapturedLimit != defaultPageSize {
-		t.Errorf("esperado limit padrão %d, recebido %d", defaultPageSize, mockRepo.CapturedLimit)
+	if mockRepo.CapturedLimit != httpx.DefaultPageSize {
+		t.Errorf("esperado limit padrão %d, recebido %d", httpx.DefaultPageSize, mockRepo.CapturedLimit)
 	}
-	if resp.Page != 1 || resp.Limit != defaultPageSize {
+	if resp.Page != 1 || resp.Limit != httpx.DefaultPageSize {
 		t.Errorf("resposta com page/limit incorretos: %+v", resp)
 	}
 }
@@ -241,5 +242,41 @@ func TestBuscarIESPreservaFiltrosNosLinks(t *testing.T) {
 		if got := query.Get(key); got != value {
 			t.Errorf("link Self %s = %q, esperado %q", key, got, value)
 		}
+	}
+}
+
+func TestBuscarIESRejeitaSortDesconhecido(t *testing.T) {
+	service := NewService(&MockRepository{ReturnResult: &SearchResult{}})
+
+	_, err := service.BuscarIES(context.Background(), "usp", SearchFilterParams{Sort: "preco"}, 1, 10)
+	if !errors.Is(err, apperr.ErrInvalidInput) {
+		t.Fatalf("esperado ErrInvalidInput, recebido %v", err)
+	}
+}
+
+func TestBuscarIESAceitaSortsConhecidos(t *testing.T) {
+	for _, sort := range []string{"", "az", "relevancia", "_score"} {
+		t.Run("sort="+sort, func(t *testing.T) {
+			service := NewService(&MockRepository{ReturnResult: &SearchResult{}})
+			if _, err := service.BuscarIES(context.Background(), "usp", SearchFilterParams{Sort: sort}, 1, 10); err != nil {
+				t.Fatalf("sort %q deveria ser aceito: %v", sort, err)
+			}
+		})
+	}
+}
+
+func TestBuscarIESPorIDRejeitaCaracteresInvalidos(t *testing.T) {
+	for _, id := range []string{"1/_search", "a b", "../x", "1?x=y", "a#b"} {
+		t.Run(id, func(t *testing.T) {
+			mockRepo := &MockRepository{}
+			service := NewService(mockRepo)
+
+			if _, err := service.BuscarIESPorID(context.Background(), id); !errors.Is(err, apperr.ErrInvalidInput) {
+				t.Fatalf("esperado ErrInvalidInput para %q, recebido %v", id, err)
+			}
+			if mockRepo.CapturedID != "" {
+				t.Error("o repositório não deveria ser consultado com id inválido")
+			}
+		})
 	}
 }

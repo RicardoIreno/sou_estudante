@@ -1,8 +1,6 @@
 module api_estudante
 
-go 1.22
-
-toolchain go1.22.12
+go 1.27
 
 require github.com/elastic/go-elasticsearch/v8 v8.17.0
 

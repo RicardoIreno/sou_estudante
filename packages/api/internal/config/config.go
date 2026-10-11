@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+	"log/slog"
 	"os"
 	"strconv"
 )
@@ -41,6 +43,25 @@ type Config struct {
 	FlushIntervalSec int
 }
 
+// ValidateAPI confere o que a API precisa para subir. A chave somente leitura
+// é obrigatória: sem ela a API falaria com o Elasticsearch sem autenticação.
+func (c *Config) ValidateAPI() error {
+	if c.ESAPIKey == "" {
+		return errors.New("ES_APIKEY não definida (a API exige a chave somente leitura; rode ./setup.sh)")
+	}
+	return nil
+}
+
+// ValidateSeed confere o que o job de ingestão precisa para rodar.
+func (c *Config) ValidateSeed() error {
+	if c.ESIngestAPIKey == "" {
+		return errors.New("ES_INGEST_APIKEY não definida (o seed exige a chave de leitura/escrita; rode ./setup.sh)")
+	}
+	return nil
+}
+
+// Load lê a configuração do ambiente, aplicando os padrões. Não valida: use
+// ValidateAPI ou ValidateSeed conforme o binário.
 func Load() *Config {
 	return &Config{
 		ESURL:            getEnv("ES_URL", defaultESURL),
@@ -72,7 +93,9 @@ func getEnvInt(key string, fallback int) int {
 		return fallback
 	}
 	parsed, err := strconv.Atoi(value)
-	if err != nil {
+	if err != nil || parsed <= 0 {
+		slog.Warn("valor inválido em variável de ambiente; usando o padrão",
+			"variavel", key, "valor", value, "padrao", fallback)
 		return fallback
 	}
 	return parsed

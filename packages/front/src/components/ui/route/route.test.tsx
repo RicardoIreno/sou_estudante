@@ -179,6 +179,20 @@ describe('Route', () => {
       ).toBeInTheDocument()
     })
 
+    it('uses a custom href when provided', () => {
+      render(
+        <Route
+          module="2"
+          variant="inline"
+          href="/ingresso/42"
+          title="Como ingressar neste curso"
+          description="Notas de corte, vagas e cotas no Sisu — Bússola"
+        />,
+      )
+
+      expect(screen.getByRole('link')).toHaveAttribute('href', '/ingresso/42')
+    })
+
     it('does not render the module badge', () => {
       render(
         <Route

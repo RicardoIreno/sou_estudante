@@ -1,7 +1,6 @@
 'use client'
 
 import { type ReactNode, useId, useState } from 'react'
-import { cn } from '@/utils/cn'
 import { ProfileTabsContext } from './profile-tabs-context'
 
 export interface ProfileTabsProps {
@@ -20,7 +19,7 @@ export function ProfileTabs({
 
   return (
     <ProfileTabsContext.Provider value={{ activeTab, setActiveTab, idBase }}>
-      <div className={cn('', className)}>{children}</div>
+      <div className={className}>{children}</div>
     </ProfileTabsContext.Provider>
   )
 }

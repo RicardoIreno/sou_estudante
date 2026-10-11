@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import Menu from './menu'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { Menu } from './menu'
 
 const meta = {
   title: 'Components/Layout/Menu',

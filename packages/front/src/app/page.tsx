@@ -10,17 +10,17 @@ export default function Home() {
 
       <div className="px-5 pb-8 pt-10">
         <section>
-          <div className="mb-2.5 text-center text-coadjuvant-xs font-bold uppercase tracking-[0.9px] text-text-muted">
+          <div className="mb-2.5 text-center text-xs font-bold uppercase tracking-[0.9px] text-fg-muted">
             Por onde você quer começar?
           </div>
 
-          <h2 className="mb-3 text-center font-display text-[clamp(1.6rem,4.2vw,2.4rem)] font-semibold leading-[1.12] tracking-[-0.3px] text-text">
+          <h2 className="mb-3 text-center font-display text-[clamp(1.6rem,4.2vw,2.4rem)] font-semibold leading-[1.12] tracking-[-0.3px] text-fg">
             Cinco rotas para
             <br />
             <em className="italic text-m1-deep">a sua decisão.</em>
           </h2>
 
-          <p className="mx-auto mb-[1.875rem] max-w-[520px] text-center text-sm leading-[1.6] text-text-muted">
+          <p className="mx-auto mb-[1.875rem] max-w-[520px] text-center text-sm leading-[1.6] text-fg-muted">
             Cada módulo responde a uma pergunta da sua jornada. Acesse-os na
             ordem que fizer sentido para você.
           </p>
@@ -34,22 +34,19 @@ export default function Home() {
 
         <section id="howto" className="mx-auto mt-9 max-w-[680px]">
           <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2.5">
-            <div className="text-coadjuvant-xs font-bold uppercase tracking-[0.9px] text-text-muted">
+            <div className="text-xs font-bold uppercase tracking-[0.9px] text-fg-muted">
               Como funciona
             </div>
 
             <Button
               type="button"
-              /*onClick={() => iniciarTour()}*/
-              className="inline-flex cursor-pointer items-center gap-[6px] rounded-[20px] border-none bg-text px-[0.9rem] py-[0.45rem] font-coadjuvant text-coadjuvant-sm font-semibold text-white"
+              className="inline-flex cursor-pointer items-center gap-[6px] rounded-full border-none bg-fg px-[0.9rem] py-[0.45rem] font-sans text-xs font-semibold text-on-dark"
             >
               <svg
                 viewBox="0 0 12 12"
                 fill="none"
                 className="h-[10px] w-[10px]"
-                role="img"
-                aria-label="Ícone de iniciar passo a passo guiado"
-                aria-hidden
+                aria-hidden="true"
               >
                 <path d="M3 2L10 6L3 10Z" fill="currentColor" />
               </svg>
@@ -57,7 +54,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <p className="mb-4 max-w-[600px] text-coadjuvant-sm leading-[1.55] text-text-muted">
+          <p className="mb-4 max-w-[600px] text-xs leading-[1.55] text-fg-muted">
             Cada módulo leva o nome de um instrumento de navegação. Escolher
             onde estudar também é traçar uma rota.
           </p>

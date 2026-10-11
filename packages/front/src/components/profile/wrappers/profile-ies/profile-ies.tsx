@@ -39,7 +39,7 @@ export const ProfileIES = ({ ies, module = '4' }: ProfileIESProps) => {
         subtitle={subtitulo}
       >
         {descritores && (
-          <p className="font-protagonist text-protagonist font-semibold text-fg-protagonist">
+          <p className="font-sans text-base font-semibold text-fg">
             {descritores}
           </p>
         )}

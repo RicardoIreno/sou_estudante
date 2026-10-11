@@ -89,18 +89,18 @@ func TestUniqueTermsRetornaErroEmFalha(t *testing.T) {
 	}
 }
 
-func TestBuildRecriaIndiceQuandoJaExiste(t *testing.T) {
-	var deleted, created int32
+func TestBuildTrocaAliasEApagaIndiceAntigo(t *testing.T) {
+	var created, deletedOld int32
 
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodHead && r.URL.Path == "/dicionario_cursos":
-			w.WriteHeader(http.StatusOK)
-		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_cursos":
-			atomic.AddInt32(&deleted, 1)
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_cursos-latest":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_cursos-antigo":
+			atomic.AddInt32(&deletedOld, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
-		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_cursos":
+		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_cursos-latest":
 			atomic.AddInt32(&created, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
@@ -110,8 +110,16 @@ func TestBuildRecriaIndiceQuandoJaExiste(t *testing.T) {
 		case strings.HasSuffix(r.URL.Path, "/_bulk"):
 			body, _ := io.ReadAll(r.Body)
 			bulkResponse(w, string(body))
-		default:
+		case strings.HasSuffix(r.URL.Path, "/_refresh"):
 			w.WriteHeader(http.StatusOK)
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario_cursos":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"dicionario_cursos-antigo":{"aliases":{"dicionario_cursos":{}}}}`))
+		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		default:
+			t.Errorf("requisição inesperada: %s %s", r.Method, r.URL.Path)
 		}
 	})
 
@@ -129,17 +137,17 @@ func TestBuildRecriaIndiceQuandoJaExiste(t *testing.T) {
 	if inserted != 1 {
 		t.Errorf("inseridos = %d, esperado 1", inserted)
 	}
-	if atomic.LoadInt32(&deleted) != 1 {
-		t.Error("índice existente deveria ser removido antes de recriar")
-	}
 	if atomic.LoadInt32(&created) != 1 {
-		t.Errorf("índice criado %d vezes, esperado 1", created)
+		t.Errorf("índice -latest criado %d vezes, esperado 1", created)
+	}
+	if atomic.LoadInt32(&deletedOld) != 1 {
+		t.Errorf("índice antigo deveria ser apagado 1 vez, obtido %d", deletedOld)
 	}
 }
 
 func TestBuildPropagaErroDaBuscaDeTermos(t *testing.T) {
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodHead {
+		if r.Method == http.MethodDelete {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
@@ -164,14 +172,66 @@ func TestBuildPropagaErroDaBuscaDeTermos(t *testing.T) {
 	}
 }
 
-func TestBuildRecriaIndexaEAtualiza(t *testing.T) {
-	var created, refreshed int32
+func TestBuildNaoTrocaAliasQuandoIndexacaoFalha(t *testing.T) {
+	var aliasListed, aliasPointed int32
 
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodHead && r.URL.Path == "/dicionario_cursos":
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_cursos-latest":
 			w.WriteHeader(http.StatusNotFound)
-		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_cursos":
+		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_cursos-latest":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		case strings.HasSuffix(r.URL.Path, "/_search"):
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"aggregations":{"unique_terms":{"buckets":[{"key":{"term":"DIREITO"}}]}}}`))
+		case strings.HasSuffix(r.URL.Path, "/_bulk"):
+			body, _ := io.ReadAll(r.Body)
+			actions := testutil.CountBulkActions(string(body))
+			items := make([]string, actions)
+			for i := range items {
+				items[i] = `{"index":{"status":400,"error":{"type":"mapper_parsing_exception","reason":"boom"}}}`
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"took":1,"errors":true,"items":[` + strings.Join(items, ",") + `]}`))
+		case strings.HasSuffix(r.URL.Path, "/_refresh"):
+			w.WriteHeader(http.StatusOK)
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario_cursos":
+			atomic.AddInt32(&aliasListed, 1)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{}`))
+		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
+			atomic.AddInt32(&aliasPointed, 1)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		default:
+			t.Errorf("requisição inesperada: %s %s", r.Method, r.URL.Path)
+		}
+	})
+
+	cfg := &config.Config{NumWorkers: 1, FlushBytes: 10_000, FlushIntervalSec: 1}
+	if _, err := Build(context.Background(), client, cfg, Spec{
+		SourceIndex: "cursos",
+		TargetIndex: "dicionario_cursos",
+		SourceField: "curso.no_curso.keyword",
+		DocField:    "no_curso",
+		Mapping:     []byte(`{"mappings":{}}`),
+	}); err == nil {
+		t.Fatal("esperado erro de rejeição na indexação do dicionário")
+	}
+	if atomic.LoadInt32(&aliasListed) != 0 || atomic.LoadInt32(&aliasPointed) != 0 {
+		t.Errorf("após falha não deveria haver troca de alias: listou=%d trocou=%d", aliasListed, aliasPointed)
+	}
+}
+
+func TestBuildIndexaEAtualizaAlias(t *testing.T) {
+	var created, refreshed, aliasPointed int32
+
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_cursos-latest":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_cursos-latest":
 			atomic.AddInt32(&created, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
@@ -184,8 +244,14 @@ func TestBuildRecriaIndexaEAtualiza(t *testing.T) {
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
 			atomic.AddInt32(&refreshed, 1)
 			w.WriteHeader(http.StatusOK)
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario_cursos":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
+			atomic.AddInt32(&aliasPointed, 1)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
 		default:
-			w.WriteHeader(http.StatusOK)
+			t.Errorf("requisição inesperada: %s %s", r.Method, r.URL.Path)
 		}
 	})
 
@@ -208,5 +274,8 @@ func TestBuildRecriaIndexaEAtualiza(t *testing.T) {
 	}
 	if atomic.LoadInt32(&refreshed) != 1 {
 		t.Error("refresh do dicionário não foi chamado")
+	}
+	if atomic.LoadInt32(&aliasPointed) != 1 {
+		t.Error("alias do dicionário não foi atualizado")
 	}
 }

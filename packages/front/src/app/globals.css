@@ -22,8 +22,17 @@
   --color-enade-warn-surface: #fff3e0;
   --color-enade-low: #c0392b;
   --color-enade-low-surface: #fdecea;
-  --color-progress-bar-foreground: oklch(0.48 0.03 240);
+  --color-progress-bar-foreground: oklch(81.5% 0.055 215.5);
   --color-progress-bar-background: oklch(0.94 0.01 75);
+
+  /* Cores · Feedback genérico (erro) */
+  --color-error: var(--color-enade-low);
+  --color-error-surface: var(--color-enade-low-surface);
+
+  /* Cores · Informação (banner de localização, tag de curso) */
+  --color-info-surface: #f0f9ff;
+  --color-info-border: #b3e0f0;
+  --color-info-deep: var(--color-sky-950);
 
   /* Cores · Callout (sobrescritas por [data-variant] em .callout) */
   --color-callout-accent: var(--color-enade-warn);
@@ -35,13 +44,10 @@
   --color-accent-deep: var(--color-m1-deep);
   --color-accent-fg: var(--color-m1-deep);
 
-  /* Cores · Texto por papel */
-  --color-fg-protagonist: oklch(0.15 0 0);
-  --color-fg-coadjuvant: oklch(0.15 0 0);
-  --color-fg-muted: oklch(0.55 0 0);
-
   /* Cores · Neutros semânticos */
   --color-muted: var(--color-gray-100);
+  --color-input-border: var(--color-gray-300);
+  --color-on-dark: #fff; /* texto e véus sobre fundos escuros (navy) */
   --color-site-background: #f8f4fb;
   --color-card-surface: oklch(1 0 0);
   --color-card-border: oklch(0.92 0 0);
@@ -53,57 +59,53 @@
   --color-surface: #fff;
 
   /* Cores · Rodapé */
-  --color-footer-background: hsla(186, 83%, 60%, 1);
+  /* 75% garante contraste >= 4.5:1 do texto branco (WCAG AA) sobre o fundo. */
+  --color-footer-background: color-mix(
+    in oklab,
+    var(--color-blue-900) 75%,
+    transparent
+  );
   --color-footer-text: #fff;
 
-  /* Cores · Texto */
-  --color-text: #1a0e23;
-  --color-text-muted: #5b5266;
+  /* Cores · Texto (principal e secundário) */
+  --color-fg: #1a0e23;
+  --color-fg-muted: #5b5266;
 
   /*  Tipografia · Famílias */
-
-  /* Protagonista — conteúdo principal (card, callout, textos principais) */
-  --font-protagonist: "Source Sans 3", system-ui, sans-serif;
-  /* Coadjuvante — apoio (button, tag, filtros, tips) */
-  --font-coadjuvant: "Source Sans 3", system-ui, sans-serif;
-
-  /* Títulos — display (Playfair Display) */
-  --font-title-protagonist: var(--font-display);
-  --font-title-coadjuvant: var(--font-display);
-
   --font-mono: "DM Mono", ui-monospace, monospace; /* dados numéricos */
+  --font-display: "Source Sans 3", system-ui, sans-serif; /* títulos */
+  /* Corpo. O `next/font` sobrescreve esta variável no <body> (layout.tsx). */
+  --font-sans: "Source Sans 3", system-ui, sans-serif;
 
-  /* Display — títulos de destaque (Playfair Display) */
-  --font-display: "Playfair Display", Georgia, serif;
-
-  /* Tipografia · Escala */
-
-  /* Protagonista — conteúdo principal (card, callout, textos principais) */
-  --text-protagonist-sm: 0.875rem; /* 14px */
-  --text-protagonist: 1rem; /* 16px */
-  --text-protagonist-lg: 1.25rem; /* 20px */
-  --text-protagonist-xl: 2.25rem; /* 36px — números de destaque (selo) */
-  --text-protagonist-2xl: clamp(
-    2rem,
-    4vw,
-    2.75rem
-  ); /* hero das páginas de módulo */
-
-  /* Coadjuvante — apoio (button, tag, filtros, tips) */
-  --text-coadjuvant-xxs: 6px; /* 10px */
-  --text-coadjuvant-xs: 0.625rem; /* 10px */
-  --text-coadjuvant-sm: 0.75rem; /* 12px */
-  --text-coadjuvant: 0.875rem; /* 14px */
-  --text-coadjuvant-lg: 1rem; /* 16px */
+  /* Tipografia · Escala
+     Usa a escala padrão do Tailwind: text-xs (12px, piso), text-sm (14px),
+     text-base (16px), text-xl (20px) e text-4xl (36px, números de destaque).
+     Tamanhos próprios: `text-display` (título de página de módulo) e
+     `text-2xs` (10px, abaixo do piso de 12px; só para texto complementar). */
+  --text-display: clamp(2rem, 4vw, 2.75rem);
+  --text-2xs: 0.625rem; /* 10px */
 
   /* Formas */
   --radius-card: 20px;
   --radius-callout: 18px;
+  --radius-panel: 14px; /* painéis e banners internos de perfil */
+  --radius-control: 10px; /* botões e controles pequenos */
 
   --container-home: 900px;
   --container-pages: 1100px;
 
   --ease-wave: cubic-bezier(0.55, 0.5, 0.45, 0.5);
+
+  /* Movimento · Durações e easings */
+  --duration-fast: 150ms;
+  --duration-cruise: 400ms;
+  --duration-page: 400ms;
+  --ease-prow: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-page: var(--ease-prow);
+  --ease-tide: var(--ease-wave);
+
+  /* Transição de página (fade + subida) */
+  --page-transition-offset: 8px;
 }
 
 /* Temas por módulo */
@@ -146,14 +148,8 @@
 
 /* Base */
 body {
-  font-family: var(--font-protagonist);
-  color: var(--color-fg-protagonist);
-
-  /* Aliases re-declarados aqui para herdarem as fontes do `next/font` (com o
-     fallback métrico) aplicadas no próprio `<body>`. */
-  --font-coadjuvant: var(--font-protagonist);
-  --font-title-protagonist: var(--font-display);
-  --font-title-coadjuvant: var(--font-display);
+  font-family: var(--font-sans);
+  color: var(--color-fg);
 }
 
 /*  Bússola da Hero da Página Inicial */
@@ -216,13 +212,23 @@ body {
   }
 }
 
-/* ==========================================================================
-   Esqueleto de página profile de carregamento
-   ========================================================================== */
-.esqueleto {
-  animation: pulso-esqueleto 1.2s var(--ease-tide) infinite;
-  background: var(--color-plum-100);
-  border-radius: 10px;
+/* Transição de página (fade + leve subida) */
+.page-transition {
+  animation-name: page-transition-enter;
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--ease-page);
+  animation-fill-mode: both;
+}
+
+@keyframes page-transition-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--page-transition-offset), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Todo movimento respeita prefers-reduced-motion */

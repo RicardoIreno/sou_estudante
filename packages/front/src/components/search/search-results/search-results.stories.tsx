@@ -22,7 +22,11 @@ function SearchResultsDemo({ variant = 'default' }: { variant?: DemoVariant }) {
         isLoading
         labels={{ singular: 'resultado', plural: 'resultados' }}
         getItemKey={(item) => item.id}
-        renderItem={(item) => <Card.Header title={item.nome} />}
+        renderItem={(item) => (
+          <Card.Header>
+            <Card.Title title={item.nome} />
+          </Card.Header>
+        )}
       />
     )
   }
@@ -35,7 +39,11 @@ function SearchResultsDemo({ variant = 'default' }: { variant?: DemoVariant }) {
         labels={{ singular: 'resultado', plural: 'resultados' }}
         emptyMessage="Nenhum resultado por aqui"
         getItemKey={(item) => item.id}
-        renderItem={(item) => <Card.Header title={item.nome} />}
+        renderItem={(item) => (
+          <Card.Header>
+            <Card.Title title={item.nome} />
+          </Card.Header>
+        )}
       />
     )
   }
@@ -47,7 +55,11 @@ function SearchResultsDemo({ variant = 'default' }: { variant?: DemoVariant }) {
         error="Erro ao buscar resultados"
         labels={{ singular: 'resultado', plural: 'resultados' }}
         getItemKey={(item) => item.id}
-        renderItem={(item) => <Card.Header title={item.nome} />}
+        renderItem={(item) => (
+          <Card.Header>
+            <Card.Title title={item.nome} />
+          </Card.Header>
+        )}
       />
     )
   }
@@ -60,7 +72,9 @@ function SearchResultsDemo({ variant = 'default' }: { variant?: DemoVariant }) {
       getItemKey={(item) => item.id}
       renderItem={(item) => (
         <Card module="1">
-          <Card.Header title={item.nome} />
+          <Card.Header>
+            <Card.Title title={item.nome} />
+          </Card.Header>
         </Card>
       )}
     />

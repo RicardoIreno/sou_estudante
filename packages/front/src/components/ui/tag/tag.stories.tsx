@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { MapPin } from 'lucide-react'
 import { Tag } from './tag'
 
 const meta = {
@@ -41,5 +42,14 @@ export const Module5: Story = {
   args: {
     label: 'uma tag',
     module: '5',
+  },
+}
+
+export const WithSource: Story = {
+  args: {
+    label: 'Tubarão, SC',
+    module: '2',
+    source: 'Censo',
+    icon: <MapPin className="size-3" aria-hidden />,
   },
 }

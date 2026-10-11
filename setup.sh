@@ -44,14 +44,14 @@ API_KEY_NAME="app-api-key"
 BULK_API_KEY_NAME="bulk-api-key"
 API_KEY_EXPIRATION=""          # Ex: 30d (vazio = sem expiração)
 API_INDEX_PATTERN="*"
-bulk_INDEX_PATTERN="*"
+BULK_INDEX_PATTERN="*"
 
 # URL usada pelo PRÓPRIO script (host). O .env continua com a URL interna.
 ES_HOST_URL="${ES_HOST_URL:-http://localhost:9200}"
 ES_SERVICE="se_es01"           # nome do serviço no docker-compose
 ES_CONTAINER=""                # vazio = resolve via ESNODE01_NAME do .env
-bulk_SERVICE="se_bulk"
-bulk_PROFILE="bulk"
+BULK_SERVICE="se_bulk"
+BULK_PROFILE="bulk"
 
 CURL_TIMEOUT=10
 CURL_INSECURE=false
@@ -65,9 +65,9 @@ DRY_RUN=false
 REUSE_VALID_KEYS=false         # reutiliza chaves válidas em vez de recriar
 PURGE_ALL_KEYS=false           # revoga TODAS as API Keys (perigoso)
 SKIP_ES_UP=false
-SKIP_bulk=false
+SKIP_BULK=false
 API_ROLE_DESCRIPTORS_FILE=""
-bulk_ROLE_DESCRIPTORS_FILE=""
+BULK_ROLE_DESCRIPTORS_FILE=""
 
 CLI_USER=""
 CLI_PASS=""
@@ -81,7 +81,7 @@ readonly VAR_URL="ELASTICSEARCH_URL"
 readonly VAR_USER="ELASTICSEARCH_USERNAME"
 readonly VAR_PASS="ELASTIC_PASSWORD"
 readonly VAR_APIKEY="ELASTICSEARCH_APIKEY"
-readonly VAR_bulk_APIKEY="ELASTICSEARCH_BULK_APIKEY"
+readonly VAR_BULK_APIKEY="ELASTICSEARCH_BULK_APIKEY"
 
 # -----------------------------------------------------------------------------
 # UI / Log
@@ -129,8 +129,8 @@ ${BOLD}${CATEGORY_COLOR}Elasticsearch / containers:${RESET}
   ${CMD}-w, --wait <segundos>${RESET}           Espera o ES ficar pronto; 0 = sem limite ${MUTED}(padrão: ${WAIT_SECONDS})${RESET}
   ${CMD}    --skip-es-up${RESET}                Não tenta subir o ES (apenas aguarda)
   ${CMD}    --skip-bulk${RESET}              Não executa o container de bulking
-  ${CMD}    --bulk-service <nome>${RESET}     Serviço do bulk ${MUTED}(padrão: ${bulk_SERVICE})${RESET}
-  ${CMD}    --bulk-profile <nome>${RESET}     Profile do bulk ${MUTED}(padrão: ${bulk_PROFILE})${RESET}
+  ${CMD}    --bulk-service <nome>${RESET}     Serviço do bulk ${MUTED}(padrão: ${BULK_SERVICE})${RESET}
+  ${CMD}    --bulk-profile <nome>${RESET}     Profile do bulk ${MUTED}(padrão: ${BULK_PROFILE})${RESET}
 
 ${BOLD}${CATEGORY_COLOR}API Keys (Privilégio Mínimo):${RESET}
   ${CMD}-n, --key-name <nome>${RESET}           Nome da API key somente leitura ${MUTED}(padrão: ${API_KEY_NAME})${RESET}
@@ -141,7 +141,7 @@ ${BOLD}${CATEGORY_COLOR}API Keys (Privilégio Mínimo):${RESET}
   ${CMD}    --api-role-descriptors <json>${RESET} Caminho para JSON de role descriptors da API (leitura)
   ${CMD}    --bulk-role-descriptors <json>${RESET} Caminho para JSON de role descriptors do bulk
   ${CMD}    --api-pattern <pattern>${RESET}     Índices da chave de leitura ${MUTED}(padrão: ${API_INDEX_PATTERN})${RESET}
-  ${CMD}-p, --index-pattern <pattern>${RESET}   Índices da chave do bulk ${MUTED}(padrão: ${bulk_INDEX_PATTERN})${RESET}
+  ${CMD}-p, --index-pattern <pattern>${RESET}   Índices da chave do bulk ${MUTED}(padrão: ${BULK_INDEX_PATTERN})${RESET}
 
 ${BOLD}${CATEGORY_COLOR}Gerais:${RESET}
   ${CMD}    --non-interactive${RESET}           Modo CI: não faz perguntas no terminal
@@ -172,18 +172,18 @@ parse_args() {
       --es-container)         require_option_value "$1" "${2:-}"; ES_CONTAINER="$2"; shift 2 ;;
       -w|--wait)              require_option_value "$1" "${2:-}"; WAIT_SECONDS="$2"; shift 2 ;;
       --skip-es-up)           SKIP_ES_UP=true; shift ;;
-      --skip-bulk)          SKIP_bulk=true; shift ;;
-      --bulk-service)       require_option_value "$1" "${2:-}"; bulk_SERVICE="$2"; shift 2 ;;
-      --bulk-profile)       require_option_value "$1" "${2:-}"; bulk_PROFILE="$2"; shift 2 ;;
+      --skip-bulk)          SKIP_BULK=true; shift ;;
+      --bulk-service)       require_option_value "$1" "${2:-}"; BULK_SERVICE="$2"; shift 2 ;;
+      --bulk-profile)       require_option_value "$1" "${2:-}"; BULK_PROFILE="$2"; shift 2 ;;
       -n|--key-name)          require_option_value "$1" "${2:-}"; API_KEY_NAME="$2"; shift 2 ;;
       --bulk-key-name)      require_option_value "$1" "${2:-}"; BULK_API_KEY_NAME="$2"; shift 2 ;;
       -t|--expiration)        require_option_value "$1" "${2:-}"; API_KEY_EXPIRATION="$2"; shift 2 ;;
       --reuse-valid-keys)     REUSE_VALID_KEYS=true; shift ;;
       --purge-all-keys)       PURGE_ALL_KEYS=true; shift ;;
       --api-role-descriptors) require_option_value "$1" "${2:-}"; API_ROLE_DESCRIPTORS_FILE="$2"; shift 2 ;;
-      --bulk-role-descriptors) require_option_value "$1" "${2:-}"; bulk_ROLE_DESCRIPTORS_FILE="$2"; shift 2 ;;
+      --bulk-role-descriptors) require_option_value "$1" "${2:-}"; BULK_ROLE_DESCRIPTORS_FILE="$2"; shift 2 ;;
       --api-pattern)          require_option_value "$1" "${2:-}"; API_INDEX_PATTERN="$2"; shift 2 ;;
-      -p|--index-pattern)     require_option_value "$1" "${2:-}"; bulk_INDEX_PATTERN="$2"; shift 2 ;;
+      -p|--index-pattern)     require_option_value "$1" "${2:-}"; BULK_INDEX_PATTERN="$2"; shift 2 ;;
       --non-interactive)      NON_INTERACTIVE=true; shift ;;
       --dry-run)              DRY_RUN=true; shift ;;
       --timeout)              require_option_value "$1" "${2:-}"; CURL_TIMEOUT="$2"; shift 2 ;;
@@ -616,7 +616,7 @@ build_bulk_role_descriptors() {
     "indices": [
       {
         "names": ${names},
-        "privileges": ["read", "write", "create_index", "delete_index", "view_index_metadata", "maintenance"]
+        "privileges": ["read", "write", "create_index", "delete_index", "view_index_metadata", "maintenance", "manage"]
       }
     ]
   }
@@ -798,32 +798,32 @@ setup_api_keys() {
     log_info "Chave de leitura limitada ao pattern: ${API_INDEX_PATTERN}"
   fi
 
-  if [[ -n "$bulk_ROLE_DESCRIPTORS_FILE" ]]; then
-    [[ -f "$bulk_ROLE_DESCRIPTORS_FILE" ]] || die "Arquivo de role descriptors do bulk não encontrado: ${bulk_ROLE_DESCRIPTORS_FILE}"
-    bulk_role_descriptors="$(cat "$bulk_ROLE_DESCRIPTORS_FILE")"
-    log_info "Aplicando privilégios restritos do bulk do arquivo: ${bulk_ROLE_DESCRIPTORS_FILE}"
+  if [[ -n "$BULK_ROLE_DESCRIPTORS_FILE" ]]; then
+    [[ -f "$BULK_ROLE_DESCRIPTORS_FILE" ]] || die "Arquivo de role descriptors do bulk não encontrado: ${BULK_ROLE_DESCRIPTORS_FILE}"
+    bulk_role_descriptors="$(cat "$BULK_ROLE_DESCRIPTORS_FILE")"
+    log_info "Aplicando privilégios restritos do bulk do arquivo: ${BULK_ROLE_DESCRIPTORS_FILE}"
   else
-    bulk_role_descriptors="$(build_bulk_role_descriptors "$bulk_INDEX_PATTERN")"
-    log_info "Chave do bulk limitada ao pattern: ${bulk_INDEX_PATTERN}"
+    bulk_role_descriptors="$(build_bulk_role_descriptors "$BULK_INDEX_PATTERN")"
+    log_info "Chave do bulk limitada ao pattern: ${BULK_INDEX_PATTERN}"
   fi
 
   setup_single_api_key "API Key (somente leitura)" "$API_KEY_NAME" "$VAR_APIKEY" "$api_role_descriptors" "$url" "$user" "$pass"
-  setup_single_api_key "API Key do bulk (leitura/escrita)" "$BULK_API_KEY_NAME" "$VAR_bulk_APIKEY" "$bulk_role_descriptors" "$url" "$user" "$pass"
+  setup_single_api_key "API Key do bulk (leitura/escrita)" "$BULK_API_KEY_NAME" "$VAR_BULK_APIKEY" "$bulk_role_descriptors" "$url" "$user" "$pass"
 }
 
 # -----------------------------------------------------------------------------
 # Etapa 4: Container de bulking (job one-shot)
 # -----------------------------------------------------------------------------
 start_bulk() {
-  print_step "4. Container de bulking (${bulk_SERVICE})"
+  print_step "4. Container de bulking (${BULK_SERVICE})"
 
-  if [[ "$SKIP_bulk" == true ]]; then
+  if [[ "$SKIP_BULK" == true ]]; then
     log_info "Etapa ignorada (--skip-bulk)."
     return 0
   fi
 
   if [[ "$DRY_RUN" == true ]]; then
-    log_info "[DRY-RUN] Executaria: $(compose_display) --profile ${bulk_PROFILE} run --rm --no-deps ${bulk_SERVICE}"
+    log_info "[DRY-RUN] Executaria: $(compose_display) --profile ${BULK_PROFILE} run --rm --no-deps ${BULK_SERVICE}"
     return 0
   fi
 
@@ -837,10 +837,10 @@ start_bulk() {
   require_compose
 
   log_info "Executando o job de bulking..."
-  if "${COMPOSE_CMD[@]}" --profile "$bulk_PROFILE" run --rm --no-deps "$bulk_SERVICE"; then
+  if "${COMPOSE_CMD[@]}" --profile "$BULK_PROFILE" run --rm --no-deps "$BULK_SERVICE"; then
     log_success "Container de bulking executado com sucesso."
   else
-    die "Falha ao executar o container de bulking. Verifique se a imagem foi construída: $(compose_display) --profile ${bulk_PROFILE} build"
+    die "Falha ao executar o container de bulking. Verifique se a imagem foi construída: $(compose_display) --profile ${BULK_PROFILE} build"
   fi
 }
 
@@ -851,7 +851,7 @@ check_indices() {
   local url="$1" key response http_code body names
 
   print_step "5. Índices existentes no Elasticsearch"
-  key="$(get_env_var "$VAR_bulk_APIKEY")"
+  key="$(get_env_var "$VAR_BULK_APIKEY")"
 
   if is_blank "$key"; then
     log_warn "API key do bulk indisponível; pulando a verificação de índices."
@@ -902,14 +902,14 @@ print_summary() {
   printf '%b\n' "${BOLD}${SUCCESS}  Setup concluído!${RESET}"
   print_line
   log_success "API Keys prontas e salvas em ${CMD}${ENV_FILE}${RESET} (permissões 600)."
-  if [[ "$SKIP_bulk" == true ]]; then
+  if [[ "$SKIP_BULK" == true ]]; then
     log_warn "Container de bulking não foi executado (--skip-bulk)."
   else
-    log_success "Container de bulking (${bulk_SERVICE}) executado com sucesso."
+    log_success "Container de bulking (${BULK_SERVICE}) executado com sucesso."
   fi
   echo
   log_info "Próximos passos — reindexação de dados pelo container de bulking:"
-  printf '      %s\n' "${compose_cmd} --profile ${bulk_PROFILE} run --rm --no-deps ${bulk_SERVICE}"
+  printf '      %s\n' "${compose_cmd} --profile ${BULK_PROFILE} run --rm --no-deps ${BULK_SERVICE}"
   echo
   log_info "Depois suba a API e o front: ${CMD}${compose_cmd} up -d se_api se_front${RESET}"
   echo

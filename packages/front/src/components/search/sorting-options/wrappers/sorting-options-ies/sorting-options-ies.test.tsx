@@ -1,7 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSearchIes } from '@/services/api/use-search-ies'
 import { SortingOptionsIes } from './sorting-options-ies'
+
+vi.mock('next/navigation', () => ({
+  useSearchParams: vi.fn(),
+}))
 
 vi.mock('@/services/api/use-search-ies', () => ({
   useSearchIes: vi.fn(),
@@ -12,6 +18,9 @@ describe('SortingOptionsIes', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams() as unknown as ReadonlyURLSearchParams,
+    )
     vi.mocked(useSearchIes).mockReturnValue({
       updateParams,
     } as unknown as ReturnType<typeof useSearchIes>)

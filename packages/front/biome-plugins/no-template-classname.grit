@@ -1,0 +1,7 @@
+language js(typescript, jsx)
+
+JsxAttribute(name=$n, initializer=$init) as $attr where {
+  $n <: `className`,
+  $init <: contains JsTemplateExpression(),
+  register_diagnostic(span=$attr, message="Não use template literal em className. Use cn() de '@/utils/cn'.", severity="error")
+}

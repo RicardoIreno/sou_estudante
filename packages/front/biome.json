@@ -28,6 +28,7 @@
       "react": "recommended"
     }
   },
+  "plugins": ["./biome-plugins/no-template-classname.grit"],
   "assist": {
     "actions": {
       "source": {

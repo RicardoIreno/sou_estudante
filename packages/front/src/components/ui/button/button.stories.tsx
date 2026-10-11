@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import AttentionIcon from '@/assets/attention-icon'
 import { Button } from './button'
 
 const meta = {
@@ -35,12 +34,7 @@ export const Module2: Story = {
 
 export const Module3: Story = {
   args: {
-    children: (
-      <>
-        <AttentionIcon />
-        como interpretar
-      </>
-    ),
+    children: 'como interpretar',
     module: '3',
   },
 }

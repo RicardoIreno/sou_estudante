@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ProfileIngresso } from './profile-ingresso'
 
 const meta: Meta<typeof ProfileIngresso> = {
@@ -21,7 +21,7 @@ export const TurnoUnico: Story = {
         no_curso: 'Engenharia de Computação',
         no_grau_academico: 'Bacharelado',
         in_gratuito: false,
-        cine: undefined,
+        cine: {},
       },
       instituicao: {
         no_ies: 'Universidade de São Paulo',
@@ -32,6 +32,9 @@ export const TurnoUnico: Story = {
         sg_uf: 'SP',
         in_capital: false,
       },
+      censo_metricas: {},
+      enade: {},
+      tda: {},
       sisu: {
         ofertas: [
           {
@@ -74,7 +77,7 @@ export const MultiplosTurnos: Story = {
         no_curso: 'Ciência da Computação',
         no_grau_academico: 'Bacharelado',
         in_gratuito: false,
-        cine: undefined,
+        cine: {},
       },
       instituicao: {
         no_ies: 'Universidade Federal de Minas Gerais',
@@ -85,6 +88,9 @@ export const MultiplosTurnos: Story = {
         sg_uf: 'MG',
         in_capital: false,
       },
+      censo_metricas: {},
+      enade: {},
+      tda: {},
       sisu: {
         ofertas: [
           {

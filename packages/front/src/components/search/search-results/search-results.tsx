@@ -30,6 +30,8 @@ export interface SearchResultsProps<TItem> {
   module?: Module
   emptyMessage?: string
   skeletonCount?: number
+  /** Conteúdo extra exibido ao lado da contagem de resultados. */
+  summary?: ReactNode
 }
 
 /**
@@ -51,10 +53,15 @@ export function SearchResults<TItem>({
   module,
   emptyMessage,
   skeletonCount = 3,
+  summary,
 }: SearchResultsProps<TItem>) {
   if (isLoading) {
     return (
-      <div className="grid gap-4">
+      <div
+        className="grid gap-4"
+        role="status"
+        aria-label="Carregando resultados"
+      >
         {Array.from({ length: skeletonCount }).map((_, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: skeletons estáticos
           <SkeletonCard key={index} />
@@ -70,7 +77,7 @@ export function SearchResults<TItem>({
   if (!items || items.length === 0) {
     return (
       <div className="text-center py-8">
-        <Typo v="mute" s="sm" t="p" className="cursor-auto">
+        <Typo v="mute" s="sm" t="p">
           {emptyMessage ?? `Nenhum ${labels.singular} encontrado`}
         </Typo>
       </div>
@@ -79,15 +86,18 @@ export function SearchResults<TItem>({
 
   return (
     <div className="space-y-4">
-      <Typo v="mute" s="sm" t="p" className="cursor-auto">
-        {total > 0
-          ? `${total} ${
-              total === 1
-                ? (labels.foundSingular ?? `${labels.singular} encontrado`)
-                : (labels.foundPlural ?? `${labels.plural} encontrados`)
-            }`
-          : `${items.length} ${items.length === 1 ? labels.singular : labels.plural}`}
-      </Typo>
+      <div className="flex items-center gap-2">
+        <Typo v="mute" s="sm" t="p">
+          {total > 0
+            ? `${total} ${
+                total === 1
+                  ? (labels.foundSingular ?? `${labels.singular} encontrado`)
+                  : (labels.foundPlural ?? `${labels.plural} encontrados`)
+              }`
+            : `${items.length} ${items.length === 1 ? labels.singular : labels.plural}`}
+        </Typo>
+        {summary}
+      </div>
       <div className="grid gap-4">
         {items.map((item, index) => (
           <Fragment key={getItemKey(item, index)}>

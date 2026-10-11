@@ -1,9 +1,6 @@
-'use client'
-
-import { Info, MapPin } from 'lucide-react'
-import Menu from '@/components/layout/menu/menu'
+import { MapPin } from 'lucide-react'
+import { Menu } from '@/components/layout/menu/menu'
 import { Profile } from '@/components/profile'
-import { Button } from '@/components/ui/button/button'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
 import { MODULE_META, type Module } from '@/lib/module'
@@ -28,7 +25,10 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
     curso.instituicao?.sg_ies || curso.instituicao?.no_ies || undefined
   const cidade = curso.localizacao?.no_municipio
   const uf = curso.localizacao?.sg_uf
-  const temSisu = curso.sisu.tem_sisu
+  const temSisu = curso.sisu?.tem_sisu ?? false
+  const id = curso.sequencial
+  const ingressoHref =
+    temSisu && id !== undefined ? `/ingresso/${id}` : undefined
 
   return (
     <Profile module={module}>
@@ -73,14 +73,6 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
         <Profile.TabPanel value="overview">
           <div className="p-4">
             <Profile.Overview items={buildOverviewItems(curso)} />
-            <Button
-              v="outline"
-              module={module}
-              className="inline-flex cursor-pointer items-center gap-[5px] rounded-[10px] border-[1.5px] px-3 py-[6px] font-protagonist text-coadjuvant-xs font-semibold transition-transform duration-fast ease-prow active:scale-[0.97] mt-1"
-            >
-              <Info className="size-3" aria-hidden="true" />
-              Como interpretar?
-            </Button>
           </div>
         </Profile.TabPanel>
 
@@ -90,6 +82,15 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
       </Profile.Tabs>
 
       <Profile.Section title="Continue sua rota" className="mt-1">
+        {ingressoHref && (
+          <Route
+            module="2"
+            variant="inline"
+            href={ingressoHref}
+            title="Como ingressar neste curso"
+            description="Notas de corte, vagas e cotas no Sisu — Bússola"
+          />
+        )}
         <Route
           module="3"
           variant="inline"
