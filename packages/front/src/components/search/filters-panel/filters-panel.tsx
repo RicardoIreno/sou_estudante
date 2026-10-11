@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useState } from 'react'
+import { Fragment, type ReactNode, useState } from 'react'
 import { FilterGroup } from '@/components/search/filter-group'
 import { Typo } from '@/components/ui/typo'
 import { getAggregationCount } from '@/lib/aggregations'
@@ -35,6 +35,8 @@ export interface FiltersPanelProps {
   onToggle: (key: string, value: string) => void
   /** Limpa todos os filtros ativos. Sem ele, desmarca cada valor ativo. */
   onClear?: () => void
+  /** Conteúdo exibido como primeiro item, antes das seções de filtro. */
+  leading?: ReactNode
   module?: Module
   className?: string
 }
@@ -49,6 +51,7 @@ export function FiltersPanel({
   activeValues,
   onToggle,
   onClear,
+  leading,
   module,
   className,
 }: FiltersPanelProps) {
@@ -102,6 +105,13 @@ export function FiltersPanel({
           <Typo s="sm">Limpar tudo</Typo>
         </button>
       </header>
+
+      {leading && (
+        <>
+          {leading}
+          <hr className={cn('m-0 h-px w-full border-0 bg-card-border')} />
+        </>
+      )}
 
       {sections.map((section, index) => (
         <Fragment key={section.key}>

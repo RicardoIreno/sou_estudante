@@ -36,7 +36,7 @@ export function SortingOptions({
     <div
       role="group"
       aria-label={ariaLabel}
-      className={cn('flex gap-2', className)}
+      className={cn('flex flex-wrap gap-2', className)}
     >
       {options.map((option) => {
         const active = option.value === value

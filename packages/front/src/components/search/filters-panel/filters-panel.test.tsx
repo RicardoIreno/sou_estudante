@@ -92,4 +92,22 @@ describe('FiltersPanel', () => {
 
     expect(container.firstChild).toHaveAttribute('data-module', '4')
   })
+
+  it('renderiza o conteúdo leading antes das seções de filtro', () => {
+    render(
+      <FiltersPanel
+        sections={sections}
+        activeValues={() => []}
+        onToggle={() => {}}
+        leading={<span>Ordenar por</span>}
+      />,
+    )
+
+    const leading = screen.getByText('Ordenar por')
+    const firstSection = screen.getByText('Estado')
+
+    expect(leading.compareDocumentPosition(firstSection)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
 })

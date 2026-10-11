@@ -9,6 +9,7 @@ import {
   FiltersPanel,
 } from '@/components/search/filters-panel/filters-panel'
 import { useFilterPanel } from '@/components/search/filters-panel/use-filter-panel'
+import { SortingOptionsIes } from '@/components/search/sorting-options/wrappers/sorting-options-ies/sorting-options-ies'
 import type { Module } from '@/lib/module'
 import { ufOptions } from '@/lib/uf'
 import { useSearchIes } from '@/services/api/use-search-ies'
@@ -56,6 +57,7 @@ export function FiltersPanelIes({ module, className }: FiltersPanelIesProps) {
       activeValues={getActiveValues}
       onToggle={toggle}
       onClear={resetFilters}
+      leading={<SortingOptionsIes module={module} />}
       module={module}
       className={className}
     />

@@ -6,6 +6,7 @@ import {
   FiltersPanel,
 } from '@/components/search/filters-panel/filters-panel'
 import { useFilterPanel } from '@/components/search/filters-panel/use-filter-panel'
+import { SortingOptionsCursos } from '@/components/search/sorting-options/wrappers/sorting-options-cursos/sorting-options-cursos'
 import type { Module } from '@/lib/module'
 import { ufOptions } from '@/lib/uf'
 import { useSearchCursos } from '@/services/api/use-search-cursos'
@@ -100,6 +101,7 @@ export function FiltersPanelCursos({
       activeValues={getActiveValues}
       onToggle={toggle}
       onClear={resetFilters}
+      leading={<SortingOptionsCursos module={module} />}
       module={module}
       className={className}
     />
