@@ -504,6 +504,7 @@ Esta seção foi conferida contra o estado real do repositório. Os itens conclu
 ### Fase 3: corrigir risco funcional
 
 - [ ] Validar contra um ES real o filtro de turno (nested) e o bucket "Integral" (seção 9). O código já está corrigido; falta a confirmação de dados.
+- [ ] **Paginação profunda vira erro 500** (seção 9, P1): limitar `page * limit` a `index.max_result_window` (10.000) e devolver 400 em vez de 500.
 
 ### Fase 4: alinhar documentação
 
