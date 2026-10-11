@@ -107,9 +107,9 @@ export function LayoutSearchPage({
             {hasSearch && <Suspense fallback={null}>{activeFilters}</Suspense>}
 
             {hasResults && (
-              <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4">
+              <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-7">
                 {filtersPanel && (
-                  <aside className="md:col-span-1">
+                  <aside className="md:col-span-2">
                     <Suspense
                       fallback={
                         <Typo v="mute" s="sm">
@@ -124,8 +124,8 @@ export function LayoutSearchPage({
 
                 <div
                   className={cn('space-y-4', {
-                    'md:col-span-3': Boolean(filtersPanel),
-                    'md:col-span-4': !filtersPanel,
+                    'md:col-span-5': Boolean(filtersPanel),
+                    'md:col-span-7': !filtersPanel,
                   })}
                 >
                   {(resultsSummary || toolbar) && (

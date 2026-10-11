@@ -5,6 +5,7 @@ import type { Module } from '@/lib/module'
 import type { IES } from '@/services/api/types'
 import { useSearchIes } from '@/services/api/use-search-ies'
 import { IesResultItem } from './ies-result-item'
+import { SearchResultsIesSummary } from './search-results-ies-summary'
 
 interface SearchResultsIesProps {
   module?: Module
@@ -39,6 +40,8 @@ export function SearchResultsIes({ module }: SearchResultsIesProps) {
         foundPlural: 'instituições encontradas',
       }}
       emptyMessage="Nenhuma instituição encontrada"
+      showCount={false}
+      footer={<SearchResultsIesSummary />}
       getItemKey={(ies, index) => ies.co_ies ?? `ies-${index}`}
       renderItem={(ies) => <IesResultItem ies={ies} module={module} />}
       module={module}
