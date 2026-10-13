@@ -23,21 +23,31 @@ export function EnadeSection() {
       title="Enade"
       description="Selo, tag e máscara do mar do Enade. O selo é a fonte da informação acessível; a máscara e o desenho são decorativos."
     >
-      <SubSection title="SeloEnade · card">
+      <SubSection title="SeloEnade · sm">
         <States>
           {LEVELS.map(({ level, label }) => (
-            <State key={`card-${label}`} label={label}>
-              <SeloEnade level={level} />
+            <State key={`sm-${label}`} label={label}>
+              <SeloEnade level={level} size="sm" />
             </State>
           ))}
         </States>
       </SubSection>
 
-      <SubSection title="SeloEnade · detalhe">
+      <SubSection title="SeloEnade · md">
         <States>
           {LEVELS.map(({ level, label }) => (
-            <State key={`detail-${label}`} label={label}>
-              <SeloEnade level={level} size="detalhe" />
+            <State key={`md-${label}`} label={label}>
+              <SeloEnade level={level} size="md" />
+            </State>
+          ))}
+        </States>
+      </SubSection>
+
+      <SubSection title="SeloEnade · lg">
+        <States>
+          {LEVELS.map(({ level, label }) => (
+            <State key={`lg-${label}`} label={label}>
+              <SeloEnade level={level} size="lg" />
             </State>
           ))}
         </States>
@@ -60,7 +70,7 @@ export function EnadeSection() {
               <MaskEnade level={5} />
             </Card.Backdrop>
             <Card.Header>
-              <SeloEnade level={5} size="card" />
+              <SeloEnade level={5} size="md" />
               <Card.Title
                 title="Medicina · 16904"
                 subtitle="Universidade Federal de Roraima · Boa Vista - RR"

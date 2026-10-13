@@ -1,50 +1,39 @@
-/**
- * Molécula SeloEnade — selo do Enade (mar): composição do desenho da faixa
- * (ConceitoEnade) e do rótulo numérico. A banda de fundo do card vive em
- * ConceitoEnade, usada também pelo MaskEnade.
- */
 import { ConceitoEnade } from '@/components/enade/formas-enade/conceito-enade'
-import { marPalette } from '@/components/enade/formas-enade/geometria-mar'
 import { cn } from '@/utils/cn'
 
 export interface SeloEnadeProps {
   level: 1 | 2 | 3 | 4 | 5 | 'SC' | null
-  size?: 'card' | 'detalhe'
+  size?: 'sm' | 'md' | 'lg'
 }
 
-export function SeloEnade({ level, size = 'card' }: SeloEnadeProps) {
+const SIZE_CLASSES = {
+  sm: {
+    container: 'h-8 w-8 rounded-control',
+    numeric: 'text-base',
+    nonNumeric: 'text-xs',
+  },
+  md: {
+    container: 'h-10 w-10 rounded-control',
+    numeric: 'text-xl',
+    nonNumeric: 'text-sm',
+  },
+  lg: {
+    container: 'h-20 w-20 rounded-card',
+    numeric: 'text-4xl',
+    nonNumeric: 'text-xl',
+  },
+} as const
+
+export function SeloEnade({ level, size = 'md' }: SeloEnadeProps) {
   const isNumeric = typeof level === 'number'
-  const numericLevel = isNumeric ? level : null
-  const isDetail = size === 'detalhe'
-
-  const palette = marPalette(numericLevel)
-
-  // Definição do rótulo de acessibilidade e text principal
+  const text = isNumeric ? String(level) : level === 'SC' ? 'SC' : '—'
   const label = isNumeric
     ? `Conceito Enade ${level} de 5`
     : level === 'SC'
       ? 'Sem conceito (SC)'
       : 'Sem avaliação no ciclo'
-
-  const text = isNumeric ? String(level) : level === 'SC' ? 'SC' : '—'
-  const subtext = isDetail && isNumeric ? 'de 5' : 'Enade'
-
-  // Mapeamento de estilos de tamanho de fonte e container
-  const containerClasses = isDetail
-    ? 'h-20 w-20 rounded-card'
-    : 'h-10 w-10 rounded-control'
-
-  const fontClasses = isDetail
-    ? isNumeric
-      ? 'text-4xl'
-      : 'text-xl'
-    : isNumeric
-      ? 'text-xl'
-      : 'text-sm'
-
-  const subtextClasses = isDetail
-    ? 'mt-[2px] text-xs'
-    : 'mt-px text-xs tracking-[0.3px]'
+  const sizeClasses = SIZE_CLASSES[size]
+  const fontClasses = isNumeric ? sizeClasses.numeric : sizeClasses.nonNumeric
 
   return (
     <div
@@ -53,9 +42,8 @@ export function SeloEnade({ level, size = 'card' }: SeloEnadeProps) {
       title={label}
       className={cn(
         'relative flex shrink-0 flex-col items-center justify-center overflow-hidden',
-        containerClasses,
+        sizeClasses.container,
       )}
-      style={{ background: palette.background, color: palette.color }}
     >
       <ConceitoEnade
         level={level}
@@ -64,14 +52,11 @@ export function SeloEnade({ level, size = 'card' }: SeloEnadeProps) {
 
       <div
         className={cn(
-          'relative z-[1] font-mono font-bold leading-none',
+          'relative z-[1] font-selo font-normal leading-none text-stroke-selo',
           fontClasses,
         )}
       >
         {text}
-      </div>
-      <div className={cn('relative z-[1] font-semibold', subtextClasses)}>
-        {subtext}
       </div>
     </div>
   )
