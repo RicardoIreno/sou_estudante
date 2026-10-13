@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Rubik Mono One";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/RubikMonoOne-Regular.ttf") format("truetype");
+}
+
 @theme {
   /* Cores · Acentos por módulo */
   --color-m1-accent: #00e5ff; /* M1 Carta Náutica — neon-lime  */
@@ -79,6 +87,7 @@
   --font-display: "Source Sans 3", system-ui, sans-serif; /* títulos */
   /* Corpo. O `next/font` sobrescreve esta variável no <body> (layout.tsx). */
   --font-sans: "Source Sans 3", system-ui, sans-serif;
+  --font-selo: "Rubik Mono One", system-ui;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -251,5 +260,12 @@ body {
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
     transition-duration: 0.01ms;
+  }
+}
+
+@layer utilities {
+  .text-stroke-selo {
+    color: white;
+    -webkit-text-stroke: 1px rgb(20, 96, 150);
   }
 }

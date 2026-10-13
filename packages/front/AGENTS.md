@@ -7,7 +7,6 @@
 - Linter: Biome
 - Test Runner: Vitest
 - Render: React Testing Library (RTL) + jsdom
-- Storybook
 
 ## Regras
 
@@ -20,6 +19,9 @@ Detalhes em [`docs/30.frontend.md`](../../docs/30.frontend.md) (convenções do 
 - Wrappers em `<agnóstico>/wrappers/<wrapper>/`, nomeados `<Agnóstico><Domínio>`.
 - Só variação visual: Scoped-Variable (`data-*`), sem Context.
 - DRY a partir do segundo uso real.
+
+### Design System (página oculta)
+- Toda alteração que afete o design system (tokens em `globals.css`, componentes base de `ui/`, composições/estados visuais) exige atualizar a página oculta em `src/app/design-system/` na mesma mudança.
 
 ### Semantic Tokens & CSS Architecture
 - **File Reference:** Always consult `/packages/front/src/app/globals.css` first to search for existing semantic tokens or to define new ones when needed.

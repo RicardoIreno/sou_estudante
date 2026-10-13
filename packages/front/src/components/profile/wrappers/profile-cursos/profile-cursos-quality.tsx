@@ -37,7 +37,7 @@ export const ProfileCursosQuality = ({
         </span>
 
         <div className="flex items-start gap-4">
-          <SeloEnade level={faixa} size="detalhe" />
+          <SeloEnade level={faixa} size="lg" />
           <div className="flex flex-1 flex-col gap-1">
             <span className="font-sans text-xs font-bold uppercase tracking-wide text-fg-muted">
               Ciclo avaliativo
