@@ -19,6 +19,7 @@ const renderLayout = (module?: '1' | '4', withQuery = true) => {
       activeFilters={<p>filtros ativos</p>}
       filtersPanel={<p>filtros</p>}
       toolbar={<p>ordenação</p>}
+      resultsSummary={<p>resumo</p>}
       results={<p>resultados</p>}
     />,
   )
@@ -45,7 +46,18 @@ describe('LayoutSearchPage', () => {
     expect(screen.getByText('filtros')).toBeInTheDocument()
     expect(screen.getByText('filtros ativos')).toBeInTheDocument()
     expect(screen.getByText('ordenação')).toBeInTheDocument()
+    expect(screen.getByText('resumo')).toBeInTheDocument()
     expect(screen.getByText('resultados')).toBeInTheDocument()
+  })
+
+  it('places the summary and the toolbar in the same flex row', () => {
+    renderLayout()
+
+    const summary = screen.getByText('resumo')
+    const toolbar = screen.getByText('ordenação')
+
+    expect(summary.parentElement).toBe(toolbar.parentElement)
+    expect(summary.parentElement).toHaveClass('justify-between')
   })
 
   it('places the filters in a complementary landmark and the results outside it', () => {

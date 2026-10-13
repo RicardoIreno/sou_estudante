@@ -17,6 +17,8 @@ interface LayoutSearchPageProps {
   activeFilters?: ReactNode
   filtersPanel?: ReactNode
   toolbar?: ReactNode
+  /** Resumo dos resultados (ex.: contagem + tag), exibido ao lado da ordenação. */
+  resultsSummary?: ReactNode
   results?: ReactNode
   /** Aviso exibido logo abaixo do cabeçalho (ex.: módulo em construção). */
   notice?: ReactNode
@@ -33,6 +35,7 @@ export function LayoutSearchPage({
   activeFilters,
   filtersPanel,
   toolbar,
+  resultsSummary,
   results,
   notice,
   minQueryLength,
@@ -40,7 +43,9 @@ export function LayoutSearchPage({
 }: LayoutSearchPageProps) {
   const meta = module ? MODULE_META[module] : undefined
   const hasSearch = Boolean(searchHeader)
-  const hasResults = Boolean(filtersPanel || toolbar || results)
+  const hasResults = Boolean(
+    filtersPanel || toolbar || resultsSummary || results,
+  )
   const showPrompt = hasSearch || hasResults
 
   return (
@@ -102,9 +107,9 @@ export function LayoutSearchPage({
             {hasSearch && <Suspense fallback={null}>{activeFilters}</Suspense>}
 
             {hasResults && (
-              <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4">
+              <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-7">
                 {filtersPanel && (
-                  <aside className="md:col-span-1">
+                  <aside className="md:col-span-2">
                     <Suspense
                       fallback={
                         <Typo v="mute" s="sm">
@@ -119,11 +124,20 @@ export function LayoutSearchPage({
 
                 <div
                   className={cn('space-y-4', {
-                    'md:col-span-3': Boolean(filtersPanel),
-                    'md:col-span-4': !filtersPanel,
+                    'md:col-span-5': Boolean(filtersPanel),
+                    'md:col-span-7': !filtersPanel,
                   })}
                 >
-                  {toolbar && <Suspense fallback={null}>{toolbar}</Suspense>}
+                  {(resultsSummary || toolbar) && (
+                    <div className="flex items-center justify-between">
+                      {resultsSummary && (
+                        <Suspense fallback={null}>{resultsSummary}</Suspense>
+                      )}
+                      {toolbar && (
+                        <Suspense fallback={null}>{toolbar}</Suspense>
+                      )}
+                    </div>
+                  )}
 
                   {results && (
                     <Suspense

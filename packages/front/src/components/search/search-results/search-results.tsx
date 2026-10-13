@@ -30,8 +30,11 @@ export interface SearchResultsProps<TItem> {
   module?: Module
   emptyMessage?: string
   skeletonCount?: number
-  /** Conteúdo extra exibido ao lado da contagem de resultados. */
-  summary?: ReactNode
+  /** Exibe a linha de contagem de resultados. Desative quando a contagem for
+   *  renderizada fora da lista (ex.: no layout, ao lado da ordenação). */
+  showCount?: boolean
+  /** Conteúdo extra exibido após a lista, logo antes da paginação. */
+  footer?: ReactNode
 }
 
 /**
@@ -53,7 +56,8 @@ export function SearchResults<TItem>({
   module,
   emptyMessage,
   skeletonCount = 3,
-  summary,
+  showCount = true,
+  footer,
 }: SearchResultsProps<TItem>) {
   if (isLoading) {
     return (
@@ -86,18 +90,19 @@ export function SearchResults<TItem>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Typo v="mute" s="sm" t="p">
-          {total > 0
-            ? `${total} ${
-                total === 1
-                  ? (labels.foundSingular ?? `${labels.singular} encontrado`)
-                  : (labels.foundPlural ?? `${labels.plural} encontrados`)
-              }`
-            : `${items.length} ${items.length === 1 ? labels.singular : labels.plural}`}
-        </Typo>
-        {summary}
-      </div>
+      {showCount && (
+        <div className="flex items-center gap-2">
+          <Typo v="mute" s="sm" t="p">
+            {total > 0
+              ? `${total} ${
+                  total === 1
+                    ? (labels.foundSingular ?? `${labels.singular} encontrado`)
+                    : (labels.foundPlural ?? `${labels.plural} encontrados`)
+                }`
+              : `${items.length} ${items.length === 1 ? labels.singular : labels.plural}`}
+          </Typo>
+        </div>
+      )}
       <div className="grid gap-4">
         {items.map((item, index) => (
           <Fragment key={getItemKey(item, index)}>
@@ -105,6 +110,8 @@ export function SearchResults<TItem>({
           </Fragment>
         ))}
       </div>
+
+      {footer}
 
       {links && onNavigate && (
         <Pagination

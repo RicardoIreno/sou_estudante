@@ -101,17 +101,17 @@ export const MODULE_META: Record<Module, ModuleMeta> = {
   '5': {
     badge: 'SEXTANTE',
     title: 'Comparar cursos',
-    description: 'Analise até 4 cursos lado a lado',
+    description: 'Analise até 5 cursos lado a lado',
     page: {
       lead: 'Lado a lado,',
       accent: 'a escolha fica mais clara.',
       subtitle:
-        'Compare até quatro cursos pelos mesmos critérios. Cada linha mostra de onde vem o dado e em que ano — sem somar tudo numa nota única, porque o que pesa mais é decisão sua.',
+        'Compare até cinco cursos pelos mesmos critérios. Cada linha mostra de onde vem o dado e em que ano — sem somar tudo numa nota única, porque o que pesa mais é decisão sua.',
     },
     list: {
       title: 'Compare lado a lado',
       description:
-        'O sextante mede posições para orientar a escolha: até quatro cursos comparados pelos mesmos critérios, sem ranking.',
+        'O sextante mede posições para orientar a escolha: até cinco cursos comparados pelos mesmos critérios, sem ranking.',
     },
     href: '/comparar',
   },

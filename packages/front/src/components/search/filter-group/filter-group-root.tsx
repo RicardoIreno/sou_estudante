@@ -20,10 +20,7 @@ export function FilterGroupRoot({
     <FilterGroupContext.Provider value={{ groupId }}>
       <section
         data-module={module}
-        className={cn(
-          'flex w-70 flex-col bg-card-surface font-sans text-fg',
-          className,
-        )}
+        className={cn('flex w-70 flex-col font-sans text-fg', className)}
         aria-labelledby={`${groupId}-title`}
       >
         {children}

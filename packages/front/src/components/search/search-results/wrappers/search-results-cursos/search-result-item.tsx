@@ -4,6 +4,7 @@ import type { ReactElement } from 'react'
 import { MaskEnade } from '@/components/enade/mask-enade/mask-enade'
 import { TagEnade } from '@/components/enade/tag-enade/tag-enade'
 import { Card, type CardTag } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox/checkbox'
 import { parseEnadeLevel } from '@/lib/enade'
 import type { Module } from '@/lib/module'
 import type { Curso } from '@/services/api/types'
@@ -11,9 +12,21 @@ import type { Curso } from '@/services/api/types'
 interface SearchResultItemProps {
   curso: Curso
   module?: Module
+  /** Modo de comparação ativo: revela o checkbox de seleção na esquerda. */
+  comparing?: boolean
+  selected?: boolean
+  disabled?: boolean
+  onToggle?: (id: string) => void
 }
 
-export function SearchResultItem({ curso, module }: SearchResultItemProps) {
+export function SearchResultItem({
+  curso,
+  module,
+  comparing = false,
+  selected = false,
+  disabled = false,
+  onToggle,
+}: SearchResultItemProps) {
   // Extrair dados da estrutura completa
   const nomeCurso = curso.curso?.no_curso || 'Curso não especificado'
   const instituicao = curso.instituicao?.no_ies || ''
@@ -64,8 +77,8 @@ export function SearchResultItem({ curso, module }: SearchResultItemProps) {
   }
   tags.push(<TagEnade key="enade" level={conceitoEnade} />)
 
-  const card = (
-    <Card module={module}>
+  const cardContent = (
+    <>
       <Card.Backdrop>
         <MaskEnade level={conceitoEnade} />
       </Card.Backdrop>
@@ -90,23 +103,37 @@ export function SearchResultItem({ curso, module }: SearchResultItemProps) {
         }
         emptyHint="sem dados"
       />
-    </Card>
+    </>
   )
 
   const id = curso.sequencial
   if (id === undefined) {
-    return card
+    return <Card module={module}>{cardContent}</Card>
   }
 
   return (
     <div className="space-y-2" data-module={module}>
-      <Link
-        href={`/cursos/${id}`}
-        aria-label={`Ver detalhes do curso ${nomeCurso}`}
-        className="block rounded-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
-      >
-        {card}
-      </Link>
+      <Card module={module}>
+        <div className="flex items-start gap-3">
+          {comparing && (
+            <Checkbox
+              module={module}
+              checked={selected}
+              disabled={disabled}
+              onChange={() => onToggle?.(String(id))}
+              aria-label={`Comparar ${nomeCurso}`}
+              className="size-6"
+            />
+          )}
+          <Link
+            href={`/cursos/${id}`}
+            aria-label={`Ver detalhes do curso ${nomeCurso}`}
+            className="block min-w-0 flex-1 rounded-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
+          >
+            {cardContent}
+          </Link>
+        </div>
+      </Card>
 
       {temSisu && (
         <Link

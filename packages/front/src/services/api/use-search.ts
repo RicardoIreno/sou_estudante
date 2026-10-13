@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   type ApiError,
   ERROR_MESSAGES,
@@ -161,6 +161,13 @@ export function useSearch<TItem, TAgg>(
 
   const enabled = query.length >= minChars
 
+  // O React Query não hidrata a busca no SSR: o servidor renderiza sem dados,
+  // enquanto o cliente pode já ter o cache do queryClient populado. Esse guard
+  // mantém o primeiro render (servidor e cliente) idêntico — vazio/em carga — e
+  // só expõe os dados após a montagem, evitando mismatch de hidratação.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   const {
     data,
     isPending,
@@ -192,14 +199,15 @@ export function useSearch<TItem, TAgg>(
 
   return {
     query,
-    results: data?.results ?? [],
-    isLoading: enabled && isPending,
-    error: isError ? messageForError(queryError, errorMessage) : null,
-    total: data?.total ?? 0,
+    results: mounted ? (data?.results ?? []) : [],
+    isLoading: !mounted || (enabled && isPending),
+    error:
+      mounted && isError ? messageForError(queryError, errorMessage) : null,
+    total: mounted ? (data?.total ?? 0) : 0,
     currentPage,
-    limit: data?.limit ?? defaultLimit,
-    links: data?.links ?? null,
-    aggregations: data?.aggregations ?? null,
+    limit: mounted ? (data?.limit ?? defaultLimit) : defaultLimit,
+    links: mounted ? (data?.links ?? null) : null,
+    aggregations: mounted ? (data?.aggregations ?? null) : null,
     setQuery,
     navigateToPage,
     updateParams,

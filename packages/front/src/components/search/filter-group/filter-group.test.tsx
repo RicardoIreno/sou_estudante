@@ -36,7 +36,7 @@ describe('FilterGroup', () => {
         <FilterGroup.Title>Categoria</FilterGroup.Title>
         <FilterGroup.List>
           <FilterGroup.Option label="Federal" resultCount={7} />
-          <FilterGroup.Option label="Municipal" defaultChecked />
+          <FilterGroup.Option label="Municipal" checked />
           <FilterGroup.Option label="Privada" disabled />
         </FilterGroup.List>
       </FilterGroup>,
@@ -46,7 +46,7 @@ describe('FilterGroup', () => {
       screen.getByRole('heading', { name: 'Categoria' }),
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: 'Federal' }),
+      screen.getByRole('checkbox', { name: 'Federal, 7 resultados' }),
     ).toBeInTheDocument()
     expect(screen.getByText('7')).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: 'Municipal' })).toBeChecked()
@@ -61,7 +61,6 @@ describe('FilterGroup', () => {
         <FilterGroup.List>
           <FilterGroup.Option
             label="Noturno"
-            value="Noturno"
             checked={false}
             onChange={handleChange}
           />

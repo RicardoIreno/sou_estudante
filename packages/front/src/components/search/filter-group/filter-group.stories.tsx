@@ -20,7 +20,7 @@ export const Default: Story = {
       <FilterGroup.List>
         <FilterGroup.Option label="Federal" resultCount={7} />
         <FilterGroup.Option label="Estadual" resultCount={4} />
-        <FilterGroup.Option label="Municipal" resultCount={1} defaultChecked />
+        <FilterGroup.Option label="Municipal" resultCount={1} checked />
         <FilterGroup.Option label="Privada" resultCount={4} disabled />
       </FilterGroup.List>
     </FilterGroup>
@@ -37,7 +37,7 @@ export const Module3: Story = {
       <FilterGroup.Title>Categoria</FilterGroup.Title>
       <FilterGroup.List>
         <FilterGroup.Option label="Federal" resultCount={7} />
-        <FilterGroup.Option label="Estadual" resultCount={4} defaultChecked />
+        <FilterGroup.Option label="Estadual" resultCount={4} checked />
         <FilterGroup.Option label="Municipal" resultCount={1} />
         <FilterGroup.Option label="Privada" resultCount={4} disabled />
       </FilterGroup.List>

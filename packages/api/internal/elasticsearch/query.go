@@ -94,8 +94,11 @@ func CategoriasAgg(field string) map[string]any {
 }
 
 // SearchBody monta o corpo completo de uma busca paginada: bool query com a
-// parte textual em must e os filtros em filter (omitido quando vazio), mais
-// paginação, ordenação e agregações. page começa em 1.
+// parte textual em must, mais paginação, ordenação e agregações. Os filtros
+// entram como post_filter: os hits e o total respeitam o filtro, mas as
+// agregações refletem o resultado sem ele, preservando a multi-seleção (faceted
+// search) — depois de escolher um valor, os demais continuam mostrando sua
+// contagem e seguem selecionáveis. page começa em 1.
 func SearchBody(
 	must map[string]any,
 	filters []map[string]any,
@@ -103,16 +106,19 @@ func SearchBody(
 	aggs map[string]any,
 	page, limit int,
 ) map[string]any {
-	boolQuery := map[string]any{"must": must}
-	if len(filters) > 0 {
-		boolQuery["filter"] = filters
-	}
-
-	return map[string]any{
-		"query": map[string]any{"bool": boolQuery},
+	body := map[string]any{
+		"query": map[string]any{"bool": map[string]any{"must": must}},
 		"size":  limit,
 		"from":  (page - 1) * limit,
 		"sort":  sort,
 		"aggs":  aggs,
 	}
+
+	if len(filters) > 0 {
+		body["post_filter"] = map[string]any{
+			"bool": map[string]any{"filter": filters},
+		}
+	}
+
+	return body
 }

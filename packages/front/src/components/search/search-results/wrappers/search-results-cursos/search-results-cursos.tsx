@@ -1,11 +1,15 @@
 'use client'
 
+import {
+  MAX_COMPARE,
+  useCompareCursos,
+} from '@/components/compare/compare-provider'
 import { SearchResults } from '@/components/search/search-results/search-results'
-import { Tag } from '@/components/ui/tag/tag'
 import type { Module } from '@/lib/module'
 import type { Curso } from '@/services/api/types'
 import { useSearchCursos } from '@/services/api/use-search-cursos'
 import { SearchResultItem } from './search-result-item'
+import { SearchResultsCursosSummary } from './search-results-cursos-summary'
 
 interface SearchResultsCursosProps {
   module?: Module
@@ -20,11 +24,11 @@ export function SearchResultsCursos({ module }: SearchResultsCursosProps) {
     currentPage,
     limit,
     links,
-    aggregations,
     navigateToPage,
   } = useSearchCursos()
+  const { ids, isComparing, isSelected, toggle } = useCompareCursos()
 
-  const gratuitos = aggregations?.gratuitos?.[0]?.count ?? 0
+  const selectionFull = ids.length >= MAX_COMPARE
 
   return (
     <SearchResults<Curso>
@@ -38,20 +42,28 @@ export function SearchResultsCursos({ module }: SearchResultsCursosProps) {
       onNavigate={navigateToPage}
       labels={{ singular: 'curso', plural: 'cursos' }}
       emptyMessage="Nenhum curso encontrado"
-      summary={
-        gratuitos > 0 ? (
-          <Tag
-            label={`${gratuitos} ${gratuitos === 1 ? 'gratuito' : 'gratuitos'}`}
-            module={module}
-          />
-        ) : undefined
-      }
+      showCount={false}
+      footer={<SearchResultsCursosSummary module={module} />}
       getItemKey={(curso, index) =>
         curso.sequencial
           ? `seq-${curso.sequencial}`
           : `${curso.instituicao?.co_ies}-${curso.curso?.co_curso}-${index}`
       }
-      renderItem={(curso) => <SearchResultItem curso={curso} module={module} />}
+      renderItem={(curso) => {
+        const id = curso.sequencial
+        const selected = id !== undefined && isSelected(String(id))
+
+        return (
+          <SearchResultItem
+            curso={curso}
+            module={module}
+            comparing={isComparing}
+            selected={selected}
+            disabled={id !== undefined && !selected && selectionFull}
+            onToggle={toggle}
+          />
+        )
+      }}
       module={module}
     />
   )
