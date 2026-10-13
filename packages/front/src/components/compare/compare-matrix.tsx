@@ -34,7 +34,7 @@ export function CompareMatrix({
           <tr className="border-b border-card-border">
             <th
               scope="col"
-              className="w-40 min-w-40 p-4 align-bottom text-xs font-bold uppercase tracking-[0.9px] text-fg-muted"
+              className="w-40 min-w-40 p-4 align-top text-xs font-bold uppercase tracking-[0.9px] text-fg-muted"
             >
               Critério
             </th>
@@ -85,22 +85,32 @@ export function CompareMatrix({
                   </span>
                 </th>
               </tr>
-              {section.rows.map((row) => (
-                <tr key={row.label} className="border-t border-card-border">
-                  <th
-                    scope="row"
-                    className="p-4 text-left font-sans text-sm font-semibold text-fg"
-                  >
-                    {row.label}
-                  </th>
-                  {row.values.map((value, index) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: células alinhadas às colunas
-                    <td key={index} className="p-4 font-sans text-sm text-fg">
-                      {value ?? '—'}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {section.rows.map((row) => {
+                const cellClass = cn(
+                  'border-l border-card-border p-4 text-sm text-fg',
+                  row.numeric ? 'font-mono font-bold' : 'font-sans',
+                )
+
+                return (
+                  <tr key={row.label} className="border-t border-card-border">
+                    <th
+                      scope="row"
+                      className={cn(
+                        'p-4 text-left font-sans text-sm text-fg',
+                        section.plainLabels ? 'font-normal' : 'font-semibold',
+                      )}
+                    >
+                      {row.label}
+                    </th>
+                    {row.values.map((value, index) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: células alinhadas às colunas
+                      <td key={index} className={cellClass}>
+                        {value ?? '—'}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
             </Fragment>
           ))}
         </tbody>

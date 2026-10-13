@@ -106,7 +106,7 @@ export const MODULE_META: Record<Module, ModuleMeta> = {
       lead: 'Lado a lado,',
       accent: 'a escolha fica mais clara.',
       subtitle:
-        'Compare até cinco cursos pelos mesmos critérios. Cada linha mostra de onde vem o dado e em que ano — sem somar tudo numa nota única, porque o que pesa mais é decisão sua.',
+        'Compare até cinco cursos pelos mesmos critérios. Não há curso vencedor. Cada linha mostra a fonte e o ano — compare pelo que pesa mais na sua rota.',
     },
     list: {
       title: 'Compare lado a lado',

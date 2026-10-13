@@ -3,16 +3,61 @@ import type { Curso } from '@/services/api/types'
 export interface CompareRow {
   label: string
   values: (string | undefined)[]
+  /** Dados numéricos são renderizados em fonte monoespaçada (`--font-mono`). */
+  numeric?: boolean
 }
 
 export interface CompareSection {
   title: string
   source: string
   rows: CompareRow[]
+  /** Rótulos das linhas em peso regular, sem o semibold padrão. */
+  plainLabels?: boolean
 }
 
 const capitalize = (value?: string) =>
   value ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase() : ''
+
+const NAO_USA_SISU = 'Não usa Sisu · verifique as cotas na instituição'
+
+const MODALIDADES_COTA: ReadonlyArray<{ codigo: string; label: string }> = [
+  { codigo: 'LB_EP', label: 'Baixa renda · demais candidatos' },
+  { codigo: 'LB_PCD', label: 'Baixa renda · pessoas com deficiência' },
+  { codigo: 'LB_PPI', label: 'Baixa renda · pretos, pardos e indígenas' },
+  { codigo: 'LB_Q', label: 'Baixa renda · quilombolas' },
+  { codigo: 'LI_EP', label: 'Independente de renda · demais candidatos' },
+  {
+    codigo: 'LI_PCD',
+    label: 'Independente de renda · pessoas com deficiência',
+  },
+  {
+    codigo: 'LI_PPI',
+    label: 'Independente de renda · pretos, pardos e indígenas',
+  },
+  { codigo: 'LI_Q', label: 'Independente de renda · quilombolas' },
+]
+
+const MODALIDADES_CONHECIDAS = new Set([
+  'AC',
+  ...MODALIDADES_COTA.map(({ codigo }) => codigo),
+])
+
+function notaCota(curso: Curso, codigo: string): string | undefined {
+  if (!curso.sisu?.tem_sisu) return NAO_USA_SISU
+  const oferta = curso.sisu?.ofertas?.find((o) => o.modalidade === codigo)
+  return oferta?.nota_corte !== undefined
+    ? String(oferta.nota_corte)
+    : undefined
+}
+
+function outrasModalidades(curso: Curso): string | undefined {
+  if (!curso.sisu?.tem_sisu) return NAO_USA_SISU
+  const tem = curso.sisu?.ofertas?.some(
+    (o) =>
+      o.modalidade !== undefined && !MODALIDADES_CONHECIDAS.has(o.modalidade),
+  )
+  return tem ? 'Sim' : undefined
+}
 
 function enadeLabel(raw?: string): string | undefined {
   if (!raw) return undefined
@@ -64,6 +109,7 @@ export function buildCompareSections(
         },
         {
           label: 'Vagas por ano',
+          numeric: true,
           values: column((c) =>
             c.censo_metricas?.qt_vg_total !== undefined
               ? String(c.censo_metricas.qt_vg_total)
@@ -72,6 +118,7 @@ export function buildCompareSections(
         },
         {
           label: 'Matrículas',
+          numeric: true,
           values: column((c) =>
             c.censo_metricas?.qt_mat !== undefined
               ? String(c.censo_metricas.qt_mat)
@@ -90,6 +137,7 @@ export function buildCompareSections(
         },
         {
           label: 'Ano do Enade',
+          numeric: true,
           values: column((c) =>
             c.enade?.ano_enade !== undefined
               ? String(c.enade.ano_enade)
@@ -104,12 +152,14 @@ export function buildCompareSections(
       rows: [
         {
           label: 'Taxa de desistência',
+          numeric: true,
           values: column((c) =>
             c.tda?.tda !== undefined ? `${Math.round(c.tda.tda)}%` : undefined,
           ),
         },
         {
           label: 'Ano de referência',
+          numeric: true,
           values: column((c) =>
             c.tda?.nu_ano_referencia_tda !== undefined
               ? String(c.tda.nu_ano_referencia_tda)
@@ -119,30 +169,53 @@ export function buildCompareSections(
       ],
     },
     {
-      title: 'Ingresso via Sisu',
+      title: 'Ingresso',
       source: 'Sisu',
       rows: [
         {
           label: 'Oferta no Sisu',
-          values: column((c) => (c.sisu?.tem_sisu ? 'Sim' : 'Não')),
+          values: column((c) => (c.sisu?.tem_sisu ? 'Sim' : NAO_USA_SISU)),
         },
         {
           label: 'Nota de corte',
+          numeric: true,
           values: column((c) => {
+            if (!c.sisu?.tem_sisu) return NAO_USA_SISU
             const nota = c.sisu?.ofertas?.[0]?.nota_corte
             return nota !== undefined ? String(nota) : undefined
           }),
         },
         {
           label: 'Vagas no Sisu',
+          numeric: true,
           values: column((c) => {
+            if (!c.sisu?.tem_sisu) return NAO_USA_SISU
             const vagas = c.sisu?.ofertas?.[0]?.vagas
             return vagas !== undefined ? String(vagas) : undefined
           }),
         },
         {
           label: 'Turno',
-          values: column((c) => capitalize(c.sisu?.ofertas?.[0]?.turno)),
+          values: column((c) => {
+            if (!c.sisu?.tem_sisu) return NAO_USA_SISU
+            return capitalize(c.sisu?.ofertas?.[0]?.turno)
+          }),
+        },
+      ],
+    },
+    {
+      title: 'Por modalidade de cota',
+      source: '1ª chamada',
+      plainLabels: true,
+      rows: [
+        ...MODALIDADES_COTA.map(({ codigo, label }) => ({
+          label,
+          numeric: true,
+          values: column((c) => notaCota(c, codigo)),
+        })),
+        {
+          label: 'Outras modalidades da instituição',
+          values: column((c) => outrasModalidades(c)),
         },
       ],
     },

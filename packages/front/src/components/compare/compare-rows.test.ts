@@ -78,4 +78,120 @@ describe('buildCompareSections', () => {
 
     expect(instituicao?.values[0]).toBeUndefined()
   })
+
+  it('renomeia a seção de ingresso para "Ingresso"', () => {
+    const sections = buildCompareSections([buildCurso()])
+
+    const ingresso = sections.find((section) => section.title === 'Ingresso')
+
+    expect(ingresso?.source).toBe('Sisu')
+    expect(
+      sections.some((section) => section.title === 'Ingresso via Sisu'),
+    ).toBe(false)
+  })
+
+  it('lista as modalidades de cota com a nota de corte correspondente', () => {
+    const sections = buildCompareSections([
+      buildCurso({
+        sisu: {
+          tem_sisu: true,
+          ofertas: [
+            { modalidade: 'AC', nota_corte: 700.5 },
+            { modalidade: 'LB_PPI', nota_corte: 680.2 },
+            { modalidade: 'LI_Q', nota_corte: 690 },
+          ],
+        },
+      }),
+    ])
+
+    const cotas = sections.find(
+      (section) => section.title === 'Por modalidade de cota',
+    )
+
+    expect(cotas?.source).toBe('1ª chamada')
+    expect(cotas?.plainLabels).toBe(true)
+    expect(cotas?.rows.map((row) => row.label)).toEqual([
+      'Baixa renda · demais candidatos',
+      'Baixa renda · pessoas com deficiência',
+      'Baixa renda · pretos, pardos e indígenas',
+      'Baixa renda · quilombolas',
+      'Independente de renda · demais candidatos',
+      'Independente de renda · pessoas com deficiência',
+      'Independente de renda · pretos, pardos e indígenas',
+      'Independente de renda · quilombolas',
+      'Outras modalidades da instituição',
+    ])
+
+    const porLabel = Object.fromEntries(
+      cotas?.rows.map((row) => [row.label, row.values[0]]) ?? [],
+    )
+
+    expect(porLabel['Baixa renda · pretos, pardos e indígenas']).toBe('680.2')
+    expect(porLabel['Independente de renda · quilombolas']).toBe('690')
+    expect(porLabel['Baixa renda · demais candidatos']).toBeUndefined()
+  })
+
+  it('marca "Sim" quando há modalidades próprias da instituição', () => {
+    const sections = buildCompareSections([
+      buildCurso({
+        sisu: {
+          tem_sisu: true,
+          ofertas: [{ modalidade: 'BONUS_REGIONAL', nota_corte: 650 }],
+        },
+      }),
+    ])
+
+    const cotas = sections.find(
+      (section) => section.title === 'Por modalidade de cota',
+    )
+    const outras = cotas?.rows.find(
+      (row) => row.label === 'Outras modalidades da instituição',
+    )
+
+    expect(outras?.values[0]).toBe('Sim')
+  })
+
+  it('marca as linhas numéricas para renderização em fonte mono', () => {
+    const sections = buildCompareSections([buildCurso()])
+
+    const linhas = new Map(
+      sections.flatMap((section) =>
+        section.rows.map((row) => [row.label, row.numeric]),
+      ),
+    )
+
+    expect(linhas.get('Vagas por ano')).toBe(true)
+    expect(linhas.get('Matrículas')).toBe(true)
+    expect(linhas.get('Ano do Enade')).toBe(true)
+    expect(linhas.get('Taxa de desistência')).toBe(true)
+    expect(linhas.get('Nota de corte')).toBe(true)
+    expect(linhas.get('Baixa renda · demais candidatos')).toBe(true)
+
+    expect(linhas.get('Instituição')).toBeUndefined()
+    expect(linhas.get('Conceito Enade')).toBeUndefined()
+    expect(linhas.get('Turno')).toBeUndefined()
+    expect(linhas.get('Outras modalidades da instituição')).toBeUndefined()
+  })
+
+  it('preenche com "Não usa Sisu" quando o curso não tem Sisu', () => {
+    const sections = buildCompareSections([
+      buildCurso({ sisu: { tem_sisu: false, ofertas: [] } }),
+    ])
+
+    const labels: Record<string, string | undefined> = {}
+    for (const section of sections) {
+      for (const row of section.rows) {
+        labels[row.label] = row.values[0]
+      }
+    }
+
+    const NAO_USA_SISU = 'Não usa Sisu · verifique as cotas na instituição'
+
+    expect(labels['Oferta no Sisu']).toBe(NAO_USA_SISU)
+    expect(labels['Nota de corte']).toBe(NAO_USA_SISU)
+    expect(labels['Vagas no Sisu']).toBe(NAO_USA_SISU)
+    expect(labels.Turno).toBe(NAO_USA_SISU)
+    expect(labels['Baixa renda · demais candidatos']).toBe(NAO_USA_SISU)
+    expect(labels['Outras modalidades da instituição']).toBe(NAO_USA_SISU)
+  })
 })
