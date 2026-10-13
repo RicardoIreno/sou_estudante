@@ -1,7 +1,7 @@
 # Front (Next.js)
 
-Interface do SoU_Estudante: Next.js (App Router), Tailwind CSS v4, Biome, Vitest
-e Storybook. Container `se_front` (porta 3000).
+Interface do SoU_Estudante: Next.js (App Router), Tailwind CSS v4, Biome e
+Vitest. Container `se_front` (porta 3000).
 
 - Padrões de componentes e estilo: [docs/30.frontend.md](../../docs/30.frontend.md)
   e [docs/01.component-composition.md](../../docs/01.component-composition.md)
@@ -24,7 +24,7 @@ Execute em `packages/front`:
 | Lint como no CI | `npm run check:ci` |
 | Corrigir lint/formatação | `npm run lint:fix` |
 | Build de produção | `npm run build` |
-| Storybook | `npm run storybook` (porta 6006) |
+| Design system (oculta) | `/design-system` em `npm run dev` |
 
 No ambiente do projeto os comandos rodam dentro do container
 (`podman exec -it se_front npm run ...`).

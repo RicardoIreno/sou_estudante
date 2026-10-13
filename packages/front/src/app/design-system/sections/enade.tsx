@@ -1,0 +1,92 @@
+import { MarLegenda } from '@/components/enade/formas-enade/mar-legenda'
+import { MaskEnade } from '@/components/enade/mask-enade/mask-enade'
+import { SeloEnade } from '@/components/enade/selo-enade/selo-enade'
+import { TagEnade } from '@/components/enade/tag-enade/tag-enade'
+import { Card } from '@/components/ui/card'
+import type { EnadeLevel } from '@/lib/enade'
+import { Section, State, States, SubSection } from '../kit'
+
+const LEVELS: Array<{ level: EnadeLevel; label: string }> = [
+  { level: 5, label: '5' },
+  { level: 4, label: '4' },
+  { level: 3, label: '3' },
+  { level: 2, label: '2' },
+  { level: 1, label: '1' },
+  { level: 'SC', label: 'SC' },
+  { level: null, label: 'null' },
+]
+
+export function EnadeSection() {
+  return (
+    <Section
+      id="enade"
+      title="Enade"
+      description="Selo, tag e máscara do mar do Enade. O selo é a fonte da informação acessível; a máscara e o desenho são decorativos."
+    >
+      <SubSection title="SeloEnade · card">
+        <States>
+          {LEVELS.map(({ level, label }) => (
+            <State key={`card-${label}`} label={label}>
+              <SeloEnade level={level} />
+            </State>
+          ))}
+        </States>
+      </SubSection>
+
+      <SubSection title="SeloEnade · detalhe">
+        <States>
+          {LEVELS.map(({ level, label }) => (
+            <State key={`detail-${label}`} label={label}>
+              <SeloEnade level={level} size="detalhe" />
+            </State>
+          ))}
+        </States>
+      </SubSection>
+
+      <SubSection title="TagEnade">
+        <States>
+          {LEVELS.map(({ level, label }) => (
+            <State key={`tag-${label}`} label={label}>
+              <TagEnade level={level} />
+            </State>
+          ))}
+        </States>
+      </SubSection>
+
+      <SubSection title="MaskEnade + SeloEnade no card">
+        <div className="max-w-xl">
+          <Card module="2">
+            <Card.Backdrop>
+              <MaskEnade level={5} />
+            </Card.Backdrop>
+            <Card.Header>
+              <SeloEnade level={5} size="card" />
+              <Card.Title
+                title="Medicina · 16904"
+                subtitle="Universidade Federal de Roraima · Boa Vista - RR"
+              />
+            </Card.Header>
+            <Card.Tags
+              source={[
+                'Gratuito',
+                'Presencial',
+                'Integral',
+                <TagEnade key="enade" level={5} />,
+              ]}
+            />
+            <Card.ProgressBar
+              title="Taxa de desistência acumulada (5 anos)"
+              percentage="17%"
+            />
+          </Card>
+        </div>
+      </SubSection>
+
+      <SubSection title="MarLegenda">
+        <div className="max-w-xl rounded-panel border border-card-border bg-card-surface p-4">
+          <MarLegenda />
+        </div>
+      </SubSection>
+    </Section>
+  )
+}
