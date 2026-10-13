@@ -2,6 +2,7 @@ import { X } from 'lucide-react'
 import { Fragment } from 'react'
 import type { Module } from '@/lib/module'
 import type { Curso } from '@/services/api/types'
+import { cn } from '@/utils/cn'
 import { buildCompareSections } from './compare-rows'
 
 interface CompareMatrixProps {
@@ -29,7 +30,7 @@ export function CompareMatrix({
       className="overflow-x-auto rounded-panel border border-card-border bg-card-surface"
     >
       <table className="w-full border-collapse text-left">
-        <thead>
+        <thead className={cn('border-b-2 border-m5-deep')}>
           <tr className="border-b border-card-border">
             <th
               scope="col"

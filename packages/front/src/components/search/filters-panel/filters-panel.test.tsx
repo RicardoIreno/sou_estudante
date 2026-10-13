@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { type FilterSectionDefinition, FiltersPanel } from './filters-panel'
 
 const sections: FilterSectionDefinition[] = [
@@ -109,6 +110,88 @@ describe('FiltersPanel', () => {
 
     expect(leading.compareDocumentPosition(firstSection)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
+})
+
+describe('FiltersPanel · mobile', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  function stubMobile() {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({
+        matches: true,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    )
+  }
+
+  it('renderiza um botão-gatilho em vez do card inline', () => {
+    stubMobile()
+    render(
+      <FiltersPanel
+        sections={sections}
+        activeValues={() => []}
+        onToggle={() => {}}
+      />,
+    )
+
+    const trigger = screen.getByRole('button', { name: 'Filtros' })
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('abre o bottom sheet ao clicar no gatilho', async () => {
+    stubMobile()
+    const user = userEvent.setup()
+    render(
+      <FiltersPanel
+        sections={sections}
+        activeValues={() => []}
+        onToggle={() => {}}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Filtros' }))
+
+    expect(screen.getByRole('dialog', { name: 'Filtros' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Filtros' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+  })
+
+  it('mostra a quantidade de filtros ativos no gatilho', () => {
+    stubMobile()
+    render(
+      <FiltersPanel
+        sections={sections}
+        activeValues={() => ['SP']}
+        onToggle={() => {}}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: 'Filtros' })).toHaveTextContent(
+      '1',
+    )
+  })
+
+  it('omite o contador quando não há filtros ativos', () => {
+    stubMobile()
+    render(
+      <FiltersPanel
+        sections={sections}
+        activeValues={() => []}
+        onToggle={() => {}}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: 'Filtros' })).toHaveTextContent(
+      'Filtros',
     )
   })
 })

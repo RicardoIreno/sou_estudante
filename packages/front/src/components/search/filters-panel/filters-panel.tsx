@@ -1,8 +1,15 @@
 'use client'
 
-import { Fragment, type ReactNode, useState } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
+import { Fragment, type ReactNode, useId, useState } from 'react'
 import { FilterGroup } from '@/components/search/filter-group'
+import { BottomSheet } from '@/components/ui/bottom-sheet/bottom-sheet'
+import { Button } from '@/components/ui/button/button'
 import { Typo } from '@/components/ui/typo'
+import {
+  MOBILE_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/components/ui/use-media-query'
 import { getAggregationCount } from '@/lib/aggregations'
 import type { Module } from '@/lib/module'
 import type { AggregationsMap } from '@/services/api/types'
@@ -44,6 +51,9 @@ export interface FiltersPanelProps {
 /**
  * Painel de filtros agnóstico: recebe a definição das seções, as agregações da
  * API e os callbacks de estado, sem conhecer o domínio (cursos, IES, ...).
+ *
+ * Em telas abaixo de `md` vira um bottom sheet aberto por um botão-gatilho; em
+ * telas maiores mantém o card inline.
  */
 export function FiltersPanel({
   sections,
@@ -55,8 +65,17 @@ export function FiltersPanel({
   module,
   className,
 }: FiltersPanelProps) {
+  const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY)
+  const [open, setOpen] = useState(false)
+  const titleId = useId()
+  const sheetId = useId()
+
   const hasActiveFilters = sections.some(
     (section) => activeValues(section.key).length > 0,
+  )
+  const activeCount = sections.reduce(
+    (sum, section) => sum + activeValues(section.key).length,
+    0,
   )
 
   const handleClear = () => {
@@ -72,18 +91,13 @@ export function FiltersPanel({
     }
   }
 
-  return (
-    <div
-      data-module={module}
-      className={cn(
-        'flex flex-col gap-6 rounded-card border border-card-border bg-filter-surface p-6 font-sans text-fg shadow-sm',
-        className,
-      )}
-    >
+  const content = (
+    <>
       <header className="flex items-center justify-between">
         <Typo
           t="h2"
           s="sm"
+          id={titleId}
           className={cn(
             'font-display font-bold uppercase tracking-[0.14em] text-fg',
           )}
@@ -126,6 +140,63 @@ export function FiltersPanel({
           />
         </Fragment>
       ))}
+    </>
+  )
+
+  if (isMobile) {
+    return (
+      <>
+        <Button
+          module={module}
+          v="outline"
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-controls={sheetId}
+          onClick={() => setOpen(true)}
+        >
+          <SlidersHorizontal className="size-4" aria-hidden="true" />
+          Filtros
+          {activeCount > 0 && (
+            <span
+              aria-hidden="true"
+              className={cn(
+                'rounded-full bg-accent/10 px-1.5 text-xs font-semibold tabular-nums text-accent-fg',
+              )}
+            >
+              {activeCount}
+            </span>
+          )}
+        </Button>
+
+        <BottomSheet
+          id={sheetId}
+          open={open}
+          onClose={() => setOpen(false)}
+          labelledBy={titleId}
+        >
+          <div
+            data-module={module}
+            className={cn(
+              'flex flex-col gap-6 p-6 font-sans text-fg',
+              className,
+            )}
+          >
+            {content}
+          </div>
+        </BottomSheet>
+      </>
+    )
+  }
+
+  return (
+    <div
+      data-module={module}
+      className={cn(
+        'flex flex-col gap-6 rounded-card border border-card-border bg-filter-surface p-6 font-sans text-fg shadow-sm',
+        className,
+      )}
+    >
+      {content}
     </div>
   )
 }

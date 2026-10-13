@@ -97,6 +97,11 @@
   --container-home: 900px;
   --container-pages: 1100px;
 
+  /* Breakpoints · `md` (768px) é a fronteira do modo mobile: abaixo dela o
+     layout de busca empilha e o FilterPanel vira bottom sheet. Mantenha em
+     sincronia com `MOBILE_MEDIA_QUERY` em `src/components/ui/use-media-query.ts`. */
+  --breakpoint-md: 48rem;
+
   --ease-wave: cubic-bezier(0.55, 0.5, 0.45, 0.5);
 
   /* Movimento · Durações e easings */
@@ -153,6 +158,10 @@
 body {
   font-family: var(--font-sans);
   color: var(--color-fg);
+  /* Títulos usam a mesma família do corpo. O `next/font` sobrescreve
+     `--font-sans` no <body> com o nome hasheado; re-herdar aqui evita que
+     `--font-display` (string literal "Source Sans 3") caia em system-ui. */
+  --font-display: var(--font-sans);
 }
 
 /*  Bússola da Hero da Página Inicial */
