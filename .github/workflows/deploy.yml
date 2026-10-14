@@ -28,7 +28,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          DEPLOY_PATH ="/home/ireno.ricardo/sou_estudante"
+          DEPLOY_PATH="/home/ireno.ricardo/sou_estudante"
           COMPOSE_FILE="docker-compose.prod.yml"
 
           cd "$DEPLOY_PATH"
