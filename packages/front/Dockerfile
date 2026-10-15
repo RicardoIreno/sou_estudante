@@ -1,11 +1,11 @@
 # Estágio 1: Instalação de dependências
-FROM node:24-alpine AS deps
+FROM docker.io/library/node:24-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Estágio 2: Build do projeto
-FROM node:24-alpine AS builder
+FROM docker.io/library/node:24-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 # API_URL é usada nas rewrites do Next e resolvida em tempo de build
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Estágio 3: Runner (Imagem final)
-FROM node:24-alpine AS runner
+FROM docker.io/library/node:24-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
