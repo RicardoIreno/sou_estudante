@@ -2,7 +2,7 @@ import { Oferta } from "@/services/api";
 
 const DESC_BAIXA_RENDA = "Escola pública · renda até 1 salário mínimo por pessoa";
 const DESC_SEM_RENDA = "Escola pública · sem exigência de renda";
-const DESC_OUTRAS = "Reserva de vagas ou bônus próprios · não integram a Lei de Cotas";
+const DESC_OUTRAS = "Reserva de vagas próprias da instituição — consulte a instituição para mais informações";
 
 const MAPA: Record<string, { nome: string; descricao: string | null }> = {
   AC: { nome: "Ampla concorrência", descricao: null },
