@@ -76,7 +76,7 @@ jobs:
           echo "==> Versionando imagens com o SHA do commit"
           export IMAGE_TAG="${GITHUB_SHA}"
 
-          echo "==> Construindo imagens de produção"
+          echo "==> Construindo imagens mde produção"
           $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env build --pull
 
           echo "==> Subindo serviços"
