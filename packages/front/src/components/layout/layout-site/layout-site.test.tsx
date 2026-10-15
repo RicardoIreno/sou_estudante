@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { CompareProvider } from '@/components/compare/compare-provider'
 import { LayoutSite } from '.'
 
 vi.mock('next/navigation', () => ({
@@ -10,9 +11,11 @@ vi.mock('next/navigation', () => ({
 
 const renderShell = () =>
   render(
-    <LayoutSite>
-      <p>conteúdo da página</p>
-    </LayoutSite>,
+    <CompareProvider>
+      <LayoutSite>
+        <p>conteúdo da página</p>
+      </LayoutSite>
+    </CompareProvider>,
   )
 
 describe('LayoutSite', () => {
