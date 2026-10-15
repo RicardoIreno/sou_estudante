@@ -25,6 +25,13 @@
         "fields": {
           "exato": { "type": "keyword", "normalizer": "ascii_lower" }
         }
+      },
+      "sg_ies": {
+        "type": "search_as_you_type",
+        "analyzer": "brazilian_search",
+        "fields": {
+          "exato": { "type": "keyword", "normalizer": "ascii_lower" }
+        }
       }
     }
   }

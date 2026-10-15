@@ -62,6 +62,7 @@ func TestDictionaryMappingsUseBrazilianAnalyzer(t *testing.T) {
 	}{
 		{"cursos", CursosDictionary, "no_curso"},
 		{"ies", IESDictionary, "no_ies"},
+		{"ies sigla", IESDictionary, "sg_ies"},
 	}
 
 	for _, tc := range cases {
@@ -116,6 +117,7 @@ func TestDictionaryMappingsExpoemCampoExato(t *testing.T) {
 	}{
 		{"cursos", CursosDictionary, "no_curso"},
 		{"ies", IESDictionary, "no_ies"},
+		{"ies sigla", IESDictionary, "sg_ies"},
 	}
 
 	for _, tc := range cases {

@@ -1,4 +1,8 @@
+'use client'
+
 import Link from 'next/link'
+import { CompareActions } from '@/components/compare/compare-actions'
+import { useCompareCursos } from '@/components/compare/compare-provider'
 import { BackLink } from '@/components/ui/back-link/back-link'
 import { MODULE_META, type Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
@@ -18,6 +22,9 @@ export const Header = ({
   variant = 'home',
   module,
 }: HeaderProps) => {
+  const { ids } = useCompareCursos()
+  const comparing = ids.length > 0
+
   if (variant === 'inner') {
     return (
       <header
@@ -30,15 +37,18 @@ export const Header = ({
         <BackLink label="Voltar" />
 
         <div className="flex items-center gap-3">
-          {module && (
-            <Link
-              data-module={module}
-              href={MODULE_META[module].href}
-              className="rounded-full bg-accent px-[1.15rem] py-2 text-xs font-semibold text-fg transition-transform duration-fast hover:-translate-y-px"
-            >
-              {MODULE_META[module].title}
-            </Link>
-          )}
+          {module &&
+            (comparing ? (
+              <CompareActions variant="neutral" />
+            ) : (
+              <Link
+                data-module={module}
+                href={MODULE_META[module].href}
+                className="rounded-full bg-accent px-[1.15rem] py-2 text-xs font-semibold text-fg transition-transform duration-fast hover:-translate-y-px"
+              >
+                {MODULE_META[module].title}
+              </Link>
+            ))}
           <Menu mode="light" />
         </div>
       </header>
