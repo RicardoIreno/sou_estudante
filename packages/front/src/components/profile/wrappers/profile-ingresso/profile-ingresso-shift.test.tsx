@@ -11,9 +11,9 @@ const ampla: Oferta = {
 }
 
 const cota: Oferta = {
-  modalidade: 'L1',
+  modalidade: 'LB_EP',
   turno: 'NOTURNO',
-  descricao: 'Escola pública, baixa renda',
+  descricao: 'Candidatos com renda familiar bruta per capita igual ou inferior a 1 salário mínimo que tenham cursado integralmente o ensino médio em escolas públicas ou em escolas comunitárias que atuam no âmbito da educação do campo conveniadas com o poder público (Lei nº 12.711/2012).',
   vagas: 5,
   nota_corte: 600,
 }
@@ -47,8 +47,8 @@ describe('ProfileIngressoShift', () => {
     render(<ProfileIngressoShift ofertas={[ampla, cota]} />)
 
     expect(screen.getByText('Modalidades de cota — Sisu')).toBeInTheDocument()
-    expect(screen.getByText('L1')).toBeInTheDocument()
-    expect(screen.getByText('Escola pública, baixa renda')).toBeInTheDocument()
+    expect(screen.getByText('Baixa renda · demais candidatos')).toBeInTheDocument()
+    expect(screen.getByText('Escola pública · renda até 1 salário mínimo por pessoa')).toBeInTheDocument()
   })
 
   it('omits the quota section when there are only broad-competition offers', () => {
