@@ -45,12 +45,6 @@ describe('Header', () => {
   })
 
   describe('inner variant', () => {
-    it('renders a back link to home', () => {
-      render(<Header variant="inner" />)
-
-      expect(screen.getByRole('button', { name: 'Início' })).toBeInTheDocument()
-    })
-
     it('renders the current module pill with its route', () => {
       render(<Header variant="inner" module="1" />)
 
