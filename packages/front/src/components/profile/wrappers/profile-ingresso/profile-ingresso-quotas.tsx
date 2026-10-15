@@ -34,7 +34,7 @@ export const ProfileIngressoQuotas = ({
     >
       <div>
         <div className="mb-px text-xs font-bold text-fg">{nome}</div>
-        {descricao && <div className="text-xs text-fg-muted">{descricao}</div>}
+        {descricao && <div className="text-2xs text-fg-muted">{descricao}</div>}
       </div>
 
       <div className="text-right">
@@ -43,11 +43,11 @@ export const ProfileIngressoQuotas = ({
         </span>
 
         {!vazia && typeof vagas === 'number' && (
-          <div className="font-mono text-xs text-fg-muted">
+          <div className="font-mono text-2xs text-fg-muted">
             {vagas} {vagas === 1 ? 'vaga' : 'vagas'}
           </div>
         )}
-        {texto && <div className="text-coadjuvant-xs text-text-muted">{texto}</div>}
+        {texto && <div className="text-2xs text-text-muted">{texto}</div>}
       </div>
     </div>
   )
