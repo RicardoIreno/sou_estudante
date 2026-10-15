@@ -114,6 +114,58 @@ func TestBuscarSugestoesPriorizaMatchExato(t *testing.T) {
 	}
 }
 
+func TestBuscarSugestoesMultiCampoConsultaSiglaEDevolveNome(t *testing.T) {
+	var capturedBody string
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		raw, _ := io.ReadAll(r.Body)
+		capturedBody = string(raw)
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"hits": {
+				"total": {"value": 1},
+				"hits": [{"_source": {"no_ies": "UNIVERSIDADE DE SÃO PAULO", "sg_ies": "USP"}}]
+			}
+		}`))
+	})
+
+	repo := NewElasticsearchRepository(client, "dicionario_ies", "no_ies", "sg_ies")
+	got, err := repo.BuscarSugestoes(context.Background(), "usp", 8)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if !reflect.DeepEqual(got, []string{"UNIVERSIDADE DE SÃO PAULO"}) {
+		t.Errorf("sugestões = %v, esperado [UNIVERSIDADE DE SÃO PAULO]", got)
+	}
+
+	should := mustSugestoesShould(t, testutil.DecodeJSONObject(t, capturedBody))
+
+	exactFields := map[string]bool{}
+	var multiFields []string
+	for _, clause := range should {
+		clauseMap, _ := clause.(map[string]any)
+		if term, ok := clauseMap["term"].(map[string]any); ok {
+			for field := range term {
+				exactFields[field] = true
+			}
+		}
+		if mm, ok := clauseMap["multi_match"].(map[string]any); ok {
+			if fields, ok := mm["fields"].([]any); ok {
+				for _, f := range fields {
+					multiFields = append(multiFields, f.(string))
+				}
+			}
+		}
+	}
+
+	if !exactFields["no_ies.exato"] || !exactFields["sg_ies.exato"] {
+		t.Errorf("esperado match exato em no_ies.exato e sg_ies.exato, obtido %v", exactFields)
+	}
+	if !reflect.DeepEqual(multiFields, []string{"no_ies", "sg_ies"}) {
+		t.Errorf("multi_match fields = %v, esperado [no_ies sg_ies]", multiFields)
+	}
+}
+
 func TestBuscarSugestoesRetornaErroEmFalha(t *testing.T) {
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)

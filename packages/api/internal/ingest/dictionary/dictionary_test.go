@@ -279,3 +279,53 @@ func TestBuildIndexaEAtualizaAlias(t *testing.T) {
 		t.Error("alias do dicionário não foi atualizado")
 	}
 }
+
+func TestBuildStreamIndexaDocumentosSemBuscarTermosUnicos(t *testing.T) {
+	var searched, indexed, aliasPointed int32
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_ies-latest":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_ies-latest":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_bulk"):
+			body, _ := io.ReadAll(r.Body)
+			atomic.AddInt32(&indexed, int32(testutil.CountBulkActions(string(body))))
+			bulkResponse(w, string(body))
+		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
+			w.WriteHeader(http.StatusOK)
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario_ies":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
+			atomic.AddInt32(&aliasPointed, 1)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_search"):
+			atomic.AddInt32(&searched, 1)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"aggregations":{"unique_terms":{"buckets":[]}}}`))
+		default:
+			t.Errorf("requisição inesperada: %s %s", r.Method, r.URL.Path)
+		}
+	})
+
+	cfg := &config.Config{NumWorkers: 1, FlushBytes: 10_000, FlushIntervalSec: 1}
+	stream := &termStream{field: "no_ies", terms: []string{"USP", "UNIFESP"}}
+	inserted, err := BuildStream(context.Background(), client, cfg, "dicionario_ies", []byte(`{"mappings":{}}`), stream)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if inserted != 2 {
+		t.Errorf("inseridos = %d, esperado 2", inserted)
+	}
+	if atomic.LoadInt32(&searched) != 0 {
+		t.Errorf("buscas de termos únicos = %d, esperado 0 (BuildStream usa o stream)", searched)
+	}
+	if atomic.LoadInt32(&indexed) != 2 {
+		t.Errorf("documentos indexados = %d, esperado 2", indexed)
+	}
+	if atomic.LoadInt32(&aliasPointed) != 1 {
+		t.Errorf("alias atualizado %d vezes, esperado 1", aliasPointed)
+	}
+}

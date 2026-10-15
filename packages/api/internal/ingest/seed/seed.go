@@ -114,7 +114,7 @@ func run(ctx context.Context, cfg *config.Config, deps Deps) error {
 	if err := ensureCursosDicionario(ctx, client, cfg); err != nil {
 		return err
 	}
-	return ensureIESDicionario(ctx, client, cfg)
+	return ensureIESDicionario(ctx, client, cfg, iesDocs)
 }
 
 // ensureData ingere os documentos do arquivo de origem num índice novo
@@ -177,14 +177,13 @@ func ensureCursosDicionario(ctx context.Context, client *es.Client, cfg *config.
 	})
 }
 
-func ensureIESDicionario(ctx context.Context, client *es.Client, cfg *config.Config) error {
-	return ensureDicionario(ctx, client, cfg, dictionary.Spec{
-		SourceIndex: cfg.IESIndexName,
-		TargetIndex: cfg.IESDictIndexName,
-		SourceField: iesingest.DictionarySourceField,
-		DocField:    iesingest.DictionaryDocField,
-		Mapping:     mappings.IESDictionary,
-	})
+func ensureIESDicionario(ctx context.Context, client *es.Client, cfg *config.Config, docs map[string]ies.IES) error {
+	inserted, err := dictionary.BuildStream(ctx, client, cfg, cfg.IESDictIndexName, mappings.IESDictionary, iesingest.NewDictionaryStream(docs))
+	if err != nil {
+		return fmt.Errorf("construir dicionário %s: %w", cfg.IESDictIndexName, err)
+	}
+	slog.Info("dicionário construído", "termos_unicos", inserted, "index", cfg.IESDictIndexName)
+	return nil
 }
 
 func ensureDicionario(ctx context.Context, client *es.Client, cfg *config.Config, spec dictionary.Spec) error {

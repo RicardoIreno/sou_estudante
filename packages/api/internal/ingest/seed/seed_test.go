@@ -314,6 +314,57 @@ func TestEnsureDicionarioReconstroiSempre(t *testing.T) {
 	}
 }
 
+func TestEnsureIESDicionarioIndexaNomeESigla(t *testing.T) {
+	var capturedBulk string
+	var aliasPointed int32
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_ies-latest":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_ies-latest":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_bulk"):
+			body, _ := io.ReadAll(r.Body)
+			capturedBulk = string(body)
+			actions := testutil.CountBulkActions(capturedBulk)
+			items := make([]string, actions)
+			for i := range items {
+				items[i] = `{"index":{"status":201}}`
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"took":1,"errors":false,"items":[` + strings.Join(items, ",") + `]}`))
+		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
+			w.WriteHeader(http.StatusOK)
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario_ies":
+			w.WriteHeader(http.StatusNotFound)
+		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
+			atomic.AddInt32(&aliasPointed, 1)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"acknowledged":true}`))
+		default:
+			t.Errorf("requisição inesperada: %s %s", r.Method, r.URL.Path)
+		}
+	})
+
+	docs := map[string]ies.IES{
+		"376": {CoIES: "376", NoIES: "UNIVERSIDADE DE SÃO PAULO", SgIES: "USP"},
+	}
+
+	if err := ensureIESDicionario(context.Background(), client, testConfig(), docs); err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if !strings.Contains(capturedBulk, `"no_ies":"UNIVERSIDADE DE SÃO PAULO"`) {
+		t.Errorf("bulk deveria conter o nome da IES, obtido %s", capturedBulk)
+	}
+	if !strings.Contains(capturedBulk, `"sg_ies":"USP"`) {
+		t.Errorf("bulk deveria conter a sigla da IES, obtido %s", capturedBulk)
+	}
+	if atomic.LoadInt32(&aliasPointed) != 1 {
+		t.Errorf("alias atualizado %d vezes, esperado 1", aliasPointed)
+	}
+}
+
 func TestRunParaNaFalhaDeIngestaoDeCursosSemTocarNoRestante(t *testing.T) {
 	var touchedOthers int32
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
