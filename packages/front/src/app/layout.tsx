@@ -1,17 +1,11 @@
 import type { Metadata } from 'next'
-import { DM_Mono, Source_Sans_3 } from 'next/font/google'
+import { DM_Mono } from 'next/font/google'
 import { WavesShape } from '@/assets/waves'
 import { Footer } from '@/components/layout/footer/footer'
 import { LayoutSite } from '@/components/layout/layout-site'
 import { cn } from '@/utils/cn'
 import { Providers } from './providers'
 import './globals.css'
-
-const sourceSans = Source_Sans_3({
-  variable: '--font-sans',
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-})
 
 const dmMono = DM_Mono({
   variable: '--font-mono',
@@ -35,7 +29,6 @@ export default function RootLayout({
       <body
         className={cn(
           'bg-site-background relative antialiased',
-          sourceSans.variable,
           dmMono.variable,
         )}
       >
