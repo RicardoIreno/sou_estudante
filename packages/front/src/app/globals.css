@@ -111,7 +111,7 @@
   --text-xl: 1.25rem;
   --text-4xl: 2.25rem;
   --text-2xs: 0.688rem;
-  --text-display: clamp(2rem, 4vw, 2.75rem);
+  --text-display: clamp(1.6rem, 4vw, 2.35rem);
 
   /* Formas */
   --radius-card: 20px;
