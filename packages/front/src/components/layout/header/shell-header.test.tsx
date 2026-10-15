@@ -27,18 +27,17 @@ describe('ShellHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it.each([
-    '/cursos',
-    '/ies',
-    '/ingresso',
-    '/comparar',
-    '/permanencia',
-  ])('shows the inner header with a back button on %s', (pathname) => {
-    renderAt(pathname)
+  it.each(['/cursos', '/ies', '/ingresso', '/comparar', '/permanencia'])(
+    'shows the inner header with a back button on %s',
+    (pathname) => {
+      renderAt(pathname)
 
-    expect(screen.getByRole('banner')).toHaveClass('max-w-pages')
-    expect(screen.getByRole('button', { name: /voltar/i })).toBeInTheDocument()
-  })
+      expect(screen.getByRole('banner')).toHaveClass('max-w-pages')
+      expect(
+        screen.getByRole('button', { name: /voltar/i }),
+      ).toBeInTheDocument()
+    },
+  )
 
   it('links the inner header to the module of the current route', () => {
     renderAt('/cursos')
@@ -50,13 +49,12 @@ describe('ShellHeader', () => {
     ).toBe(true)
   })
 
-  it.each([
-    '/cursos/123',
-    '/ies/456',
-    '/ingresso/789',
-  ])('renders no header on the detail page %s', (pathname) => {
-    renderAt(pathname)
+  it.each(['/cursos/123', '/ies/456', '/ingresso/789'])(
+    'renders no header on the detail page %s',
+    (pathname) => {
+      renderAt(pathname)
 
-    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
-  })
+      expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+    },
+  )
 })

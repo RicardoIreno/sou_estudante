@@ -1,9 +1,9 @@
 import { Info } from 'lucide-react'
 import { Button } from '@/components/ui/button/button'
 import { Tag } from '@/components/ui/tag/tag'
+import { modalidadePorExtensao } from '@/lib/sisu'
 import type { Oferta } from '@/services/api'
 import { ProfileIngressoQuotas } from './profile-ingresso-quotas'
-import { modalidadePorExtensao } from '@/lib/sisu'
 
 interface ProfileIngressoShiftProps {
   ofertas: Oferta[]
@@ -93,13 +93,13 @@ export const ProfileIngressoShift = ({
 
           <div className="mb-[0.875rem] flex flex-col gap-2">
             {cotas.map((o) => {
-              const {nome, descricao} = modalidadePorExtensao(o)
+              const { nome, descricao } = modalidadePorExtensao(o)
 
               return (
                 <ProfileIngressoQuotas
                   key={`${o.modalidade}-${o.turno}`}
                   nome={nome}
-                  descricao={descricao ?? ""}
+                  descricao={descricao ?? ''}
                   vagas={o.vagas}
                   nota={o.nota_corte}
                 />

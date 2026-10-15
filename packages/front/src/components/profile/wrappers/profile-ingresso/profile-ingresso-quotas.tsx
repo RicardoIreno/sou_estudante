@@ -21,7 +21,7 @@ export const ProfileIngressoQuotas = ({
 }: ProfileIngressoQuotasProps) => {
   const vazia = nota === null || nota === undefined
   const semNota = nota === 0
-  const texto = semNota ? "sem nota nesta chamada" : null
+  const texto = semNota ? 'sem nota nesta chamada' : null
 
   return (
     <div
