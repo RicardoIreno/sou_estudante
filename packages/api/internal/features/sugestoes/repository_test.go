@@ -2,7 +2,6 @@ package sugestoes
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"net/http"
 	"reflect"
@@ -12,26 +11,17 @@ import (
 	"api_estudante/internal/testutil"
 )
 
-func decodeSugestoesRequest(t *testing.T, raw string) map[string]interface{} {
+func mustSugestoesShould(t *testing.T, body map[string]any) []any {
 	t.Helper()
-	var body map[string]interface{}
-	if err := json.Unmarshal([]byte(raw), &body); err != nil {
-		t.Fatalf("corpo da requisição inválido: %v (%s)", err, raw)
-	}
-	return body
-}
-
-func mustSugestoesShould(t *testing.T, body map[string]interface{}) []interface{} {
-	t.Helper()
-	query, ok := body["query"].(map[string]interface{})
+	query, ok := body["query"].(map[string]any)
 	if !ok {
 		t.Fatalf("query ausente: %v", body)
 	}
-	boolQuery, ok := query["bool"].(map[string]interface{})
+	boolQuery, ok := query["bool"].(map[string]any)
 	if !ok {
 		t.Fatalf("bool ausente: %v", query)
 	}
-	should, ok := boolQuery["should"].([]interface{})
+	should, ok := boolQuery["should"].([]any)
 	if !ok || len(should) == 0 {
 		t.Fatalf("should ausente: %v", boolQuery)
 	}
@@ -94,14 +84,14 @@ func TestBuscarSugestoesPriorizaMatchExato(t *testing.T) {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 
-	should := mustSugestoesShould(t, decodeSugestoesRequest(t, capturedBody))
+	should := mustSugestoesShould(t, testutil.DecodeJSONObject(t, capturedBody))
 
-	var exacto map[string]interface{}
+	var exacto map[string]any
 	hasBoolPrefix := false
 	for _, clause := range should {
-		clauseMap, _ := clause.(map[string]interface{})
-		if term, ok := clauseMap["term"].(map[string]interface{}); ok {
-			if field, ok := term["no_curso.exato"].(map[string]interface{}); ok {
+		clauseMap, _ := clause.(map[string]any)
+		if term, ok := clauseMap["term"].(map[string]any); ok {
+			if field, ok := term["no_curso.exato"].(map[string]any); ok {
 				exacto = field
 			}
 		}

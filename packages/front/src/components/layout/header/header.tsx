@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { BackLink } from '@/components/ui/back-link/back-link'
 import { MODULE_META, type Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
-import { NauticalIcon } from '../../ui/route/icons/NauticalIcon'
-import Menu from '../menu/menu'
+import { NauticalIcon } from '../../ui/route/icons/nautical-icon'
+import { Menu } from '../menu/menu'
 
 export type HeaderVariant = 'home' | 'inner'
 
@@ -34,7 +34,7 @@ export const Header = ({
             <Link
               data-module={module}
               href={MODULE_META[module].href}
-              className="rounded-[24px] bg-accent px-[1.15rem] py-2 text-coadjuvant-sm font-semibold text-fg-protagonist transition-transform duration-fast hover:-translate-y-px"
+              className="rounded-full bg-accent px-[1.15rem] py-2 text-xs font-semibold text-fg transition-transform duration-fast hover:-translate-y-px"
             >
               {MODULE_META[module].title}
             </Link>
@@ -57,16 +57,16 @@ export const Header = ({
         <span aria-hidden className="block h-7 w-7">
           <NauticalIcon className="w-7 h-7" />
         </span>
-        <span className="text-sm font-semibold tracking-[-0.2px] text-white">
+        <span className="text-sm font-semibold tracking-[-0.2px] text-on-dark">
           So<span className="text-m1-accent">U</span>_Estudante
         </span>
       </Link>
-      <div className="flex items-center gap-3 text-coadjuvant-sm text-white/[.45]">
+      <div className="flex items-center gap-3 text-xs text-on-dark/[.45]">
         <a
           href="https://souciencia.unifesp.br"
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-colors duration-fast hover:text-white/80"
+          className="transition-colors duration-fast hover:text-on-dark/80"
         >
           SoU_Ciência
         </a>

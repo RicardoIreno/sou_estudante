@@ -1,5 +1,3 @@
-'use client'
-
 import type { ReactNode } from 'react'
 import { BackLink } from '@/components/ui/back-link/back-link'
 import { cn } from '@/utils/cn'

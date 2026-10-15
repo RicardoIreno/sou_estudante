@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createQueryWrapper } from '@/test/query-client'
 import { cursoService } from './curso.service'
 import type { Curso } from './types'
 import { useCurso } from './use-curso'
@@ -30,7 +31,9 @@ describe('useCurso', () => {
       data: makeCurso(),
     })
 
-    const { result } = renderHook(() => useCurso('1'))
+    const { result } = renderHook(() => useCurso('1'), {
+      wrapper: createQueryWrapper(),
+    })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.curso?.sequencial).toBe(1)
@@ -43,7 +46,9 @@ describe('useCurso', () => {
       error: { type: 'client', message: 'Not Found', statusCode: 404 },
     })
 
-    const { result } = renderHook(() => useCurso('999'))
+    const { result } = renderHook(() => useCurso('999'), {
+      wrapper: createQueryWrapper(),
+    })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.notFound).toBe(true)
@@ -56,7 +61,9 @@ describe('useCurso', () => {
       error: { type: 'network', message: 'offline' },
     })
 
-    const { result } = renderHook(() => useCurso('1'))
+    const { result } = renderHook(() => useCurso('1'), {
+      wrapper: createQueryWrapper(),
+    })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.error).not.toBeNull()

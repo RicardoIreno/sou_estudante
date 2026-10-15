@@ -24,14 +24,7 @@ export function getAggregationCount(
   if (!buckets) return undefined
 
   const normMatch = normalizeLabel(matchValue)
-  const bucket = buckets.find((b) => {
-    const normKey = normalizeLabel(b.key)
-    return (
-      normKey === normMatch ||
-      normKey.includes(normMatch) ||
-      normMatch.includes(normKey)
-    )
-  })
+  const bucket = buckets.find((b) => normalizeLabel(b.key) === normMatch)
 
   return bucket ? bucket.count : 0
 }

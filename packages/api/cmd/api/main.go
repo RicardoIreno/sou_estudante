@@ -24,6 +24,10 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 	cfg := config.Load()
+	if err := cfg.ValidateAPI(); err != nil {
+		slog.Error("Configuração inválida", "error", err)
+		os.Exit(1)
+	}
 	esClient, err := elasticsearch.NewClient(cfg.ESURL, cfg.ESAPIKey)
 	if err != nil {
 		slog.Error("Falha ao conectar no Elasticsearch", "error", err)
@@ -66,7 +70,7 @@ func main() {
 func newRouter(esClient *es.Client, cfg *config.Config) http.Handler {
 	mux := http.NewServeMux()
 
-	cursoRepo := cursos.NewElasticsearchRepository(esClient)
+	cursoRepo := cursos.NewElasticsearchRepository(esClient, cfg.CursosIndexName)
 	cursoService := cursos.NewService(cursoRepo)
 	mux.Handle("GET /cursos", &cursos.Handler{Service: cursoService})
 	mux.Handle("GET /cursos/{id}", &cursos.DetailHandler{Service: cursoService})
@@ -74,7 +78,7 @@ func newRouter(esClient *es.Client, cfg *config.Config) http.Handler {
 	sugestaoRepo := sugestoes.NewElasticsearchRepository(esClient, cfg.DictIndexName, "no_curso")
 	mux.Handle("GET /cursos/sugestoes", &sugestoes.Handler{Service: sugestoes.NewService(sugestaoRepo)})
 
-	iesRepo := ies.NewElasticsearchRepository(esClient)
+	iesRepo := ies.NewElasticsearchRepository(esClient, cfg.IESIndexName)
 	iesService := ies.NewService(iesRepo)
 	mux.Handle("GET /ies", &ies.Handler{Service: iesService})
 	mux.Handle("GET /ies/{co_ies}", &ies.DetailHandler{Service: iesService})

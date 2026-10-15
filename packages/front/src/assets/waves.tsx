@@ -1,8 +1,17 @@
 // Thanks to Arjun Gautam
-export const WavesShape = () => {
+import { cn } from '@/utils/cn'
+
+interface Props {
+  className?: string
+}
+
+export const WavesShape = ({ className }: Props) => {
   return (
     <svg
-      className="relative w-full h-[40px] min-h-[40px] md:h-[15vh] md:min-h-[100px] md:max-h-[150px] -mb-[7px]"
+      className={cn(
+        'relative w-full h-[40px] min-h-[40px] md:h-[15vh] md:min-h-[100px] md:max-h-[150px] -mb-[7px]',
+        className,
+      )}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"

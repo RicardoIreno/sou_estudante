@@ -39,20 +39,20 @@ const exactMatchBoost = 100
 
 // buildSugestoesQuery monta a query de sugestões: match exato com boost alto
 // seguido do match por prefixo (bool_prefix) como fallback.
-func buildSugestoesQuery(termo, field string) map[string]interface{} {
-	return map[string]interface{}{
-		"bool": map[string]interface{}{
-			"should": []map[string]interface{}{
+func buildSugestoesQuery(termo, field string) map[string]any {
+	return map[string]any{
+		"bool": map[string]any{
+			"should": []map[string]any{
 				{
-					"term": map[string]interface{}{
-						field + ".exato": map[string]interface{}{
+					"term": map[string]any{
+						field + ".exato": map[string]any{
 							"value": termo,
 							"boost": exactMatchBoost,
 						},
 					},
 				},
 				{
-					"multi_match": map[string]interface{}{
+					"multi_match": map[string]any{
 						"query":  termo,
 						"type":   "bool_prefix",
 						"fields": []string{field},
@@ -67,7 +67,7 @@ func buildSugestoesQuery(termo, field string) map[string]interface{} {
 // BuscarSugestoes consulta nomes no índice de dicionário priorizando o match
 // exato e, em seguida, o match por prefixo.
 func (r *ElasticsearchRepository) BuscarSugestoes(ctx context.Context, termo string, limit int) ([]string, error) {
-	queryBody := map[string]interface{}{
+	queryBody := map[string]any{
 		"size":  limit,
 		"query": buildSugestoesQuery(termo, r.field),
 	}

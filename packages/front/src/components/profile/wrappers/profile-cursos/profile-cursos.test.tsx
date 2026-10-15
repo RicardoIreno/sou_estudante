@@ -53,4 +53,24 @@ describe('ProfileCursos', () => {
     expect(screen.getByText('Ciclo avaliativo')).toBeInTheDocument()
     expect(screen.getByText(/Desistência acumulada/)).toBeInTheDocument()
   })
+
+  it('links to the Sisu admission profile when the course has Sisu', () => {
+    render(
+      <ProfileCursos
+        curso={{ ...curso, sisu: { tem_sisu: true, ofertas: [] } }}
+      />,
+    )
+
+    expect(
+      screen.getByRole('link', { name: /Como ingressar neste curso/ }),
+    ).toHaveAttribute('href', '/ingresso/1')
+  })
+
+  it('does not link to the Sisu admission profile when the course has no Sisu', () => {
+    render(<ProfileCursos curso={curso} />)
+
+    expect(
+      screen.queryByRole('link', { name: /Como ingressar neste curso/ }),
+    ).not.toBeInTheDocument()
+  })
 })

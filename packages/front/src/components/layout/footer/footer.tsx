@@ -6,17 +6,12 @@ interface FooterProps {
 
 export const Footer = ({ className }: FooterProps) => {
   return (
-    <footer
-      className={cn(
-        'flex justify-center border-t border-plum-100 bg-footer-background px-5 py-3.5',
-        className,
-      )}
-    >
+    <footer className={cn('flex justify-center px-5 py-3.5', className)}>
       <p
         className={cn(
           'inline-block',
-          'text-coadjuvant-xs leading-[1.6] text-footer-text',
-          'bg-blue-900/50 rounded-2xl m-3 p-2',
+          'text-xs leading-[1.6] text-footer-text',
+          'bg-footer-background rounded-2xl m-3 p-2',
         )}
       >
         Um produto do <strong>SoU_Ciência · Unifesp</strong> · Dados públicos ·{' '}

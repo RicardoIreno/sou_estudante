@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"api_estudante/internal/apperr"
@@ -39,12 +40,10 @@ func (s *ServiceImpl) BuscarCursos(
 	if query == "" {
 		return nil, fmt.Errorf("%w: query não pode ser vazio", apperr.ErrInvalidInput)
 	}
-	if page < 1 {
-		page = 1
+	if !validSort(filters.Sort) {
+		return nil, fmt.Errorf("%w: sort inválido %q (use enade, desistencia, az ou relevancia)", apperr.ErrInvalidInput, filters.Sort)
 	}
-	if limit < 1 || limit > httpx.MaxPageSize {
-		limit = httpx.DefaultPageSize
-	}
+	page, limit = httpx.NormalizePagination(page, limit)
 
 	result, err := s.Repository.Search(ctx, query, filters, page, limit)
 	if err != nil {
@@ -67,6 +66,11 @@ func (s *ServiceImpl) BuscarCursoPorID(ctx context.Context, id string) (*Curso, 
 	if id == "" {
 		return nil, fmt.Errorf("%w: id não pode ser vazio", apperr.ErrInvalidInput)
 	}
+	// O _id do curso é o seu sequencial (numérico). Rejeitar o resto evita
+	// montar o caminho da requisição ao Elasticsearch com texto arbitrário.
+	if !numericID.MatchString(id) {
+		return nil, fmt.Errorf("%w: id deve ser numérico", apperr.ErrInvalidInput)
+	}
 
 	item, err := s.Repository.GetByID(ctx, id)
 	if err != nil {
@@ -75,31 +79,35 @@ func (s *ServiceImpl) BuscarCursoPorID(ctx context.Context, id string) (*Curso, 
 	return item, nil
 }
 
+var numericID = regexp.MustCompile(`^[0-9]+$`)
+
+// validSort informa se o critério de ordenação é conhecido. Vazio, "_score" e
+// "relevancia" significam relevância (padrão).
+func validSort(sort string) bool {
+	switch sort {
+	case "", "_score", "relevancia", "enade", "desistencia", "az":
+		return true
+	}
+	return false
+}
+
 // cursosFilterValues serializa os filtros aplicados para preservá-los nos
 // links de paginação HATEOAS.
 func cursosFilterValues(query string, filters SearchFilterParams) url.Values {
 	values := url.Values{}
 	values.Set("q", query)
-	if len(filters.UF) > 0 {
-		values.Set("uf", strings.Join(filters.UF, ","))
-	}
-	if len(filters.Turno) > 0 {
-		values.Set("turno", strings.Join(filters.Turno, ","))
-	}
-	if len(filters.Grau) > 0 {
-		values.Set("grau", strings.Join(filters.Grau, ","))
-	}
-	if len(filters.Categoria) > 0 {
-		values.Set("categoria", strings.Join(filters.Categoria, ","))
-	}
-	if len(filters.Modalidade) > 0 {
-		values.Set("modalidade", strings.Join(filters.Modalidade, ","))
-	}
-	if len(filters.Enade) > 0 {
-		values.Set("enade", strings.Join(filters.Enade, ","))
-	}
+	httpx.SetCSV(values, "uf", filters.UF)
+	httpx.SetCSV(values, "turno", filters.Turno)
+	httpx.SetCSV(values, "grau", filters.Grau)
+	httpx.SetCSV(values, "categoria", filters.Categoria)
+	httpx.SetCSV(values, "modalidade", filters.Modalidade)
+	httpx.SetCSV(values, "enade", filters.Enade)
 	if filters.Sort != "" {
 		values.Set("sort", filters.Sort)
+	}
+	// exact é ligado por padrão: só o valor desligado precisa ser preservado.
+	if !filters.Exact {
+		values.Set("exact", "false")
 	}
 	return values
 }

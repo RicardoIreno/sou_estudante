@@ -34,9 +34,9 @@ services:
     container_name: se_api
     environment:
       - ES_URL=${ELASTICSEARCH_URL}
-      - ES_USERNAME=${ELASTICSEARCH_USERNAME}
-      - ES_PASSWORD=${ELASTIC_PASSWORD}
       - ES_APIKEY=${ELASTICSEARCH_APIKEY}
+      - ES_INDEX_NAME=${ES_INDEX_NAME}
+      - IES_INDEX_NAME=${IES_INDEX_NAME}
       - ES_DICT_INDEX_NAME=${ES_DICT_INDEX_NAME}
       - IES_DICT_INDEX_NAME=${IES_DICT_INDEX_NAME}
     ports:
@@ -107,6 +107,6 @@ volumes:
     driver: local
 
 networks:
-   data_net:
+  data_net:
     name: data_net
     driver: bridge

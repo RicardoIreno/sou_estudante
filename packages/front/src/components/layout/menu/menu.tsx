@@ -3,18 +3,19 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { MODULE_META, MODULES } from '@/lib/module'
+import { cn } from '@/utils/cn'
 
 interface MenuProps {
   mode?: 'light' | 'dark'
 }
 
 const ITEM =
-  'flex w-full items-center gap-[11px] px-5 py-[0.7rem] text-left text-sm text-text transition-colors duration-fast hover:bg-surface-alt'
+  'flex w-full items-center gap-[11px] px-5 py-[0.7rem] text-left text-sm text-fg transition-colors duration-fast hover:bg-muted'
 const PONTO = 'h-[9px] w-[9px] shrink-0 rounded-full'
 
-export default function Menu({ mode = 'light' }: MenuProps) {
+export function Menu({ mode = 'light' }: MenuProps) {
   const [opened, setOpened] = useState(false)
-  const botaoRef = useRef<HTMLButtonElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const drawerRef = useRef<HTMLElement>(null)
   const fecharRef = useRef<HTMLButtonElement>(null)
 
@@ -23,7 +24,7 @@ export default function Menu({ mode = 'light' }: MenuProps) {
     document.body.style.overflow = 'hidden'
     fecharRef.current?.focus()
 
-    const aoTeclar = (e: KeyboardEvent) => {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOpened(false)
         return
@@ -48,12 +49,12 @@ export default function Menu({ mode = 'light' }: MenuProps) {
       }
     }
 
-    document.addEventListener('keydown', aoTeclar)
+    document.addEventListener('keydown', onKeyDown)
 
     return () => {
       document.body.style.overflow = ''
-      document.removeEventListener('keydown', aoTeclar)
-      botaoRef.current?.focus()
+      document.removeEventListener('keydown', onKeyDown)
+      buttonRef.current?.focus()
     }
   }, [opened])
 
@@ -61,24 +62,23 @@ export default function Menu({ mode = 'light' }: MenuProps) {
     <>
       <button
         type="button"
-        ref={botaoRef}
+        ref={buttonRef}
         aria-label="Menu"
         aria-expanded={opened}
         onClick={() => setOpened(true)}
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] ${
+        className={cn(
+          'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
           mode === 'dark'
-            ? 'bg-white/10 text-white hover:bg-white/[.18]'
-            : 'bg-plum-100 hover:bg-plum-100/70'
-        }`}
+            ? 'bg-on-dark/10 text-on-dark hover:bg-on-dark/[.18]'
+            : 'bg-plum-100 hover:bg-plum-100/70',
+        )}
       >
         <svg
           viewBox="0 0 16 16"
           fill="none"
           width="16"
           height="16"
-          role="img"
-          aria-label="Ícone do menu"
-          aria-hidden
+          aria-hidden="true"
         >
           <path
             d="M2 4H14M2 8H14M2 12H14"
@@ -90,11 +90,12 @@ export default function Menu({ mode = 'light' }: MenuProps) {
       </button>
 
       <div
-        aria-hidden
+        aria-hidden="true"
         onClick={() => setOpened(false)}
-        className={`fixed inset-0 z-[1200] bg-navy-900/50 transition-opacity duration-cruise ${
-          opened ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
+        className={cn(
+          'fixed inset-0 z-[1200] bg-navy-900/50 transition-opacity duration-cruise',
+          opened ? 'opacity-100' : 'pointer-events-none opacity-0',
+        )}
       />
 
       <aside
@@ -104,13 +105,14 @@ export default function Menu({ mode = 'light' }: MenuProps) {
         aria-modal="true"
         aria-label="Menu"
         inert={!opened}
-        className={`fixed inset-y-0 right-0 z-[1210] flex w-[280px] max-w-[84vw] flex-col overflow-y-auto bg-surface shadow-[-12px_0_40px_color-mix(in_srgb,var(--color-navy-900)_25%,transparent)] transition-transform duration-cruise ease-tide ${
-          opened ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={cn(
+          'fixed inset-y-0 right-0 z-[1210] flex w-[280px] max-w-[84vw] flex-col overflow-y-auto bg-surface shadow-[-12px_0_40px_color-mix(in_srgb,var(--color-navy-900)_25%,transparent)] transition-transform duration-cruise ease-tide',
+          opened ? 'translate-x-0' : 'translate-x-full',
+        )}
       >
         {/* Cabeçalho */}
         <div className="flex items-center justify-between border-b border-plum-100 px-5 py-[1.1rem]">
-          <span className="font-display text-[1.05rem] font-semibold text-text">
+          <span className="font-display text-base font-semibold text-fg">
             SoU_Estudante
           </span>
           <button
@@ -118,16 +120,14 @@ export default function Menu({ mode = 'light' }: MenuProps) {
             type="button"
             aria-label="Fechar"
             onClick={() => setOpened(false)}
-            className="p-1 text-text-muted transition-colors duration-fast hover:text-text"
+            className="p-1 text-fg-muted transition-colors duration-fast hover:text-fg"
           >
             <svg
               viewBox="0 0 16 16"
               fill="none"
               width="16"
               height="16"
-              role="img"
-              aria-label="Ícone para fechar"
-              aria-hidden
+              aria-hidden="true"
             >
               <path
                 d="M3 3L13 13M13 3L3 13"
@@ -141,26 +141,26 @@ export default function Menu({ mode = 'light' }: MenuProps) {
 
         {/* Links */}
         <Link href="/" className={ITEM} onClick={() => setOpened(false)}>
-          <span aria-hidden className={`${PONTO} bg-text`} />
+          <span aria-hidden className={cn(PONTO, 'bg-fg')} />
           Início
         </Link>
 
-        <div className={`${ITEM} cursor-default hover:bg-transparent`}>
-          <span aria-hidden className={`${PONTO} bg-plum-100`} />
+        <div className={cn(ITEM, 'cursor-default hover:bg-transparent')}>
+          <span aria-hidden className={cn(PONTO, 'bg-plum-100')} />
           Metodologia
-          <span className="ml-auto rounded-[20px] bg-site-background px-[7px] py-[2px] text-[9px] font-bold uppercase tracking-[0.4px] text-text-muted">
+          <span className="ml-auto rounded-full bg-site-background px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
             em breve
           </span>
         </div>
-        <div className={`${ITEM} cursor-default hover:bg-transparent`}>
-          <span aria-hidden className={`${PONTO} bg-plum-100`} />
+        <div className={cn(ITEM, 'cursor-default hover:bg-transparent')}>
+          <span aria-hidden className={cn(PONTO, 'bg-plum-100')} />
           Sobre
-          <span className="ml-auto rounded-[20px] bg-site-background px-[7px] py-[2px] text-[9px] font-bold uppercase tracking-[0.4px] text-text-muted">
+          <span className="ml-auto rounded-full bg-site-background px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
             em breve
           </span>
         </div>
 
-        <div className="px-5 pb-[0.4rem] pt-4 text-[9px] font-bold uppercase tracking-[0.8px] text-text-muted">
+        <div className="px-5 pb-[0.4rem] pt-4 text-xs font-bold uppercase tracking-[0.8px] text-fg-muted">
           Módulos
         </div>
 
@@ -172,7 +172,7 @@ export default function Menu({ mode = 'light' }: MenuProps) {
             className={ITEM}
             onClick={() => setOpened(false)}
           >
-            <span aria-hidden className={`${PONTO} bg-accent`} />
+            <span aria-hidden className={cn(PONTO, 'bg-accent')} />
             {MODULE_META[module].title}
           </Link>
         ))}

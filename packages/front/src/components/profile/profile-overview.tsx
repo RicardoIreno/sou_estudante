@@ -23,15 +23,13 @@ export function ProfileOverview({ items, className }: ProfileOverviewProps) {
       {visible.map((item) => (
         <div
           key={item.label}
-          className="mb-2 flex items-center justify-between rounded-[14px] border border-plum-100 bg-card-surface px-4 py-3"
+          className="mb-2 flex items-center justify-between rounded-panel border border-plum-100 bg-card-surface px-4 py-3"
         >
-          <dt className="font-protagonist text-xs text-text-muted">
-            {item.label}
-          </dt>
-          <dd className="text-right font-protagonist text-coadjuvant font-semibold text-text">
+          <dt className="font-sans text-xs text-fg-muted">{item.label}</dt>
+          <dd className="text-right font-sans text-sm font-semibold text-fg">
             {item.value}
             {item.note && (
-              <span className="ml-1 font-coadjuvant text-coadjuvant-xs text-text-muted">
+              <span className="ml-1 font-sans text-xs text-fg-muted">
                 · {item.note}
               </span>
             )}

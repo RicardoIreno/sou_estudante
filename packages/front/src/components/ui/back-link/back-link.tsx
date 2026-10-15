@@ -30,7 +30,7 @@ export const BackLink = ({
       type="button"
       onClick={handleClick}
       className={cn(
-        'cursor-pointer inline-flex items-center gap-[5px] text-coadjuvant-sm font-medium text-text-muted',
+        'cursor-pointer inline-flex items-center gap-[5px] text-xs font-medium text-fg-muted',
         'transition-colors hover:text-accent-deep',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
         className,

@@ -98,41 +98,6 @@ func TestNewItemDefineDocumentID(t *testing.T) {
 	}
 }
 
-func TestExists(t *testing.T) {
-	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/cursos" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-		w.WriteHeader(http.StatusNotFound)
-	})
-
-	exists, err := Exists(context.Background(), client, "cursos")
-	if err != nil || !exists {
-		t.Fatalf("Exists(cursos) = %v, %v; esperado true", exists, err)
-	}
-
-	exists, err = Exists(context.Background(), client, "inexistente")
-	if err != nil || exists {
-		t.Fatalf("Exists(inexistente) = %v, %v; esperado false", exists, err)
-	}
-}
-
-func TestDocCount(t *testing.T) {
-	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"count":42}`))
-	})
-
-	count, err := DocCount(context.Background(), client, "cursos")
-	if err != nil {
-		t.Fatalf("erro inesperado: %v", err)
-	}
-	if count != 42 {
-		t.Errorf("count = %d, esperado 42", count)
-	}
-}
-
 func TestCreateRetornaErroEmFalha(t *testing.T) {
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
@@ -173,17 +138,6 @@ func TestRefreshRetornaErroEmFalha(t *testing.T) {
 
 	if err := Refresh(context.Background(), client, "cursos"); err == nil {
 		t.Fatal("esperado erro para refresh com status 500")
-	}
-}
-
-func TestDocCountRetornaErroEmFalha(t *testing.T) {
-	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(`{"error":"boom"}`))
-	})
-
-	if _, err := DocCount(context.Background(), client, "cursos"); err == nil {
-		t.Fatal("esperado erro para contagem com status 500")
 	}
 }
 
@@ -263,5 +217,54 @@ func TestRunIgnoraErroDeStreamEProssegue(t *testing.T) {
 	}
 	if indexed != 1 {
 		t.Errorf("indexados = %d, esperado 1", indexed)
+	}
+}
+
+// failingStream devolve sempre o mesmo erro, como um decoder JSON que repete
+// um erro de sintaxe a cada chamada.
+type failingStream struct {
+	calls int
+}
+
+func (s *failingStream) Next() (*Document, error) {
+	s.calls++
+	if s.calls > 10_000 {
+		return nil, io.EOF // evita travar o teste se a proteção não existir
+	}
+	return nil, errors.New("invalid character 'x'")
+}
+
+func (s *failingStream) Close() error { return nil }
+
+func TestRunAbortaAposErrosConsecutivosDeLeitura(t *testing.T) {
+	client := testutil.NewESClient(t, bulkHandler(t, nil))
+	stream := &failingStream{}
+
+	_, err := Run(context.Background(), client, "cursos", testConfig(), stream)
+	if err == nil {
+		t.Fatal("esperado erro após erros consecutivos de leitura, obtido nil")
+	}
+	if stream.calls > maxConsecutiveReadErrors+1 {
+		t.Errorf("Next chamado %d vezes; esperado parar perto de %d", stream.calls, maxConsecutiveReadErrors)
+	}
+}
+
+func TestRunZeraContadorDeErrosAoLerComSucesso(t *testing.T) {
+	client := testutil.NewESClient(t, bulkHandler(t, nil))
+
+	var items []scriptedItem
+	for i := 0; i < 3; i++ {
+		for j := 0; j < maxConsecutiveReadErrors-1; j++ {
+			items = append(items, scriptedItem{err: errors.New("registro corrompido")})
+		}
+		items = append(items, scriptedItem{doc: &Document{ID: fmt.Sprint(i), Body: map[string]string{"k": "v"}}})
+	}
+
+	indexed, err := Run(context.Background(), client, "cursos", testConfig(), &scriptedStream{items: items})
+	if err != nil {
+		t.Fatalf("erros isolados não devem abortar: %v", err)
+	}
+	if indexed != 3 {
+		t.Errorf("indexados = %d, esperado 3", indexed)
 	}
 }

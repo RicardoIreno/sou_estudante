@@ -9,6 +9,7 @@ export type UseSearchIesReturn = UseSearchReturn<IES, IesSearchAggregations>
 export function useSearchIes(explicitQuery?: string): UseSearchIesReturn {
   return useSearch<IES, IesSearchAggregations>(
     {
+      scope: 'ies',
       fetcher: iesService.searchIes,
       // q é opcional: sem termo listamos todas as IES
       minChars: 0,

@@ -53,7 +53,7 @@ func TestWriteError(t *testing.T) {
 func TestWriteJSONComPayloadNaoSerializavel(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	WriteJSON(rec, http.StatusOK, map[string]interface{}{"invalido": make(chan int)})
+	WriteJSON(rec, http.StatusOK, map[string]any{"invalido": make(chan int)})
 
 	if rec.Code != http.StatusOK {
 		t.Errorf("status = %d, esperado 200", rec.Code)

@@ -3,22 +3,14 @@ package ingest
 import (
 	"errors"
 	"io"
-	"os"
 	"path/filepath"
 	"testing"
+
+	"api_estudante/internal/testutil"
 )
 
-func writeSourceFile(t *testing.T, content string) string {
-	t.Helper()
-	path := filepath.Join(t.TempDir(), "origem.json")
-	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-		t.Fatalf("preparar arquivo de teste: %v", err)
-	}
-	return path
-}
-
 func TestReaderReturnsEveryRecordInOrder(t *testing.T) {
-	path := writeSourceFile(t, `[{"sequencial":1,"curso_no_curso":"DIREITO"},{"sequencial":2,"curso_no_curso":"MEDICINA"}]`)
+	path := testutil.WriteTempFile(t, "origem.json", `[{"sequencial":1,"curso_no_curso":"DIREITO"},{"sequencial":2,"curso_no_curso":"MEDICINA"}]`)
 
 	reader, err := Open(path)
 	if err != nil {
@@ -48,7 +40,7 @@ func TestReaderReturnsEveryRecordInOrder(t *testing.T) {
 }
 
 func TestReaderReturnsEOFForEmptyArray(t *testing.T) {
-	reader, err := Open(writeSourceFile(t, `[]`))
+	reader, err := Open(testutil.WriteTempFile(t, "origem.json", `[]`))
 	if err != nil {
 		t.Fatalf("abrir origem: %v", err)
 	}
@@ -60,7 +52,7 @@ func TestReaderReturnsEOFForEmptyArray(t *testing.T) {
 }
 
 func TestReaderRejeitaArquivoNaoArray(t *testing.T) {
-	reader, err := Open(writeSourceFile(t, `{"sequencial":1}`))
+	reader, err := Open(testutil.WriteTempFile(t, "origem.json", `{"sequencial":1}`))
 	if err != nil {
 		t.Fatalf("abrir origem: %v", err)
 	}
@@ -73,7 +65,7 @@ func TestReaderRejeitaArquivoNaoArray(t *testing.T) {
 }
 
 func TestReaderRetornaErroParaRegistroInvalido(t *testing.T) {
-	reader, err := Open(writeSourceFile(t, `[{"sequencial":"nao-numero"}]`))
+	reader, err := Open(testutil.WriteTempFile(t, "origem.json", `[{"sequencial":"nao-numero"}]`))
 	if err != nil {
 		t.Fatalf("abrir origem: %v", err)
 	}
@@ -87,5 +79,39 @@ func TestReaderRetornaErroParaRegistroInvalido(t *testing.T) {
 func TestOpenRetornaErroParaArquivoInexistente(t *testing.T) {
 	if _, err := Open(filepath.Join(t.TempDir(), "inexistente.json")); err == nil {
 		t.Fatal("esperado erro ao abrir arquivo inexistente")
+	}
+}
+
+func TestReaderArquivoTruncadoNoMeioDeRegistro(t *testing.T) {
+	reader, err := Open(testutil.WriteTempFile(t, "origem.json", `[{"sequencial":1,"curso_no_curso":"DIREITO"},{"sequencial":2,"curso_no_cu`))
+	if err != nil {
+		t.Fatalf("abrir origem: %v", err)
+	}
+	defer reader.Close()
+
+	if _, err := reader.Next(); err != nil {
+		t.Fatalf("primeiro registro deveria ser lido: %v", err)
+	}
+	for i := 0; i < 3; i++ {
+		_, err := reader.Next()
+		if err == nil || errors.Is(err, io.EOF) {
+			t.Fatalf("chamada %d: esperado erro de truncamento, obtido %v", i, err)
+		}
+	}
+}
+
+func TestReaderArquivoTruncadoAntesDoFechamentoDoArray(t *testing.T) {
+	reader, err := Open(testutil.WriteTempFile(t, "origem.json", `[{"sequencial":1,"curso_no_curso":"DIREITO"}`))
+	if err != nil {
+		t.Fatalf("abrir origem: %v", err)
+	}
+	defer reader.Close()
+
+	if _, err := reader.Next(); err != nil {
+		t.Fatalf("primeiro registro deveria ser lido: %v", err)
+	}
+	// Sem o ']' final o arquivo está truncado: não pode terminar como sucesso.
+	if _, err := reader.Next(); err == nil || errors.Is(err, io.EOF) {
+		t.Fatalf("esperado erro para array sem fechamento, obtido %v", err)
 	}
 }

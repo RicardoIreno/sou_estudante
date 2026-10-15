@@ -85,4 +85,23 @@ describe('SearchResults', () => {
 
     expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
+
+  it('renderiza o footer após a lista e antes da paginação', () => {
+    render(
+      <SearchResults
+        {...baseProps}
+        total={50}
+        links={links}
+        onNavigate={vi.fn()}
+        footer={<span>Rodapé</span>}
+      />,
+    )
+
+    const footer = screen.getByText('Rodapé')
+    const navigation = screen.getByRole('navigation')
+
+    expect(footer.compareDocumentPosition(navigation)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
 })

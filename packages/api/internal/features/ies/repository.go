@@ -4,19 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strings"
 
 	es "github.com/elastic/go-elasticsearch/v8"
 
-	"api_estudante/internal/domain"
 	"api_estudante/internal/elasticsearch"
 )
 
 // ErrNotFound indica que a IES solicitada não existe no índice.
 var ErrNotFound = errors.New("ies não encontrada")
-
-// indexName é o índice estático de IES populado pelo bulk.
-const indexName = "ies"
 
 // Repository define o contrato de acesso às IES.
 type Repository interface {
@@ -37,27 +32,20 @@ type SearchResult struct {
 	Aggregations *SearchAggregations
 }
 
-// NewElasticsearchRepository cria uma nova instância do repository.
-func NewElasticsearchRepository(client *es.Client) Repository {
+// NewElasticsearchRepository cria uma nova instância do repository sobre o
+// índice de IES informado (config.IESIndexName).
+func NewElasticsearchRepository(client *es.Client, index string) Repository {
 	return &ElasticsearchRepository{
 		client: client,
-		index:  indexName,
+		index:  index,
 	}
-}
-
-// buildQuery escolhe a consulta textual: match_all quando não há termo.
-func buildQuery(query string) map[string]interface{} {
-	if strings.TrimSpace(query) == "" {
-		return map[string]interface{}{"match_all": map[string]interface{}{}}
-	}
-	return buildTextQuery(query)
 }
 
 // buildTextQuery monta a busca textual por nome e sigla da IES. Usa operator
 // "and" para exigir todos os termos digitados e evitar correspondências soltas.
-func buildTextQuery(query string) map[string]interface{} {
-	return map[string]interface{}{
-		"multi_match": map[string]interface{}{
+func buildTextQuery(query string) map[string]any {
+	return map[string]any{
+		"multi_match": map[string]any{
 			"query":     query,
 			"fields":    []string{"no_ies^3", "sg_ies^2"},
 			"type":      "best_fields",
@@ -67,102 +55,59 @@ func buildTextQuery(query string) map[string]interface{} {
 	}
 }
 
+// categoriaField é o campo keyword da categoria administrativa no índice ies
+// (já keyword, portanto sem sufixo ".keyword").
+const categoriaField = "categoria_administrativa"
+
 // categoriaFilter monta a cláusula de filtro por categoria administrativa.
-// Os campos do índice ies já são keyword, portanto não levam sufixo ".keyword".
-func categoriaFilter(categoria string) map[string]interface{} {
-	terms := domain.CategoriaTerms(categoria)
-	if len(terms) == 0 {
-		return nil
-	}
-	return map[string]interface{}{
-		"terms": map[string]interface{}{
-			"categoria_administrativa": terms,
-		},
-	}
+func categoriaFilter(categoria string) map[string]any {
+	return elasticsearch.CategoriaFilter(categoriaField, categoria)
 }
 
 // buildFilterClauses monta as cláusulas de filtro cumulativas.
-func buildFilterClauses(filters SearchFilterParams) []map[string]interface{} {
-	clauses := []map[string]interface{}{}
+func buildFilterClauses(filters SearchFilterParams) []map[string]any {
+	clauses := []map[string]any{}
 
 	if len(filters.UF) > 0 {
-		ufs := make([]string, len(filters.UF))
-		for i, uf := range filters.UF {
-			ufs[i] = strings.ToUpper(uf)
-		}
-		clauses = append(clauses, map[string]interface{}{
-			"terms": map[string]interface{}{"uf": ufs},
-		})
+		clauses = append(clauses, elasticsearch.UpperTermsFilter("uf", filters.UF))
 	}
 
 	if len(filters.Regiao) > 0 {
-		clauses = append(clauses, map[string]interface{}{
-			"terms": map[string]interface{}{"regiao": filters.Regiao},
-		})
+		clauses = append(clauses, elasticsearch.TermsFilter("regiao", filters.Regiao))
 	}
 
-	if len(filters.Categoria) > 0 {
-		should := []map[string]interface{}{}
-		for _, cat := range filters.Categoria {
-			if clause := categoriaFilter(cat); clause != nil {
-				should = append(should, clause)
-			}
-		}
-		if len(should) > 0 {
-			clauses = append(clauses, map[string]interface{}{
-				"bool": map[string]interface{}{
-					"should":               should,
-					"minimum_should_match": 1,
-				},
-			})
-		}
+	if clause := elasticsearch.CategoriaAnyOf(categoriaField, filters.Categoria); clause != nil {
+		clauses = append(clauses, clause)
 	}
 
 	if len(filters.Organizacao) > 0 {
-		clauses = append(clauses, map[string]interface{}{
-			"terms": map[string]interface{}{"organizacao_academica": filters.Organizacao},
-		})
+		clauses = append(clauses, elasticsearch.TermsFilter("organizacao_academica", filters.Organizacao))
 	}
 
 	return clauses
 }
 
 // buildSortClauses define a ordenação: relevância (score) ou alfabética (padrão).
-func buildSortClauses(sort string) []map[string]interface{} {
+func buildSortClauses(sort string) []map[string]any {
 	switch sort {
 	case "relevancia", "_score":
-		return []map[string]interface{}{
+		return []map[string]any{
 			{"_score": "desc"},
 		}
 	default:
-		return []map[string]interface{}{
-			{"no_ies.keyword": map[string]interface{}{"order": "asc"}},
+		return []map[string]any{
+			{"no_ies.keyword": map[string]any{"order": "asc"}},
 		}
 	}
 }
 
 // buildAggregations monta as agregações usadas pelos filtros da UI.
-func buildAggregations() map[string]interface{} {
-	return map[string]interface{}{
-		"ufs": map[string]interface{}{
-			"terms": map[string]interface{}{"field": "uf", "size": 30},
-		},
-		"regioes": map[string]interface{}{
-			"terms": map[string]interface{}{"field": "regiao", "size": 10},
-		},
-		"organizacoes": map[string]interface{}{
-			"terms": map[string]interface{}{"field": "organizacao_academica", "size": 20},
-		},
-		"categorias": map[string]interface{}{
-			"filters": map[string]interface{}{
-				"filters": map[string]interface{}{
-					"Privada":   categoriaFilter("privada"),
-					"Federal":   categoriaFilter("federal"),
-					"Estadual":  categoriaFilter("estadual"),
-					"Municipal": categoriaFilter("municipal"),
-				},
-			},
-		},
+func buildAggregations() map[string]any {
+	return map[string]any{
+		"ufs":          elasticsearch.TermsAgg("uf", 30),
+		"regioes":      elasticsearch.TermsAgg("regiao", 10),
+		"organizacoes": elasticsearch.TermsAgg("organizacao_academica", 20),
+		"categorias":   elasticsearch.CategoriasAgg(categoriaField),
 	}
 }
 
@@ -187,24 +132,13 @@ func (r *ElasticsearchRepository) Search(
 	filters SearchFilterParams,
 	page, limit int,
 ) (*SearchResult, error) {
-	from := (page - 1) * limit
-
-	boolQuery := map[string]interface{}{
-		"must": buildQuery(query),
-	}
-	if filterClauses := buildFilterClauses(filters); len(filterClauses) > 0 {
-		boolQuery["filter"] = filterClauses
-	}
-
-	esQuery := map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": boolQuery,
-		},
-		"size": limit,
-		"from": from,
-		"sort": buildSortClauses(filters.Sort),
-		"aggs": buildAggregations(),
-	}
+	esQuery := elasticsearch.SearchBody(
+		buildTextQuery(query),
+		buildFilterClauses(filters),
+		buildSortClauses(filters.Sort),
+		buildAggregations(),
+		page, limit,
+	)
 
 	resp, err := elasticsearch.ExecuteSearch[IES](ctx, r.client, r.index, esQuery)
 	if err != nil {

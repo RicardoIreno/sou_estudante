@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: deploy-vm
   cancel-in-progress: false
@@ -13,16 +16,19 @@ jobs:
   lint:
     uses: ./.github/workflows/lint.yml
 
+  test:
+    uses: ./.github/workflows/test.yml
+
   deploy:
-    needs: lint
-    runs-on: [self-hosted, vpn]
+    needs: [lint, test]
+    runs-on: self-hosted
     timeout-minutes: 30
     steps:
       - name: Deploy local
         run: |
           set -euo pipefail
 
-          DEPLOY_PATH="/var/www/sou_estudante"
+          DEPLOY_PATH="/home/ireno.ricardo/sou_estudante"
           COMPOSE_FILE="docker-compose.prod.yml"
 
           cd "$DEPLOY_PATH"
@@ -37,16 +43,83 @@ jobs:
             exit 1
           fi
 
-          echo "==> Construindo imagens de produção"
-          podman compose -f "$COMPOSE_FILE" --env-file .env build --pull
+          echo "==> Validando variáveis essenciais do .env"
+          required_vars=(ELASTIC_PASSWORD ELASTICSEARCH_APIKEY)
+          missing=0
+          for var in "${required_vars[@]}"; do
+            value="$(grep -E "^[[:space:]]*${var}=" .env | tail -n1 | cut -d= -f2- \
+              | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//')"
+            if [ -z "$value" ]; then
+              echo "ERRO: variável ${var} vazia ou ausente no .env" >&2
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+          echo "==> Detectando o comando de compose"
+          if command -v podman >/dev/null 2>&1 && podman compose version >/dev/null 2>&1; then
+            COMPOSE_CMD="podman compose"
+          elif command -v podman-compose >/dev/null 2>&1; then
+            COMPOSE_CMD="podman-compose"
+          elif command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+            COMPOSE_CMD="docker compose"
+          elif command -v docker-compose >/dev/null 2>&1; then
+            COMPOSE_CMD="docker-compose"
+          else
+            echo "ERRO: nenhum compose encontrado (podman compose, podman-compose, docker compose, docker-compose)." >&2
+            exit 1
+          fi
+          echo "Usando: $COMPOSE_CMD"
+
+          echo "==> Versionando imagens com o SHA do commit"
+          export IMAGE_TAG="${GITHUB_SHA}"
+
+          echo "==> Construindo imagens mde produção"
+          $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env build --pull
 
           echo "==> Subindo serviços"
-          podman compose -f "$COMPOSE_FILE" --env-file .env up -d --remove-orphans
+          $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env up -d --remove-orphans
 
           echo "==> Removendo imagens órfãs"
-          podman image prune -f
+          "${COMPOSE_CMD%% *}" image prune -f 2>/dev/null || true
 
-          echo "==> Aguardando o frontend responder"
+          echo "==> Status dos containers"
+          $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env ps
+
+      - name: Verifica saúde (Elasticsearch, API e front)
+        run: |
+          set -euo pipefail
+
+          echo "==> Aguardando o Elasticsearch (HTTP 200 ou 401 = no ar)"
+          for i in $(seq 1 30); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:9200/ 2>/dev/null || true)"
+            if [ "$code" = "200" ] || [ "$code" = "401" ]; then
+              echo "Elasticsearch OK (HTTP $code)"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "ERRO: Elasticsearch não respondeu em http://localhost:9200" >&2
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "==> Aguardando a API"
+          for i in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://localhost:8080/healthz 2>/dev/null; then
+              echo "API OK"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "ERRO: API não respondeu em http://localhost:8080/healthz" >&2
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "==> Aguardando o frontend"
           for i in $(seq 1 30); do
             if curl -fsS -o /dev/null http://localhost:3000/; then
               echo "Frontend OK"
@@ -59,5 +132,4 @@ jobs:
             sleep 2
           done
 
-          echo "==> Status dos containers"
-          podman compose -f "$COMPOSE_FILE" --env-file .env ps
+          echo "==> Deploy concluído com sucesso"

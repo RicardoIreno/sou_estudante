@@ -1,8 +1,5 @@
-'use client'
-
 import type { ReactNode } from 'react'
 import { cn } from '@/utils/cn'
-import { useSearchHeaderContext } from './search-header-context'
 
 export interface SearchHeaderActionsProps {
   children: ReactNode
@@ -14,7 +11,6 @@ export function SearchHeaderActions({
   children,
   className,
 }: SearchHeaderActionsProps) {
-  useSearchHeaderContext('SearchHeader.Actions')
   return (
     <div
       className={cn(

@@ -41,9 +41,9 @@ services:
     container_name: se_api
     environment:
       - ES_URL=${ELASTICSEARCH_URL}
-      - ES_USERNAME=${ELASTICSEARCH_USERNAME}
-      - ES_PASSWORD=${ELASTIC_PASSWORD}
       - ES_APIKEY=${ELASTICSEARCH_APIKEY}
+      - ES_INDEX_NAME=${ES_INDEX_NAME}
+      - IES_INDEX_NAME=${IES_INDEX_NAME}
       - ES_DICT_INDEX_NAME=${ES_DICT_INDEX_NAME}
       - IES_DICT_INDEX_NAME=${IES_DICT_INDEX_NAME}
       - PORT=8080
@@ -51,6 +51,12 @@ services:
       - "127.0.0.1:8080:8080"
     networks:
       - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     depends_on:
       se_es01:
         condition: service_healthy
