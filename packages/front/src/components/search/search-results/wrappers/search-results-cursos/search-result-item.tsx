@@ -148,8 +148,6 @@ export function SearchResultItem({
           )}
         </div>
       </Card>
-
-      
     </div>
   )
 }

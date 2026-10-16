@@ -38,7 +38,7 @@ export const CardTags = ({ className, source }: Props) => {
             label={tag.label}
             icon={tag.icon}
             source={tag.source}
-            variant={tag.tone ?? "curso"}
+            variant={tag.tone ?? 'curso'}
           />
         )
       })}
