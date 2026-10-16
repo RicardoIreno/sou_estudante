@@ -49,17 +49,22 @@
   --color-enade-warn-surface: #fff3e0;
   --color-enade-low: #c0392b;
   --color-enade-low-surface: #fdecea;
-  --color-progress-bar-foreground: oklch(81.5% 0.055 215.5);
+  --color-progress-bar-foreground: oklch(55.4% 0.046 257.417);
   --color-progress-bar-background: oklch(0.94 0.01 75);
 
   /* Cores · Feedback genérico (erro) */
   --color-error: var(--color-enade-low);
   --color-error-surface: var(--color-enade-low-surface);
 
-  /* Cores · Informação (banner de localização, tag de curso) */
+  /* Cores · Informação (banner de localização) */
   --color-info-surface: #f0f9ff;
   --color-info-border: #b3e0f0;
   --color-info-deep: var(--color-sky-950);
+
+  /* Cores · tag de cursos */
+  --color-tag-curso-surface: var(--color-slate-100);
+  --color-tag-curso-border: var(--color-slate-600);
+  --color-tag-curso-deep: var(--color-slate-800);
 
   /* Cores · Callout (sobrescritas por [data-variant] em .callout) */
   --color-callout-accent: var(--color-enade-warn);
