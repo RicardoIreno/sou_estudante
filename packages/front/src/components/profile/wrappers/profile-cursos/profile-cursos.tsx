@@ -28,6 +28,9 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
   const id = curso.sequencial
   const ingressoHref =
     temSisu && id !== undefined ? `/ingresso/${id}` : undefined
+  const permanenciaHref = id !== undefined ? `/permanencia/${id}` : undefined
+  const idIes = curso.instituicao.co_ies
+  const iesHref = idIes !== undefined ? `/ies/${idIes}` : undefined
 
   return (
     <Profile module={module}>
@@ -87,12 +90,14 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
         <Route
           module="3"
           variant="inline"
+          href={permanenciaHref}
           title="Vou conseguir me manter?"
           description="Bolsas, cotas e apoios à permanência — Âncora"
         />
         <Route
           module="4"
           variant="inline"
+          href={iesHref}
           title="Conheça a instituição"
           description="Indicadores oficiais e perfil da IES — Telescópio"
         />
