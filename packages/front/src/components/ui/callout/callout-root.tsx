@@ -9,7 +9,7 @@ export interface CalloutRootProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles: Record<CalloutVariant, string> = {
-  info: 'border border-callout-accent/40 text-fg',
+  info: 'border border-callout-accent/40 text-callout-accent-deep',
   future:
     'border-2 border-dashed border-callout-accent text-callout-accent-deep',
 }
@@ -25,7 +25,7 @@ export const CalloutRoot = ({
       role="note"
       data-variant={v}
       className={cn(
-        'callout rounded-callout bg-callout-surface px-5 py-4 font-sans text-base leading-relaxed',
+        'callout rounded-callout bg-callout-surface p-3 px-4 font-sans text-xs leading-[1.6]',
         variantStyles[v],
         className,
       )}

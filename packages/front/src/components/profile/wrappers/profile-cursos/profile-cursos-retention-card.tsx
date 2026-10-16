@@ -44,7 +44,7 @@ export const ProfileCursosRetentionCard = ({
       )}
     >
       <div className="flex items-end justify-between gap-4">
-        <span className="font-sans text-xs font-bold uppercase tracking-wide text-fg-muted">
+        <span className="font-sans text-2xs font-bold uppercase tracking-wide text-fg-muted">
           Desistência acumulada — 5 anos
         </span>
         <span className="font-mono text-xl font-bold leading-none text-fg">
