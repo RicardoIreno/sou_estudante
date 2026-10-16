@@ -53,23 +53,17 @@ describe('ProfilePermanencia', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByText(
-        'Universidade de Exemplo · BELO HORIZONTE · MG',
-      ),
+      screen.getByText('Universidade de Exemplo · BELO HORIZONTE · MG'),
     ).toBeInTheDocument()
 
-    expect(
-      screen.getByText('Privada com fins lucrativos'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Privada com fins lucrativos')).toBeInTheDocument()
   })
 
   it('renders the permanence support indicators', () => {
     render(<ProfilePermanencia curso={curso} />)
 
     expect(screen.getByText('Apoio Social')).toBeInTheDocument()
-    expect(
-      screen.getByText('Atividade extracurricular'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Atividade extracurricular')).toBeInTheDocument()
   })
 
   it('renders ProUni and Fies for paid courses', () => {
@@ -90,9 +84,7 @@ describe('ProfilePermanencia', () => {
 
     render(<ProfilePermanencia curso={cursoGratuito} />)
 
-    expect(
-      screen.queryByText('Bolsas e financiamento'),
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Bolsas e financiamento')).not.toBeInTheDocument()
 
     expect(
       screen.queryByText('Financiamento é dívida.'),
@@ -102,16 +94,12 @@ describe('ProfilePermanencia', () => {
   it('renders the quotas section', () => {
     render(<ProfilePermanencia curso={curso} />)
 
-    expect(
-      screen.getByText('Reserva de vagas · cotas'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Reserva de vagas · cotas')).toBeInTheDocument()
   })
 
   it('renders the institution route', () => {
     render(<ProfilePermanencia curso={curso} />)
 
-    expect(
-      screen.getByText('Conheça a instituição'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Conheça a instituição')).toBeInTheDocument()
   })
 })
