@@ -28,7 +28,7 @@ export function ProfileHeader({
 
   return (
     <section data-module={module} className={cn('p-4 pb-3', className)}>
-      <span className="mb-[6px] flex items-center gap-[6px] text-xs font-bold uppercase tracking-[0.7px] text-accent-deep">
+      <span className="mb-[6px] flex items-center gap-[6px] text-2xs font-bold uppercase tracking-[0.7px] text-accent-deep">
         {module !== MODULE_WITHOUT_ICON && (
           <IconModule module={module ?? '1'} />
         )}

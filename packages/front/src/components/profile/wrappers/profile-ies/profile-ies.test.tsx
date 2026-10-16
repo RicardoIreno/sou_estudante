@@ -34,6 +34,5 @@ describe('ProfileIES', () => {
     expect(screen.getByText('Região Centro-Oeste')).toBeInTheDocument()
     expect(screen.getByText('Cuiabá')).toBeInTheDocument()
     expect(screen.getByText('MT')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Voltar' })).toBeInTheDocument()
   })
 })

@@ -27,4 +27,6 @@ export const ShellHeader = () => {
       />
     )
   }
+
+  return <Header variant="profile" module={moduleFromPathname(pathname)} />
 }

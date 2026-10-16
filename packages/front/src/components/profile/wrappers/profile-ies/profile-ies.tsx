@@ -31,8 +31,6 @@ export const ProfileIES = ({ ies, module = '4' }: ProfileIESProps) => {
 
   return (
     <Profile module={module}>
-      <Profile.TopBar backLabel="Voltar" backHref="/ies" />
-
       <Profile.Header
         badge={MODULE_META[module].badge}
         title={titulo}

@@ -86,23 +86,6 @@ describe('Profile', () => {
     expect(screen.getByText('Conteúdo qualidade')).toBeInTheDocument()
   })
 
-  it('renders the top bar back link and action', () => {
-    render(
-      <Profile module="1">
-        <Profile.TopBar backLabel="Resultados" backHref="/cursos">
-          <button type="button">Escolher curso</button>
-        </Profile.TopBar>
-      </Profile>,
-    )
-
-    expect(
-      screen.getByRole('button', { name: 'Resultados' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Escolher curso' }),
-    ).toBeInTheDocument()
-  })
-
   it('omits overview items without a value', () => {
     render(
       <Profile module="1">
