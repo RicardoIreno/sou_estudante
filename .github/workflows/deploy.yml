@@ -21,115 +21,67 @@ jobs:
 
   deploy:
     needs: [lint, test]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment: production
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    
     steps:
-      - name: Deploy local
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      
+      - name: Configura a chave SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
-
-          DEPLOY_PATH="/home/ireno.ricardo/sou_estudante"
-          COMPOSE_FILE="docker-compose.prod.yml"
-
-          cd "$DEPLOY_PATH"
-
-          echo "==> Atualizando código (origin/main)"
-          git fetch --prune origin main
-          git checkout -f main
-          git reset --hard origin/main
-
-          if [ ! -f .env ]; then
-            echo "ERRO: .env não encontrado em $DEPLOY_PATH (crie a partir de .env.example)" >&2
-            exit 1
-          fi
-
-          echo "==> Validando variáveis essenciais do .env"
-          required_vars=(ELASTIC_PASSWORD ELASTICSEARCH_APIKEY)
-          missing=0
-          for var in "${required_vars[@]}"; do
-            value="$(grep -E "^[[:space:]]*${var}=" .env | tail -n1 | cut -d= -f2- \
-              | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//')"
-            if [ -z "$value" ]; then
-              echo "ERRO: variável ${var} vazia ou ausente no .env" >&2
-              missing=1
+          for var in SSH_HOST SSH_USER DEPLOY_PATH SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!var}" ]; then
+              echo "ERRO: secret ${var} não configurado" >&2
+              exit 1
             fi
           done
-          if [ "$missing" -ne 0 ]; then
-            exit 1
-          fi
-
-          echo "==> Detectando o comando de compose"
-          if command -v podman >/dev/null 2>&1 && podman compose version >/dev/null 2>&1; then
-            COMPOSE_CMD="podman compose"
-          elif command -v podman-compose >/dev/null 2>&1; then
-            COMPOSE_CMD="podman-compose"
-          elif command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
-            COMPOSE_CMD="docker compose"
-          elif command -v docker-compose >/dev/null 2>&1; then
-            COMPOSE_CMD="docker-compose"
-          else
-            echo "ERRO: nenhum compose encontrado (podman compose, podman-compose, docker compose, docker-compose)." >&2
-            exit 1
-          fi
-          echo "Usando: $COMPOSE_CMD"
-
-          echo "==> Versionando imagens com o SHA do commit"
-          export IMAGE_TAG="${GITHUB_SHA}"
-
-          echo "==> Construindo imagens mde produção"
-          $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env build --pull
-
-          echo "==> Subindo serviços"
-          $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env up -d --remove-orphans
-
-          echo "==> Removendo imagens órfãs"
-          "${COMPOSE_CMD%% *}" image prune -f 2>/dev/null || true
-
-          echo "==> Status dos containers"
-          $COMPOSE_CMD -f "$COMPOSE_FILE" --env-file .env ps
-
-      - name: Verifica saúde (Elasticsearch, API e front)
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host deploy
+            HostName ${SSH_HOST}
+            User ${SSH_USER}
+            Port ${SSH_PORT}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            ServerAliveInterval 30
+          EOF
+          chmod 600 ~/.ssh/config
+      - name: Sincroniza o código (rsync)
         run: |
           set -euo pipefail
-
-          echo "==> Aguardando o Elasticsearch (HTTP 200 ou 401 = no ar)"
-          for i in $(seq 1 30); do
-            code="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:9200/ 2>/dev/null || true)"
-            if [ "$code" = "200" ] || [ "$code" = "401" ]; then
-              echo "Elasticsearch OK (HTTP $code)"
-              break
-            fi
-            if [ "$i" -eq 30 ]; then
-              echo "ERRO: Elasticsearch não respondeu em http://localhost:9200" >&2
-              exit 1
-            fi
-            sleep 2
-          done
-
-          echo "==> Aguardando a API"
-          for i in $(seq 1 30); do
-            if curl -fsS -o /dev/null http://localhost:8080/healthz 2>/dev/null; then
-              echo "API OK"
-              break
-            fi
-            if [ "$i" -eq 30 ]; then
-              echo "ERRO: API não respondeu em http://localhost:8080/healthz" >&2
-              exit 1
-            fi
-            sleep 2
-          done
-
-          echo "==> Aguardando o frontend"
-          for i in $(seq 1 30); do
-            if curl -fsS -o /dev/null http://localhost:3000/; then
-              echo "Frontend OK"
-              break
-            fi
-            if [ "$i" -eq 30 ]; then
-              echo "ERRO: frontend não respondeu em http://localhost:3000" >&2
-              exit 1
-            fi
-            sleep 2
-          done
-
-          echo "==> Deploy concluído com sucesso"
+          # --delete não remove caminhos excluídos: .env, data/ e .git do
+          # servidor são preservados.
+          rsync -az --delete \
+            --rsync-path="mkdir -p '${DEPLOY_PATH}' && rsync" \
+            --include='/.env.example' \
+            --exclude='/.env*' \
+            --exclude='/data/' \
+            --exclude='.git/' \
+            --exclude='/.github/' \
+            --exclude='node_modules/' \
+            --exclude='.next/' \
+            --exclude='coverage/' \
+            --exclude='packages/api/tmp/' \
+            ./ "deploy:${DEPLOY_PATH}/"
+      - name: Publica e verifica a saúde
+        run: |
+          set -euo pipefail
+          ssh deploy "cd '${DEPLOY_PATH}' && IMAGE_TAG='${GITHUB_SHA}' bash scripts/deploy.sh"
+      - name: Remove a chave SSH
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
