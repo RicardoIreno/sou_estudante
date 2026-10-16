@@ -39,7 +39,7 @@ export const Tag = ({
       {...props}
       className={cn(
         'mr-1 inline-flex items-center gap-1 rounded-2xl border px-2 py-1',
-        'font-semibold font-sans text-fg-muted text-xs ',
+        'font-semibold font-sans text-fg-muted text-xs',
         'transition duration-300',
         colors[variant],
         className,

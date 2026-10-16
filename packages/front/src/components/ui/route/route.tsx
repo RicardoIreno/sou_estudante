@@ -99,13 +99,14 @@ export function Route({
           <h3 className="font-sans font-bold text-xs mb-[3px] leading-[1.3]">
             {routeTitle}
           </h3>
-          <p className="text-xs text-fg-muted leading-[1.35]">
+          <p className="text-2xs text-fg-muted leading-[1.35]">
             {routeDescription}
           </p>
           <Tag
             label={meta.badge}
             module={module}
             className="border-none bg-accent/20 font-semibold mt-2 py-[2px]"
+            variant="module"
           />
         </>
       )}
