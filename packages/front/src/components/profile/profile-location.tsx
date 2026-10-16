@@ -54,7 +54,7 @@ export function ProfileLocation({
       </IconTile>
 
       <div className="flex flex-1 flex-col">
-        <span className="font-sans text-xs font-bold uppercase tracking-wide text-accent-deep">
+        <span className="font-sans text-2xs font-bold uppercase tracking-wide text-accent-deep">
           {eyebrow}
         </span>
         <span
@@ -73,7 +73,7 @@ export function ProfileLocation({
         {source && (
           <span
             className={cn(
-              'font-sans text-xs',
+              'font-sans text-2xs',
               variant ? 'text-fg-muted' : 'text-accent-deep/60',
             )}
           >

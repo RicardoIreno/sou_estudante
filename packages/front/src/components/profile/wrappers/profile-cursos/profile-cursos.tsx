@@ -1,5 +1,4 @@
 import { MapPin } from 'lucide-react'
-import { Menu } from '@/components/layout/menu/menu'
 import { Profile } from '@/components/profile'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
@@ -32,24 +31,18 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
 
   return (
     <Profile module={module}>
-      <Profile.TopBar backLabel="Resultados" backHref="/cursos">
-        <div className="flex items-center gap-2">
-          <Tag
-            label={'Escolher curso'}
-            module={'1'}
-            className="font-semibold px-[10px] py-[3px] tracking-[0.5px] mr-0"
-          />
-          <Menu />
-        </div>
-      </Profile.TopBar>
-
       <Profile.Header
         badge={MODULE_META[module].badge}
         title={titulo}
         subtitle={subtitulo}
       >
         {temSisu && (
-          <Tag label={'Tem Sisu'} module={'2'} className="py-[2px]" />
+          <Tag
+            label={'Tem Sisu'}
+            module={'2'}
+            className="text-2xs py-[2px] bg-accent/10 border-accent/30"
+            variant="module"
+          />
         )}
       </Profile.Header>
 

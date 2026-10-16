@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import { BackLink } from '@/components/ui/back-link/back-link'
+import { Tag } from '@/components/ui/tag/tag'
 import { MODULE_META, type Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
 import { NauticalIcon } from '../../ui/route/icons/nautical-icon'
 import { Menu } from '../menu/menu'
 
-export type HeaderVariant = 'home' | 'inner'
+export type HeaderVariant = 'home' | 'inner' | 'profile'
 
 interface HeaderProps {
   className?: string
@@ -42,6 +43,34 @@ export const Header = ({
           <Menu mode="light" />
         </div>
       </header>
+    )
+  }
+
+  if (variant === 'profile') {
+    return (
+      <div className="w-full bg-white">
+        <header
+          className={cn(
+            'flex items-center justify-between p-4 pb-0 bg-site-background',
+            'mx-auto w-full max-w-2xl',
+            className,
+          )}
+        >
+          <BackLink label="Voltar" />
+
+          <div className="flex items-center gap-2">
+            {module && (
+              <Tag
+                label={MODULE_META[module].title}
+                module={module}
+                className="font-semibold px-[10px] py-[3px] tracking-[0.5px] mr-0 text-2xs"
+                variant="module"
+              />
+            )}
+            <Menu />
+          </div>
+        </header>
+      </div>
     )
   }
 

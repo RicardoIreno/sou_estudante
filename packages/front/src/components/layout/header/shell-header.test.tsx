@@ -54,9 +54,9 @@ describe('ShellHeader', () => {
     '/cursos/123',
     '/ies/456',
     '/ingresso/789',
-  ])('renders no header on the detail page %s', (pathname) => {
+  ])('renders header on the detail page %s', (pathname) => {
     renderAt(pathname)
 
-    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+    expect(screen.getByRole('banner')).toHaveClass('max-w-2xl')
   })
 })

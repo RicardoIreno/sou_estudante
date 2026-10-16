@@ -1,5 +1,4 @@
 import { MapPin } from 'lucide-react'
-import { Menu } from '@/components/layout/menu/menu'
 import { Callout } from '@/components/ui/callout'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
@@ -45,32 +44,24 @@ export const ProfileIngresso = ({
 
   return (
     <Profile module={module} className="p-4">
-      <Profile.TopBar
-        backLabel="Voltar para a lista"
-        backHref="/cursos"
-        className="p-0"
-      >
-        <div className="flex items-center gap-2">
-          <Tag
-            label={'Como ingressar'}
-            module={module}
-            className="font-semibold px-[10px] py-[3px] tracking-[0.5px] mr-0"
-          />
-          <Menu />
-        </div>
-      </Profile.TopBar>
-
       <Profile.Header
         badge={'Ingresso via Sisu'}
         title={titulo}
         subtitle={subtitulo}
         className="px-0"
       >
-        <Tag label={'Tem Sisu'} module={module} className="py-[2px]" />
+        <Tag
+          label={'Tem Sisu'}
+          module={module}
+          className="text-2xs py-[2px] bg-accent/10 border-accent/30"
+          variant="module"
+        />
         {turnosUnicos.map((turno) => (
-          <Tag key={turno} label={turno} className="py-[2px]" />
+          <Tag key={turno} label={turno} className="text-2xs py-[2px]" />
         ))}
-        {cidade && <Tag label={`${cidade}, ${uf}`} className="py-[2px]" />}
+        {cidade && (
+          <Tag label={`${cidade}, ${uf}`} className="text-2xs py-[2px]" />
+        )}
       </Profile.Header>
 
       {cidade && (
@@ -113,7 +104,7 @@ export const ProfileIngresso = ({
 
       <Callout
         v="info"
-        className="bg-accent/10 border-accent/50 text-accent-deep mt-5"
+        className="bg-accent/10 border-accent/50 text-accent-deep mt-5 text-xs"
       >
         A nota de corte que você está vendo é da plataforma Sisu — e é da{' '}
         <strong>primeira chamada</strong>. As universidades fazem várias
@@ -124,7 +115,7 @@ export const ProfileIngresso = ({
         <strong>a lista de espera também resulta em matrículas.</strong>
       </Callout>
 
-      <Callout v="info" className="mt-3">
+      <Callout v="info" className="mt-3 text-xs">
         <strong>Prazos valem vaga.</strong> Inscrição, chamadas e matrícula têm
         datas definidas no edital de cada universidade — perder um prazo pode
         significar perder a vaga. Leia o edital e acompanhe o processo até o

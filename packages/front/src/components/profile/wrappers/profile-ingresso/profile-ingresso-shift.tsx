@@ -31,7 +31,7 @@ export const ProfileIngressoShift = ({
   return (
     <article className="relative overflow-hidden rounded-card border-[1.5px] border-plum-100 bg-surface p-4 sm:p-[1.125rem]">
       <div className="mb-[0.875rem] rounded-card border-[1.5px] border-plum-100 bg-surface p-5">
-        <div className="mb-1 text-xs font-bold uppercase tracking-[0.6px] text-fg-muted">
+        <div className="mb-1 text-2xs font-bold uppercase tracking-[0.6px] text-fg-muted">
           Nota de corte · Chamada regular · Ampla concorrência
         </div>
 
@@ -47,18 +47,23 @@ export const ProfileIngressoShift = ({
           </span>
         </div>
 
-        <div className="text-xs text-fg-muted">
+        <div className="text-2xs text-fg-muted">
           Último classificado · 1ª chamada
         </div>
 
         <div className="mt-[10px]">
-          <Tag label={'Sisu'} module={'2'} className="py-[2px] font-normal" />
+          <Tag
+            label={'Sisu'}
+            module={'2'}
+            className="py-[2px] font-normal bg-accent/10 border-accent/30 text-2xs"
+            variant="module"
+          />
         </div>
       </div>
 
       <div className="mb-[0.875rem] grid grid-cols-1 gap-[0.625rem] sm:grid-cols-2">
         <div className="rounded-panel border border-plum-100 bg-surface p-[0.875rem]">
-          <div className="mb-1 text-xs font-bold uppercase tracking-[0.6px] text-fg-muted">
+          <div className="mb-1 text-2xs font-bold uppercase tracking-[0.6px] text-fg-muted">
             Vagas ofertadas
           </div>
           <div className="font-mono text-xl font-bold leading-none text-fg">
@@ -66,13 +71,13 @@ export const ProfileIngressoShift = ({
               ? ampla.vagas
               : '—'}
           </div>
-          <div className="mt-[3px] text-xs text-fg-muted">
+          <div className="mt-[3px] text-2xs text-fg-muted">
             Ampla concorrência · 2026
           </div>
         </div>
 
         <div className="rounded-panel border border-plum-100 bg-surface p-[0.875rem]">
-          <div className="mb-1 text-xs font-bold uppercase tracking-[0.6px] text-fg-muted">
+          <div className="mb-1 text-2xs font-bold uppercase tracking-[0.6px] text-fg-muted">
             Turno · Sisu
           </div>
           <div className="pt-1 text-base font-bold text-fg">
@@ -85,7 +90,7 @@ export const ProfileIngressoShift = ({
         <>
           <div className="mb-[10px] mt-4 flex items-center gap-2">
             <div className="h-px flex-1 bg-plum-100" />
-            <div className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.7px] text-fg-muted">
+            <div className="whitespace-nowrap text-2xs font-bold uppercase tracking-[0.7px] text-fg-muted">
               Modalidades de cota — Sisu
             </div>
             <div className="h-px flex-1 bg-plum-100" />
@@ -110,11 +115,16 @@ export const ProfileIngressoShift = ({
       )}
 
       <footer className="flex items-center justify-between gap-2 border-t border-plum-100 pt-2">
-        <Tag label={'Sisu'} module={'2'} className="py-[2px] font-normal" />
+        <Tag
+          label={'Sisu'}
+          module={'2'}
+          className="py-[2px] font-normal bg-accent/15 border-accent/40 text-2xs"
+          variant="module"
+        />
         <Button
           v="outline"
           module={'2'}
-          className="inline-flex cursor-pointer items-center gap-[5px] rounded-control border-[1.5px] px-3 py-[6px] font-sans text-xs font-semibold transition-transform duration-fast ease-prow active:scale-[0.97] mt-1 bg-accent/10"
+          className="inline-flex cursor-pointer items-center gap-[5px] rounded-control border-[1.5px] px-3 py-[6px] font-sans text-2xs font-semibold transition-transform duration-fast ease-prow active:scale-[0.97] mt-1 bg-accent/10"
         >
           <Info className="size-3" aria-hidden="true" />
           Como interpretar?
