@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
-import Menu from './menu'
+import { Menu } from './menu'
 
 describe('Menu', () => {
   it('starts with the menu closed', () => {
@@ -107,8 +107,8 @@ describe('Menu', () => {
     render(<Menu mode="dark" />)
 
     expect(screen.getByRole('button', { name: 'Menu' })).toHaveClass(
-      'bg-white/10',
-      'text-white',
+      'bg-on-dark/10',
+      'text-on-dark',
     )
   })
 })

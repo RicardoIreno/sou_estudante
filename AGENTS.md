@@ -18,10 +18,5 @@ Network: `data_net`.
 - ⚠️: Never try to install inside this container (dev container).
 - When making tests, verify if containers are up.
 - Execute commands and tests using: `podman exec -it ...`
-- Whenever I ask to read a **task** (or **tarefa**) file, look in the folder `docs/` for `.md` files with a equivalent name `tarefa-...`. Only read a task file correspondent.
+  - Exception: if `podman exec` fails (e.g. `newuidmap` error), run only lint, typecheck and unit tests with the local binaries (`packages/front/node_modules/.bin/*`, Go via Mise), without installing anything, and tell me that the fallback was used. Anything that needs the containers (Elasticsearch, seed, build) is not covered: report it and wait.
 
-
-## You have
-- podman
-- podman-remote
-- git-delta

@@ -1,41 +1,51 @@
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 import type { Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
 
 type TagProps = HTMLAttributes<HTMLSpanElement> & {
   label: string
   module?: Module
+  icon?: ReactNode
+  source?: string
+  variant?: 'module' | 'curso' | 'none'
 }
 
-export const Tag = ({ label, module, className, ...props }: TagProps) => {
-  if (module) {
-    return (
-      <span
-        data-module={module}
-        {...props}
-        className={cn(
-          'mr-1 rounded-2xl border border-accent/30 px-2 py-1',
-          'bg-accent/10 font-coadjuvant text-accent-deep text-coadjuvant-xs font-bold',
-          'transition duration-300',
-          className,
-        )}
-      >
-        {label}
-      </span>
-    )
+export const Tag = ({
+  label,
+  module,
+  icon,
+  source,
+  className,
+  variant = 'none',
+  ...props
+}: TagProps) => {
+  const content = (
+    <>
+      {icon}
+      {label}
+      {source && <span className="font-normal text-2xs">· {source}</span>}
+    </>
+  )
+
+  const colors = {
+    module: 'bg-accent/20 border-accent/80 text-accent-deep',
+    curso: 'bg-info-surface border-info-border text-info-deep',
+    none: 'bg-site-background border-plum-100 text-fg-muted',
   }
 
   return (
     <span
+      data-module={module}
       {...props}
       className={cn(
-        'mr-1 rounded-2xl border border-plum-100 px-2 py-1',
-        'bg-site-background font-coadjuvant text-text-muted text-coadjuvant-xs font-semibold',
+        'mr-1 inline-flex items-center gap-1 rounded-2xl border px-2 py-1',
+        'font-semibold font-sans text-fg-muted text-xs ',
         'transition duration-300',
+        colors[variant],
         className,
       )}
     >
-      {label}
+      {content}
     </span>
   )
 }

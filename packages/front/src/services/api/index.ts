@@ -10,6 +10,9 @@ export { API_CONFIG } from './config'
 export { cursoService } from './curso.service'
 export { iesService } from './ies.service'
 export * from './types'
+export { useCurso } from './use-curso'
+export { useIes } from './use-ies'
+export { type UseResourceOptions, useResource } from './use-resource'
 export {
   type UseSearchOptions,
   type UseSearchReturn,

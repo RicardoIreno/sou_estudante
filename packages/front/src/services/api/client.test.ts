@@ -53,11 +53,42 @@ describe('apiClient', () => {
 
       await apiClient('/test')
 
-      expect(mockFetch).toHaveBeenCalledWith(expect.any(String), {
-        next: {
-          revalidate: API_CONFIG.CACHE.REVALIDATE_SECONDS,
-        },
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          next: { revalidate: API_CONFIG.CACHE.REVALIDATE_SECONDS },
+        }),
+      )
+    })
+
+    it('deve enviar um signal com timeout para o fetch', async () => {
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
       })
+      global.fetch = mockFetch
+
+      await apiClient('/test')
+
+      const init = mockFetch.mock.calls[0][1] as RequestInit
+      expect(init.signal).toBeInstanceOf(AbortSignal)
+      expect(init.signal?.aborted).toBe(false)
+    })
+
+    it('deve respeitar o signal do chamador junto com o timeout', async () => {
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      })
+      global.fetch = mockFetch
+      const controller = new AbortController()
+
+      await apiClient('/test', { signal: controller.signal })
+
+      const init = mockFetch.mock.calls[0][1] as RequestInit
+      expect(init.signal?.aborted).toBe(false)
+      controller.abort()
+      expect(init.signal?.aborted).toBe(true)
     })
   })
 
@@ -121,6 +152,19 @@ describe('apiClient', () => {
     it("deve retornar erro tipo 'network' quando fetch falha", async () => {
       const mockFetch = vi.fn().mockRejectedValue(new Error('Network error'))
       global.fetch = mockFetch
+
+      const result = await apiClient('/test')
+
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error.type).toBe('network')
+      }
+    })
+
+    it("deve retornar erro tipo 'network' quando o fetch é abortado por timeout", async () => {
+      global.fetch = vi
+        .fn()
+        .mockRejectedValue(new DOMException('timeout', 'TimeoutError'))
 
       const result = await apiClient('/test')
 

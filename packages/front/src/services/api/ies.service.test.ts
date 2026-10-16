@@ -40,8 +40,11 @@ describe('iesService.searchIes', () => {
     expect(url).toContain('limit=10')
     expect(url).toContain('uf=SP')
     expect(url).toContain('regiao=Sudeste')
-    expect(result.results).toHaveLength(1)
-    expect(result.results[0].co_ies).toBe('376')
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.results).toHaveLength(1)
+      expect(result.data.results[0].co_ies).toBe('376')
+    }
   })
 
   it('busca todas as IES quando não há termo (q opcional)', async () => {
@@ -69,7 +72,7 @@ describe('iesService.searchIes', () => {
     expect(url).not.toContain('q=')
   })
 
-  it('retorna resposta vazia quando a API falha', async () => {
+  it('propaga o erro tipado quando a API falha', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
@@ -78,8 +81,11 @@ describe('iesService.searchIes', () => {
 
     const result = await iesService.searchIes('anhang')
 
-    expect(result.results).toEqual([])
-    expect(result.total).toBe(0)
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.type).toBe('server')
+      expect(result.error.statusCode).toBe(500)
+    }
   })
 })
 

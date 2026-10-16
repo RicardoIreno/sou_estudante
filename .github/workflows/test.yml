@@ -1,0 +1,69 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_call:
+
+jobs:
+  api:
+    name: API (go vet, go test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/api
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: packages/api/go.mod
+          cache-dependency-path: packages/api/go.sum
+
+      - name: go.mod e go.sum sincronizados
+        run: go mod tidy -diff
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test (com detector de corrida)
+        env:
+          CGO_ENABLED: 1
+        run: go test -race -count=1 ./...
+
+  front:
+    name: Front (tsc, vitest, next build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/front
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: packages/front/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:run
+
+      - name: Build
+        run: npm run build

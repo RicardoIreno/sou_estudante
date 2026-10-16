@@ -1,35 +1,40 @@
 import { render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { SearchHeader } from './index'
-import { SearchHeaderSorting } from './search-header-sorting'
 
-vi.mock('@/services/api/use-sugestoes-cursos', () => ({
-  useSugestoesCursos: () => ({ sugestoes: [], isLoading: false }),
-}))
+const autocompleteProps = {
+  useSuggestions: () => ({ sugestoes: [], isLoading: false }),
+  placeholder: 'Busque pelo nome',
+  searchLabel: 'Buscar pelo nome',
+  listLabel: 'Sugestões',
+}
 
 describe('SearchHeader', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  it('forwards the module to the autocomplete', () => {
-    const { container } = render(
+  it('exposes the module theme to the autocomplete through data-module', () => {
+    render(
       <SearchHeader module="4">
-        <SearchHeader.Autocomplete onSearchSubmit={() => {}} />
+        <SearchHeader.Autocomplete
+          {...autocompleteProps}
+          onSearchSubmit={() => {}}
+        />
       </SearchHeader>,
     )
 
-    expect(container.querySelector('[data-module="4"]')).toBeInTheDocument()
     expect(
-      screen.getByPlaceholderText('Busque pelo nome do curso'),
-    ).toBeInTheDocument()
+      screen.getByRole('combobox').closest('[data-module]'),
+    ).toHaveAttribute('data-module', '4')
+    expect(screen.getByPlaceholderText('Busque pelo nome')).toBeInTheDocument()
   })
 
-  it('throws when a subcomponent is used outside SearchHeader', () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+  it('renders the actions and sorting slots', () => {
+    render(
+      <SearchHeader module="1">
+        <SearchHeader.Actions>Controles</SearchHeader.Actions>
+        <SearchHeader.Sorting>Ordenação</SearchHeader.Sorting>
+      </SearchHeader>,
+    )
 
-    expect(() =>
-      render(<SearchHeaderSorting>Ordenação</SearchHeaderSorting>),
-    ).toThrow(/must be rendered inside <SearchHeader>/)
+    expect(screen.getByText('Controles')).toBeInTheDocument()
+    expect(screen.getByText('Ordenação')).toBeInTheDocument()
   })
 })

@@ -20,33 +20,34 @@ export const ProfileIngressoQuotas = ({
   nota,
 }: ProfileIngressoQuotasProps) => {
   const vazia = nota === null || nota === undefined
+  const semNota = nota === 0
+  const texto = semNota ? 'sem nota nesta chamada' : null
 
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-2 rounded-[14px] border p-3',
+        'flex items-center justify-between gap-2 rounded-panel border p-3',
         vazia
           ? 'border-dashed border-plum-100 bg-site-background'
           : 'border-plum-100 bg-surface',
       )}
     >
       <div>
-        <div className="mb-px text-xs font-bold text-text">{nome}</div>
-        {descricao && (
-          <div className="text-coadjuvant-xs text-text-muted">{descricao}</div>
-        )}
+        <div className="mb-px text-xs font-bold text-fg">{nome}</div>
+        {descricao && <div className="text-2xs text-fg-muted">{descricao}</div>}
       </div>
 
       <div className="text-right">
-        <span className="font-mono text-base font-bold text-text">
+        <span className="font-mono text-base font-bold text-fg">
           {nota ? formatNotaCorte(nota) : '—'}
         </span>
 
-        {!vazia && vagas !== null && (
-          <div className="font-mono text-coadjuvant-xs text-text-muted">
+        {!vazia && typeof vagas === 'number' && (
+          <div className="font-mono text-2xs text-fg-muted">
             {vagas} {vagas === 1 ? 'vaga' : 'vagas'}
           </div>
         )}
+        {texto && <div className="text-2xs text-text-muted">{texto}</div>}
       </div>
     </div>
   )

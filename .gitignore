@@ -6,13 +6,9 @@ queries/
 */session.json
 session.json
 ss.json
-scripts/
-
-.env
 .opencode/
 docs/imgs/
-random_curso.sh
-random_ies.sh
+query2.json
 
 # dependencies
 node_modules/
@@ -23,10 +19,6 @@ node_modules/
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
-
-front/node_modules/
-tasks
 
 # api: artefato de build do air
 packages/api/tmp/
@@ -52,8 +44,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files: ignora todos, exceto o modelo versionado
 .env*
+!.env.example
 
 # vercel
 .vercel/

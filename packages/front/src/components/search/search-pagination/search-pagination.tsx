@@ -31,7 +31,7 @@ export function Pagination({
     <nav
       data-module={module}
       className={cn(
-        'flex items-center justify-between gap-4 py-4 font-coadjuvant text-fg-coadjuvant',
+        'flex items-center justify-between gap-4 py-4 font-sans text-fg',
         className,
       )}
       aria-label="Navegação de páginas"
@@ -51,7 +51,7 @@ export function Pagination({
         />
       </div>
 
-      <Typo v="mute" s="sm" t="span" className="cursor-auto">
+      <Typo v="mute" s="sm" t="span">
         Página {currentPage} de {totalPages}
       </Typo>
 
@@ -93,10 +93,10 @@ function PaginationButton({
       disabled={disabled}
       aria-label={ariaLabel}
       className={cn(
-        'rounded-md px-4 py-2 text-coadjuvant font-medium transition-colors',
+        'rounded-md px-4 py-2 text-sm font-medium transition-colors',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
         disabled
-          ? 'cursor-not-allowed bg-gray-100 text-fg-muted'
+          ? 'cursor-not-allowed bg-muted text-fg-muted'
           : 'bg-accent text-accent-deep hover:bg-accent/90 focus-visible:outline-accent',
       )}
     >

@@ -1,21 +1,31 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { PaginationLinks, SearchListResponse } from './types'
+import {
+  type ApiError,
+  ERROR_MESSAGES,
+  type PaginationLinks,
+  type Result,
+  type SearchListResponse,
+} from './types'
 
 /**
  * Opções do hook de busca paginada genérico.
  * O `fetcher` é a única dependência de domínio, permitindo reutilizar o hook
- * para cursos, IES e futuros módulos.
+ * para cursos, IES e futuros módulos. O `scope` compõe a chave de cache do
+ * React Query, compartilhada por todos os componentes da mesma rota.
  */
 export interface UseSearchOptions<TItem, TAgg> {
+  /** Identidade do domínio na chave de cache (ex.: `cursos`, `ies`). */
+  scope: string
   fetcher: (
     query: string,
     page: number,
     limit: number,
     filters: Record<string, string | null>,
-  ) => Promise<SearchListResponse<TItem, TAgg>>
+  ) => Promise<Result<SearchListResponse<TItem, TAgg>>>
   /**
    * Mínimo de caracteres para disparar a busca. Use 0 para permitir
    * listar tudo quando não houver termo (ex.: navegação por filtros).
@@ -43,11 +53,26 @@ export interface UseSearchReturn<TItem, TAgg> {
 
 const FILTER_META_KEYS = new Set(['q', 'page', 'limit'])
 
+/**
+ * Converte o erro tipado da API (`ApiError`) na mensagem amigável do
+ * `ERROR_MESSAGES`, caindo no `fallback` para erros desconhecidos.
+ */
+function messageForError(error: unknown, fallback: string): string {
+  if (error && typeof error === 'object' && 'type' in error) {
+    const type = (error as ApiError).type
+    if (type in ERROR_MESSAGES) {
+      return ERROR_MESSAGES[type]
+    }
+  }
+  return fallback
+}
+
 export function useSearch<TItem, TAgg>(
   options: UseSearchOptions<TItem, TAgg>,
   explicitQuery?: string,
 ): UseSearchReturn<TItem, TAgg> {
   const {
+    scope,
     fetcher,
     minChars = 0,
     defaultLimit = 20,
@@ -62,14 +87,6 @@ export function useSearch<TItem, TAgg>(
   const pageParam = searchParams?.get('page')
   const query = explicitQuery !== undefined ? explicitQuery : queryFromUrl
   const currentPage = pageParam ? Number.parseInt(pageParam, 10) || 1 : 1
-
-  const [results, setResults] = useState<TItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [total, setTotal] = useState(0)
-  const [limit, setLimit] = useState(defaultLimit)
-  const [links, setLinks] = useState<PaginationLinks | null>(null)
-  const [aggregations, setAggregations] = useState<TAgg | null>(null)
 
   const updateParams = useCallback(
     (newParams: Record<string, string | null>) => {
@@ -142,67 +159,55 @@ export function useSearch<TItem, TAgg>(
     return filters
   }, [searchParams])
 
-  useEffect(() => {
-    if (query.length < minChars) {
-      setResults((prev) => (prev.length > 0 ? [] : prev))
-      setTotal((prev) => (prev > 0 ? 0 : prev))
-      setLinks((prev) => (prev !== null ? null : prev))
-      setError((prev) => (prev !== null ? null : prev))
-      setAggregations((prev) => (prev !== null ? null : prev))
-      setIsLoading((prev) => (prev ? false : prev))
-      return
-    }
+  const enabled = query.length >= minChars
 
-    let isCurrent = true
-    setIsLoading(true)
-    setError(null)
+  // O React Query não hidrata a busca no SSR: o servidor renderiza sem dados,
+  // enquanto o cliente pode já ter o cache do queryClient populado. Esse guard
+  // mantém o primeiro render (servidor e cliente) idêntico — vazio/em carga — e
+  // só expõe os dados após a montagem, evitando mismatch de hidratação.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
-    fetcher(query, currentPage, limit, activeFilters)
-      .then((response) => {
-        if (!isCurrent) return
-        setResults(response.results)
-        setTotal(response.total)
-        setLimit(response.limit)
-        setLinks(response.links)
-        setAggregations(response.aggregations ?? null)
-      })
-      .catch((_err) => {
-        if (!isCurrent) return
-        setError(errorMessage)
-        setResults([])
-        setTotal(0)
-        setLinks(null)
-        setAggregations(null)
-      })
-      .finally(() => {
-        if (isCurrent) {
-          setIsLoading(false)
-        }
-      })
-
-    return () => {
-      isCurrent = false
-    }
-  }, [
-    query,
-    minChars,
-    currentPage,
-    limit,
-    activeFilters,
-    fetcher,
-    errorMessage,
-  ])
+  const {
+    data,
+    isPending,
+    isError,
+    error: queryError,
+  } = useQuery({
+    queryKey: [
+      'search',
+      scope,
+      query,
+      currentPage,
+      defaultLimit,
+      activeFilters,
+    ],
+    queryFn: async () => {
+      const result = await fetcher(
+        query,
+        currentPage,
+        defaultLimit,
+        activeFilters,
+      )
+      if (!result.success) {
+        throw result.error
+      }
+      return result.data
+    },
+    enabled,
+  })
 
   return {
     query,
-    results,
-    isLoading,
-    error,
-    total,
+    results: mounted ? (data?.results ?? []) : [],
+    isLoading: !mounted || (enabled && isPending),
+    error:
+      mounted && isError ? messageForError(queryError, errorMessage) : null,
+    total: mounted ? (data?.total ?? 0) : 0,
     currentPage,
-    limit,
-    links,
-    aggregations,
+    limit: mounted ? (data?.limit ?? defaultLimit) : defaultLimit,
+    links: mounted ? (data?.links ?? null) : null,
+    aggregations: mounted ? (data?.aggregations ?? null) : null,
     setQuery,
     navigateToPage,
     updateParams,

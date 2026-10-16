@@ -11,9 +11,6 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   v?: ButtonVariant
 }
 
-const BASE =
-  'inline-flex items-center gap-1 rounded-full border px-4 py-1 font-coadjuvant text-coadjuvant font-bold transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep'
-
 const variantStyles = (v: ButtonVariant, active: boolean) => {
   switch (v) {
     case 'solid':
@@ -22,15 +19,15 @@ const variantStyles = (v: ButtonVariant, active: boolean) => {
       return 'border-accent bg-transparent text-accent-deep hover:bg-accent/10'
     default:
       return active
-        ? 'border-accent/70 bg-accent/10 text-accent-fg shadow-md'
-        : 'border-transparent bg-muted text-fg-muted shadow-md'
+        ? 'border-accent/70 bg-accent/10 text-accent-fg'
+        : 'border-transparent bg-muted text-fg-muted'
   }
 }
 
 export const Button = ({
   children,
   module,
-  active = true,
+  active = false,
   v = 'chip',
   className,
   ...props
@@ -40,7 +37,13 @@ export const Button = ({
       type="button"
       data-module={module}
       {...props}
-      className={cn(BASE, variantStyles(v, active), className)}
+      className={cn(
+        'inline-flex cursor-pointer items-center gap-1 rounded-full border px-4 py-1',
+        'font-sans text-sm font-semibold tracking-wide',
+        'transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
+        variantStyles(v, active),
+        className,
+      )}
     >
       {children}
     </button>

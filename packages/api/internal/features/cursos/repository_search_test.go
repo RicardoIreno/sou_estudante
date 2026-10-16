@@ -2,7 +2,6 @@ package cursos
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
@@ -19,15 +18,6 @@ const cursosSearchResponse = `{
 	"aggregations": {"ufs": {"buckets": [{"key": "SP", "doc_count": 1}]}}
 }`
 
-func decodeRequest(t *testing.T, raw string) map[string]interface{} {
-	t.Helper()
-	var body map[string]interface{}
-	if err := json.Unmarshal([]byte(raw), &body); err != nil {
-		t.Fatalf("corpo da requisição inválido: %v (%s)", err, raw)
-	}
-	return body
-}
-
 func TestSearchDecodificaHitsEAgregacoes(t *testing.T) {
 	var requests int
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +29,7 @@ func TestSearchDecodificaHitsEAgregacoes(t *testing.T) {
 		_, _ = w.Write([]byte(cursosSearchResponse))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	result, err := repo.Search(context.Background(), "medicina", SearchFilterParams{}, 1, 10)
 	if err != nil {
 		t.Fatalf("erro inesperado: %v", err)
@@ -59,15 +49,15 @@ func TestSearchDecodificaHitsEAgregacoes(t *testing.T) {
 }
 
 func TestSearchEnviaPaginacaoOrdenacaoEFiltros(t *testing.T) {
-	var body map[string]interface{}
+	var body map[string]any
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		raw, _ := io.ReadAll(r.Body)
-		body = decodeRequest(t, string(raw))
+		body = testutil.DecodeJSONObject(t, string(raw))
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"hits":{"total":{"value":0},"hits":[]}}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	_, err := repo.Search(context.Background(), "medicina", SearchFilterParams{Sort: "az", UF: []string{"sp"}}, 2, 10)
 	if err != nil {
 		t.Fatalf("erro inesperado: %v", err)
@@ -80,25 +70,25 @@ func TestSearchEnviaPaginacaoOrdenacaoEFiltros(t *testing.T) {
 		t.Errorf("size = %v, esperado 10", size)
 	}
 
-	sort, ok := body["sort"].([]interface{})
+	sort, ok := body["sort"].([]any)
 	if !ok || len(sort) != 1 {
 		t.Fatalf("sort inesperado: %v", body["sort"])
 	}
-	if _, ok := sort[0].(map[string]interface{})["curso.no_curso.keyword"]; !ok {
+	if _, ok := sort[0].(map[string]any)["curso.no_curso.keyword"]; !ok {
 		t.Errorf("sort não usa curso.no_curso.keyword: %v", sort[0])
 	}
 
 	filter := mustFilter(t, body)
-	if got := filter[0]["terms"].(map[string]interface{})["localizacao.sg_uf"]; got == nil {
+	if got := filter[0]["terms"].(map[string]any)["localizacao.sg_uf"]; got == nil {
 		t.Errorf("filtro de UF ausente: %v", filter)
 	}
 }
 
 func TestSearchExactUsaTermQuandoNomeExiste(t *testing.T) {
-	var bodies []map[string]interface{}
+	var bodies []map[string]any
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		raw, _ := io.ReadAll(r.Body)
-		body := decodeRequest(t, string(raw))
+		body := testutil.DecodeJSONObject(t, string(raw))
 		bodies = append(bodies, body)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -109,7 +99,7 @@ func TestSearchExactUsaTermQuandoNomeExiste(t *testing.T) {
 		_, _ = w.Write([]byte(cursosSearchResponse))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	if _, err := repo.Search(context.Background(), "MEDICINA", SearchFilterParams{Exact: true}, 1, 10); err != nil {
 		t.Fatalf("erro inesperado: %v", err)
 	}
@@ -118,23 +108,23 @@ func TestSearchExactUsaTermQuandoNomeExiste(t *testing.T) {
 		t.Fatalf("requisições = %d, esperado 2 (probe + busca)", len(bodies))
 	}
 	must := mustQuery(t, bodies[1])
-	if _, ok := must["term"].(map[string]interface{}); !ok {
+	if _, ok := must["term"].(map[string]any); !ok {
 		t.Errorf("esperado nó term para nome exato, obtido %v", must)
 	}
 }
 
 func TestSearchExactMantemMultiMatchQuandoNomeNaoExiste(t *testing.T) {
-	var bodies []map[string]interface{}
+	var bodies []map[string]any
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		raw, _ := io.ReadAll(r.Body)
-		body := decodeRequest(t, string(raw))
+		body := testutil.DecodeJSONObject(t, string(raw))
 		bodies = append(bodies, body)
 
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"hits":{"total":{"value":0},"hits":[]}}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	if _, err := repo.Search(context.Background(), "MEDICIN", SearchFilterParams{Exact: true}, 1, 10); err != nil {
 		t.Fatalf("erro inesperado: %v", err)
 	}
@@ -148,15 +138,15 @@ func TestSearchExactMantemMultiMatchQuandoNomeNaoExiste(t *testing.T) {
 }
 
 func TestSearchSemExactNaoFazProbe(t *testing.T) {
-	var bodies []map[string]interface{}
+	var bodies []map[string]any
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		raw, _ := io.ReadAll(r.Body)
-		bodies = append(bodies, decodeRequest(t, string(raw)))
+		bodies = append(bodies, testutil.DecodeJSONObject(t, string(raw)))
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"hits":{"total":{"value":0},"hits":[]}}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	if _, err := repo.Search(context.Background(), "medicina", SearchFilterParams{}, 1, 10); err != nil {
 		t.Fatalf("erro inesperado: %v", err)
 	}
@@ -171,7 +161,7 @@ func TestSearchSemAgregacoesDeixaNil(t *testing.T) {
 		_, _ = w.Write([]byte(`{"hits":{"total":{"value":0},"hits":[]}}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	result, err := repo.Search(context.Background(), "medicina", SearchFilterParams{}, 1, 10)
 	if err != nil {
 		t.Fatalf("erro inesperado: %v", err)
@@ -187,7 +177,7 @@ func TestSearchRetornaErroEmFalha(t *testing.T) {
 		_, _ = w.Write([]byte(`{"error":"boom"}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	if _, err := repo.Search(context.Background(), "medicina", SearchFilterParams{}, 1, 10); err == nil {
 		t.Fatal("esperado erro para status 500")
 	}
@@ -199,7 +189,7 @@ func TestGetByIDDecodificaCurso(t *testing.T) {
 		_, _ = w.Write([]byte(`{"found":true,"_source":{"sequencial":1,"curso":{"no_curso":"MEDICINA"}}}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	curso, err := repo.GetByID(context.Background(), "1")
 	if err != nil {
 		t.Fatalf("erro inesperado: %v", err)
@@ -215,34 +205,55 @@ func TestGetByIDRetornaErrNotFound(t *testing.T) {
 		_, _ = w.Write([]byte(`{"found":false}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "cursos")
 	if _, err := repo.GetByID(context.Background(), "999"); !errors.Is(err, ErrNotFound) {
 		t.Fatalf("esperado ErrNotFound, obtido %v", err)
 	}
 }
 
-func mustFilter(t *testing.T, body map[string]interface{}) []map[string]interface{} {
+func mustFilter(t *testing.T, body map[string]any) []map[string]any {
 	t.Helper()
-	query := body["query"].(map[string]interface{})
-	boolQuery := query["bool"].(map[string]interface{})
-	raw, ok := boolQuery["filter"].([]interface{})
+	postFilter, ok := body["post_filter"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado bloco post_filter, obtido %v", body["post_filter"])
+	}
+	boolQuery, ok := postFilter["bool"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado nó bool no post_filter, obtido %v", postFilter["bool"])
+	}
+	raw, ok := boolQuery["filter"].([]any)
 	if !ok {
 		t.Fatalf("esperado bloco filter, obtido %v", boolQuery["filter"])
 	}
-	filter := make([]map[string]interface{}, 0, len(raw))
+	filter := make([]map[string]any, 0, len(raw))
 	for _, item := range raw {
-		filter = append(filter, item.(map[string]interface{}))
+		filter = append(filter, item.(map[string]any))
 	}
 	return filter
 }
 
-func mustQuery(t *testing.T, body map[string]interface{}) map[string]interface{} {
+func mustQuery(t *testing.T, body map[string]any) map[string]any {
 	t.Helper()
-	query := body["query"].(map[string]interface{})
-	boolQuery := query["bool"].(map[string]interface{})
-	must, ok := boolQuery["must"].(map[string]interface{})
+	query := body["query"].(map[string]any)
+	boolQuery := query["bool"].(map[string]any)
+	must, ok := boolQuery["must"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado bloco must, obtido %v", boolQuery["must"])
 	}
 	return must
+}
+
+func TestSearchUsaOIndiceConfigurado(t *testing.T) {
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/cursos_v2/_search" {
+			t.Errorf("path = %q, esperado /cursos_v2/_search", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(cursosSearchResponse))
+	})
+
+	repo := NewElasticsearchRepository(client, "cursos_v2")
+	if _, err := repo.Search(context.Background(), "medicina", SearchFilterParams{}, 1, 10); err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
 }

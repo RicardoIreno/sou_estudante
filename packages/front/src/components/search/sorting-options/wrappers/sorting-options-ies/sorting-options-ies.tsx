@@ -1,5 +1,6 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import {
   SortingOptions,
   type SortOption,
@@ -18,11 +19,14 @@ interface SortingOptionsIesProps {
 
 export function SortingOptionsIes({ module }: SortingOptionsIesProps) {
   const { updateParams } = useSearchIes()
+  const searchParams = useSearchParams()
+  const sort = searchParams?.get('sort') ?? undefined
 
   return (
     <SortingOptions
       options={IES_SORT_OPTIONS}
-      onSelect={(sort) => updateParams({ sort })}
+      value={sort}
+      onSelect={(nextSort) => updateParams({ sort: nextSort })}
       module={module}
     />
   )

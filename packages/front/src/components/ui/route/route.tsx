@@ -1,16 +1,14 @@
-'use client'
-
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { Tag } from '@/components/ui/tag/tag'
 import { MODULE_META, type Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
-import IconModule from '../icon-module/iconModule'
-import { AnchorIcon } from './icons/AnchorIcon'
-import { CompassIcon } from './icons/CompassIcon'
-import { NauticalIcon } from './icons/NauticalIcon'
-import { SextantIcon } from './icons/SextantIcon'
-import { TelescopeIcon } from './icons/TelescopeIcon'
+import { IconModule } from '../icon-module/icon-module'
+import { AnchorIcon } from './icons/anchor-icon'
+import { CompassIcon } from './icons/compass-icon'
+import { NauticalIcon } from './icons/nautical-icon'
+import { SextantIcon } from './icons/sextant-icon'
+import { TelescopeIcon } from './icons/telescope-icon'
 
 export type RouteVariant = 'card' | 'inline' | 'list'
 
@@ -19,6 +17,8 @@ interface RouteProps {
   variant?: RouteVariant
   title?: string
   description?: string
+  /** Destino do link; por padrão o `href` do módulo. */
+  href?: string
   className?: string
 }
 
@@ -35,21 +35,23 @@ export function Route({
   variant = 'card',
   title,
   description,
+  href,
   className,
 }: RouteProps) {
   const meta = MODULE_META[module]
   const Icon = ICONS[module]
   const routeTitle = title ?? meta.title
   const routeDescription = description ?? meta.description
+  const routeHref = href ?? meta.href
   const isCard = variant === 'card'
 
   if (variant === 'inline') {
     return (
       <Link
         data-module={module}
-        href={meta.href}
+        href={routeHref}
         className={cn(
-          'group flex items-center gap-4 rounded-[20px] border border-card-border bg-card-surface px-4 py-4',
+          'group flex items-center gap-4 rounded-card border border-card-border bg-card-surface px-4 py-4',
           'transition-transform hover:-translate-y-0.5',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
           className,
@@ -57,12 +59,8 @@ export function Route({
       >
         <Icon className="size-9 shrink-0" />
         <span className="flex flex-1 flex-col">
-          <span className="font-protagonist font-bold text-protagonist-sm">
-            {routeTitle}
-          </span>
-          <span className="text-coadjuvant-sm text-text-muted">
-            {routeDescription}
-          </span>
+          <span className="font-sans font-bold text-sm">{routeTitle}</span>
+          <span className="text-xs text-fg-muted">{routeDescription}</span>
         </span>
         <ArrowRight
           className="size-4 text-fg-muted transition-transform group-hover:translate-x-1"
@@ -75,12 +73,12 @@ export function Route({
   return (
     <Link
       data-module={module}
-      href={meta.href}
+      href={routeHref}
       className={cn(
-        'group relative overflow-hidden bg-white border border-card-border',
+        'group relative overflow-hidden bg-card-surface border border-card-border',
 
         isCard && [
-          'flex flex-col items-center text-center rounded-[20px] px-4 py-5 hover:-translate-y-0.5',
+          'flex flex-col items-center text-center rounded-card px-4 py-5 hover:-translate-y-0.5',
 
           // Animação para passagem de mouse:
           "before:content-[''] before:absolute before:top-0 before:inset-x-0 before:h-[3px]",
@@ -89,7 +87,7 @@ export function Route({
         ],
 
         !isCard && [
-          'flex items-start gap-3 rounded-[14px] transition-transform hover:translate-x-0.5 shadow-[inset_3px_0_0_var(--color-accent)] px-4 py-3',
+          'flex items-start gap-3 rounded-panel transition-transform hover:translate-x-0.5 shadow-[inset_3px_0_0_var(--color-accent)] px-4 py-3',
         ],
 
         className,
@@ -98,10 +96,10 @@ export function Route({
       {isCard && (
         <>
           <Icon className="mb-3" />
-          <h3 className="font-protagonist font-bold text-coadjuvant-sm mb-[3px] leading-[1.3]">
+          <h3 className="font-sans font-bold text-xs mb-[3px] leading-[1.3]">
             {routeTitle}
           </h3>
-          <p className="text-coadjuvant-xs text-fg-muted leading-[1.35]">
+          <p className="text-xs text-fg-muted leading-[1.35]">
             {routeDescription}
           </p>
           <Tag
@@ -122,13 +120,11 @@ export function Route({
           </span>
 
           <span className="min-w-0">
-            <span className="block mb-[2px] font-bold text-coadjuvant-xs text-accent-deep tracking-[0.6px]">
+            <span className="block mb-[2px] font-bold text-xs text-accent-deep tracking-[0.6px]">
               {meta.badge}
             </span>
-            <h3 className="block font-semibold text-protagonist-sm">
-              {meta.list.title}
-            </h3>
-            <p className="text-coadjuvant-sm leading-[1.45] text-fg-muted">
+            <h3 className="block font-semibold text-sm">{meta.list.title}</h3>
+            <p className="text-xs leading-[1.45] text-fg-muted">
               {meta.list.description}
             </p>
           </span>

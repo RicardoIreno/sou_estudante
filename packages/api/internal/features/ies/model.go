@@ -20,11 +20,11 @@ type IES struct {
 
 // SearchFilterParams contém parâmetros opcionais de filtragem e ordenação.
 type SearchFilterParams struct {
-	UF          []string `json:"uf,omitempty"`
-	Regiao      []string `json:"regiao,omitempty"`
-	Categoria   []string `json:"categoria,omitempty"`
-	Organizacao []string `json:"organizacao,omitempty"`
-	Sort        string   `json:"sort,omitempty"`
+	UF          []string
+	Regiao      []string
+	Categoria   []string
+	Organizacao []string
+	Sort        string
 }
 
 // AggregationBucket representa um item de contagem de uma agregação.

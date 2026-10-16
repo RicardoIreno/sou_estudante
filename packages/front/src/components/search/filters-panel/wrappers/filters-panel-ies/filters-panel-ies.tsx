@@ -1,22 +1,18 @@
 'use client'
 
-import { buildFilterOptions } from '@/components/search/filters-panel/filters-helpers'
 import {
-  type FilterOptionDefinition,
+  buildFilterOptions,
+  CATEGORIAS_ADMINISTRATIVAS,
+} from '@/components/search/filters-panel/filters-helpers'
+import {
   type FilterSectionDefinition,
   FiltersPanel,
 } from '@/components/search/filters-panel/filters-panel'
 import { useFilterPanel } from '@/components/search/filters-panel/use-filter-panel'
+import { SortingOptionsIes } from '@/components/search/sorting-options/wrappers/sorting-options-ies/sorting-options-ies'
 import type { Module } from '@/lib/module'
-import { ufLabel } from '@/lib/uf'
+import { ufOptions } from '@/lib/uf'
 import { useSearchIes } from '@/services/api/use-search-ies'
-
-const CATEGORIAS: FilterOptionDefinition[] = [
-  { label: 'Federal', value: 'Federal' },
-  { label: 'Estadual', value: 'Estadual' },
-  { label: 'Municipal', value: 'Municipal' },
-  { label: 'Privada', value: 'Privada' },
-]
 
 interface FiltersPanelIesProps {
   module?: Module
@@ -32,7 +28,7 @@ export function FiltersPanelIes({ module, className }: FiltersPanelIesProps) {
       key: 'uf',
       title: 'Estado',
       aggregationKey: 'ufs',
-      options: buildFilterOptions(aggregations?.ufs, ufLabel),
+      options: ufOptions(),
     },
     {
       key: 'regiao',
@@ -44,7 +40,7 @@ export function FiltersPanelIes({ module, className }: FiltersPanelIesProps) {
       key: 'categoria',
       title: 'Categoria',
       aggregationKey: 'categorias',
-      options: CATEGORIAS,
+      options: CATEGORIAS_ADMINISTRATIVAS,
     },
     {
       key: 'organizacao',
@@ -61,6 +57,7 @@ export function FiltersPanelIes({ module, className }: FiltersPanelIesProps) {
       activeValues={getActiveValues}
       onToggle={toggle}
       onClear={resetFilters}
+      leading={<SortingOptionsIes module={module} />}
       module={module}
       className={className}
     />

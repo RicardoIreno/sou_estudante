@@ -21,7 +21,7 @@ func TestToDocumentMapsEveryField(t *testing.T) {
 
 	want := ies.IES{
 		CoIES:                   "376",
-		NoIES:                   "CENTRO UNIVERSITÁRIO ANHANGUERA DE SÃO PAULO",
+		NoIES:                   "Centro Universitário Anhanguera de São Paulo",
 		SgIES:                   "Anhanguera SP",
 		CategoriaAdministrativa: "Privada com fins lucrativos",
 		OrganizacaoAcademica:    "Centro Universitário",

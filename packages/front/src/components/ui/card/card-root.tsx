@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
-import { CardContext } from './card-context'
 
 interface Props {
   v?: 'prev' | 'full'
@@ -22,17 +21,17 @@ export const CardRoot = ({
   }
 
   return (
-    <CardContext.Provider value={module ?? '1'}>
-      <div
-        data-module={module}
-        className={cn(
-          'rounded-card border border-card-border px-6 py-4 font-protagonist text-fg-protagonist shadow',
-          variants[v],
-          className,
-        )}
-      >
-        {children}
-      </div>
-    </CardContext.Provider>
+    <div
+      data-module={module}
+      className={cn(
+        'bg-card-surface border border-card-border font-sans rounded-card text-fg shadow',
+        'relative isolate overflow-hidden',
+        'px-6 py-4',
+        variants[v],
+        className,
+      )}
+    >
+      {children}
+    </div>
   )
 }

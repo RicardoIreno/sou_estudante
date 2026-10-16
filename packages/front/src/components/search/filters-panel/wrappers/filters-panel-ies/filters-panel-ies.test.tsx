@@ -57,15 +57,21 @@ describe('FiltersPanelIes', () => {
   it('deriva as opções das agregações (UF e região)', () => {
     render(<FiltersPanelIes />)
 
-    expect(screen.getByText('São Paulo')).toBeInTheDocument()
-    expect(screen.getByText('Sudeste')).toBeInTheDocument()
-    expect(screen.getByText('Universidade')).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', { name: /São Paulo/ }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', { name: /Sudeste/ }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', { name: /Universidade/ }),
+    ).toBeInTheDocument()
   })
 
   it('atualiza os parâmetros ao selecionar uma opção', () => {
     render(<FiltersPanelIes />)
 
-    fireEvent.click(screen.getByRole('checkbox', { name: 'São Paulo' }))
+    fireEvent.click(screen.getByRole('checkbox', { name: /São Paulo/ }))
 
     expect(updateParams).toHaveBeenCalledWith({ uf: 'SP', page: '1' })
   })

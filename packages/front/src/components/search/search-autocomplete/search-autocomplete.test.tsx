@@ -1,25 +1,35 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useSugestoesCursos } from '@/services/api/use-sugestoes-cursos'
 import { SearchAutocomplete } from './search-autocomplete'
 
-vi.mock('@/services/api/use-sugestoes-cursos', () => ({
-  useSugestoesCursos: vi.fn(),
-}))
+const useSuggestions = vi.fn()
+
+const domainProps = {
+  useSuggestions,
+  placeholder: 'Busque algo',
+  searchLabel: 'Buscar item',
+  listLabel: 'Sugestões de itens',
+}
 
 describe('SearchAutocomplete', () => {
   const mockSubmit = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useSugestoesCursos).mockReturnValue({
+    useSuggestions.mockReturnValue({
       sugestoes: ['MEDICINA', 'MEDICINA VETERINÁRIA'],
       isLoading: false,
     })
   })
 
   const renderAutocomplete = () =>
-    render(<SearchAutocomplete debounceMs={0} onSearchSubmit={mockSubmit} />)
+    render(
+      <SearchAutocomplete
+        {...domainProps}
+        debounceMs={0}
+        onSearchSubmit={mockSubmit}
+      />,
+    )
 
   it('abre o menu listando as sugestões após digitar', () => {
     renderAutocomplete()
@@ -45,6 +55,7 @@ describe('SearchAutocomplete', () => {
   it('submete o texto ao pressionar Enter sem opção selecionada', () => {
     render(
       <SearchAutocomplete
+        {...domainProps}
         debounceMs={0}
         onSearchSubmit={mockSubmit}
         defaultValue="medicina"
@@ -100,6 +111,7 @@ describe('SearchAutocomplete', () => {
   it('exposes the module theme through data-module', () => {
     render(
       <SearchAutocomplete
+        {...domainProps}
         debounceMs={0}
         onSearchSubmit={mockSubmit}
         module="2"
@@ -108,5 +120,12 @@ describe('SearchAutocomplete', () => {
     expect(
       screen.getByRole('combobox').closest('[data-module]'),
     ).toHaveAttribute('data-module', '2')
+  })
+
+  it('uses only the labels and hook injected by the domain', () => {
+    renderAutocomplete()
+    expect(screen.getByPlaceholderText('Busque algo')).toBeInTheDocument()
+    expect(screen.getByText('Buscar item')).toBeInTheDocument()
+    expect(useSuggestions).toHaveBeenCalled()
   })
 })

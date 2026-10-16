@@ -10,6 +10,7 @@ export type UseSearchCursosReturn = UseSearchReturn<Curso, SearchAggregations>
 export function useSearchCursos(explicitQuery?: string): UseSearchCursosReturn {
   return useSearch<Curso, SearchAggregations>(
     {
+      scope: 'cursos',
       fetcher: cursoService.searchCursos,
       minChars: API_CONFIG.SEARCH_MIN_CHARS,
       errorMessage: 'Erro ao buscar cursos',

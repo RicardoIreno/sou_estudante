@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"api_estudante/internal/apperr"
@@ -26,15 +25,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, _ := strconv.Atoi(params.Get("page"))
-	if page < 1 {
-		page = 1
-	}
-
-	limit, _ := strconv.Atoi(params.Get("limit"))
-	if limit < 1 || limit > maxPageSize {
-		limit = defaultPageSize
-	}
+	page, limit := httpx.ParsePagination(params)
 
 	filters := SearchFilterParams{
 		UF:          httpx.SplitCSV(params["uf"]),

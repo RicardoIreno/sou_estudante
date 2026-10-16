@@ -23,7 +23,8 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v7
         with:
-          go-version: '1.22'
+          go-version-file: packages/api/go.mod
+          cache: false
 
       - name: Check TypeScript / CSS format (Biome)
         working-directory: packages/front

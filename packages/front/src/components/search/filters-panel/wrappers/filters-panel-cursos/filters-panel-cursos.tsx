@@ -1,29 +1,18 @@
 'use client'
 
+import { CATEGORIAS_ADMINISTRATIVAS } from '@/components/search/filters-panel/filters-helpers'
 import {
   type FilterSectionDefinition,
   FiltersPanel,
 } from '@/components/search/filters-panel/filters-panel'
 import { useFilterPanel } from '@/components/search/filters-panel/use-filter-panel'
+import { SortingOptionsCursos } from '@/components/search/sorting-options/wrappers/sorting-options-cursos/sorting-options-cursos'
 import type { Module } from '@/lib/module'
+import { ufOptions } from '@/lib/uf'
 import { useSearchCursos } from '@/services/api/use-search-cursos'
 
-const ESTADOS_PRINCIPAIS = [
-  { label: 'São Paulo', value: 'SP' },
-  { label: 'Bahia', value: 'BA' },
-  { label: 'Rio de Janeiro', value: 'RJ' },
-]
-
-const OUTROS_ESTADOS = [
-  { label: 'Minas Gerais', value: 'MG' },
-  { label: 'Paraná', value: 'PR' },
-  { label: 'Rio Grande do Sul', value: 'RS' },
-  { label: 'Pernambuco', value: 'PE' },
-  { label: 'Ceará', value: 'CE' },
-  { label: 'Santa Catarina', value: 'SC' },
-  { label: 'Goiás', value: 'GO' },
-  { label: 'Distrito Federal', value: 'DF' },
-]
+/** Quantidade de UFs visíveis antes de expandir (as prioritárias de `ufOptions`). */
+const UFS_VISIVEIS = 3
 
 const TURNOS = [
   { label: 'Diurno', value: 'Diurno' },
@@ -36,13 +25,6 @@ const GRAUS_ACADEMICOS = [
   { label: 'Bacharelado', value: 'Bacharelado' },
   { label: 'Licenciatura', value: 'Licenciatura' },
   { label: 'Tecnológico', value: 'Tecnológico' },
-]
-
-const CATEGORIAS = [
-  { label: 'Federal', value: 'Federal' },
-  { label: 'Estadual', value: 'Estadual' },
-  { label: 'Municipal', value: 'Municipal' },
-  { label: 'Privada', value: 'Privada' },
 ]
 
 const MODALIDADES = [
@@ -63,8 +45,8 @@ const SECTIONS: FilterSectionDefinition[] = [
     key: 'uf',
     title: 'Estado',
     aggregationKey: 'ufs',
-    options: [...ESTADOS_PRINCIPAIS, ...OUTROS_ESTADOS],
-    visibleCount: ESTADOS_PRINCIPAIS.length,
+    options: ufOptions(),
+    visibleCount: UFS_VISIVEIS,
     moreLabel: (hidden) => `+ ${hidden} estados`,
     lessLabel: 'Ver menos estados',
   },
@@ -84,7 +66,7 @@ const SECTIONS: FilterSectionDefinition[] = [
     key: 'categoria',
     title: 'Categoria',
     aggregationKey: 'categorias',
-    options: CATEGORIAS,
+    options: CATEGORIAS_ADMINISTRATIVAS,
   },
   {
     key: 'modalidade',
@@ -119,6 +101,7 @@ export function FiltersPanelCursos({
       activeValues={getActiveValues}
       onToggle={toggle}
       onClear={resetFilters}
+      leading={<SortingOptionsCursos module={module} />}
       module={module}
       className={className}
     />

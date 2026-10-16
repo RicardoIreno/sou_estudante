@@ -31,15 +31,13 @@ export const ProfileIES = ({ ies, module = '4' }: ProfileIESProps) => {
 
   return (
     <Profile module={module}>
-      <Profile.TopBar backLabel="Voltar" backHref="/ies" />
-
       <Profile.Header
         badge={MODULE_META[module].badge}
         title={titulo}
         subtitle={subtitulo}
       >
         {descritores && (
-          <p className="font-protagonist text-protagonist font-semibold text-fg-protagonist">
+          <p className="font-sans text-base font-semibold text-fg">
             {descritores}
           </p>
         )}

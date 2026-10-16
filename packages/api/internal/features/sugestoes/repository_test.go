@@ -2,7 +2,6 @@ package sugestoes
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"net/http"
 	"reflect"
@@ -12,26 +11,17 @@ import (
 	"api_estudante/internal/testutil"
 )
 
-func decodeSugestoesRequest(t *testing.T, raw string) map[string]interface{} {
+func mustSugestoesShould(t *testing.T, body map[string]any) []any {
 	t.Helper()
-	var body map[string]interface{}
-	if err := json.Unmarshal([]byte(raw), &body); err != nil {
-		t.Fatalf("corpo da requisição inválido: %v (%s)", err, raw)
-	}
-	return body
-}
-
-func mustSugestoesShould(t *testing.T, body map[string]interface{}) []interface{} {
-	t.Helper()
-	query, ok := body["query"].(map[string]interface{})
+	query, ok := body["query"].(map[string]any)
 	if !ok {
 		t.Fatalf("query ausente: %v", body)
 	}
-	boolQuery, ok := query["bool"].(map[string]interface{})
+	boolQuery, ok := query["bool"].(map[string]any)
 	if !ok {
 		t.Fatalf("bool ausente: %v", query)
 	}
-	should, ok := boolQuery["should"].([]interface{})
+	should, ok := boolQuery["should"].([]any)
 	if !ok || len(should) == 0 {
 		t.Fatalf("should ausente: %v", boolQuery)
 	}
@@ -94,14 +84,14 @@ func TestBuscarSugestoesPriorizaMatchExato(t *testing.T) {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 
-	should := mustSugestoesShould(t, decodeSugestoesRequest(t, capturedBody))
+	should := mustSugestoesShould(t, testutil.DecodeJSONObject(t, capturedBody))
 
-	var exacto map[string]interface{}
+	var exacto map[string]any
 	hasBoolPrefix := false
 	for _, clause := range should {
-		clauseMap, _ := clause.(map[string]interface{})
-		if term, ok := clauseMap["term"].(map[string]interface{}); ok {
-			if field, ok := term["no_curso.exato"].(map[string]interface{}); ok {
+		clauseMap, _ := clause.(map[string]any)
+		if term, ok := clauseMap["term"].(map[string]any); ok {
+			if field, ok := term["no_curso.exato"].(map[string]any); ok {
 				exacto = field
 			}
 		}
@@ -121,6 +111,58 @@ func TestBuscarSugestoesPriorizaMatchExato(t *testing.T) {
 	}
 	if !hasBoolPrefix {
 		t.Errorf("esperado multi_match bool_prefix como fallback, obtido %v", should)
+	}
+}
+
+func TestBuscarSugestoesMultiCampoConsultaSiglaEDevolveNome(t *testing.T) {
+	var capturedBody string
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		raw, _ := io.ReadAll(r.Body)
+		capturedBody = string(raw)
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"hits": {
+				"total": {"value": 1},
+				"hits": [{"_source": {"no_ies": "UNIVERSIDADE DE SÃO PAULO", "sg_ies": "USP"}}]
+			}
+		}`))
+	})
+
+	repo := NewElasticsearchRepository(client, "dicionario_ies", "no_ies", "sg_ies")
+	got, err := repo.BuscarSugestoes(context.Background(), "usp", 8)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if !reflect.DeepEqual(got, []string{"UNIVERSIDADE DE SÃO PAULO"}) {
+		t.Errorf("sugestões = %v, esperado [UNIVERSIDADE DE SÃO PAULO]", got)
+	}
+
+	should := mustSugestoesShould(t, testutil.DecodeJSONObject(t, capturedBody))
+
+	exactFields := map[string]bool{}
+	var multiFields []string
+	for _, clause := range should {
+		clauseMap, _ := clause.(map[string]any)
+		if term, ok := clauseMap["term"].(map[string]any); ok {
+			for field := range term {
+				exactFields[field] = true
+			}
+		}
+		if mm, ok := clauseMap["multi_match"].(map[string]any); ok {
+			if fields, ok := mm["fields"].([]any); ok {
+				for _, f := range fields {
+					multiFields = append(multiFields, f.(string))
+				}
+			}
+		}
+	}
+
+	if !exactFields["no_ies.exato"] || !exactFields["sg_ies.exato"] {
+		t.Errorf("esperado match exato em no_ies.exato e sg_ies.exato, obtido %v", exactFields)
+	}
+	if !reflect.DeepEqual(multiFields, []string{"no_ies", "sg_ies"}) {
+		t.Errorf("multi_match fields = %v, esperado [no_ies sg_ies]", multiFields)
 	}
 }
 

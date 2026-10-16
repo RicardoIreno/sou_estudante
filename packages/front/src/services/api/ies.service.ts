@@ -1,11 +1,7 @@
 import { apiClient } from './client'
 import { API_CONFIG } from './config'
-import type {
-  IES,
-  IesListResponse,
-  Result,
-  SugestoesIesResponse,
-} from './types'
+import { buildSearchParams } from './search-params'
+import type { IES, IesListResponse, Result, SugestoesResponse } from './types'
 
 /**
  * Serviço de IES - encapsula as operações do índice de instituições
@@ -16,53 +12,19 @@ export const iesService = {
    * @param page - Número da página (padrão: 1)
    * @param limit - Resultados por página (padrão: 20)
    * @param filters - Filtros opcionais (uf, regiao, categoria, organizacao, sort)
-   * @returns IesListResponse com resultados paginados e agregações
+   * @returns Result com IesListResponse paginado; em falha, o erro tipado da API
    */
   async searchIes(
     query: string,
     page = 1,
     limit = 20,
     filters?: Record<string, string | null>,
-  ): Promise<IesListResponse> {
-    const emptyResponse: IesListResponse = {
-      total: 0,
-      page,
-      limit,
-      results: [],
-      links: {
-        self: '',
-        first: '',
-        last: '',
-      },
-    }
+  ): Promise<Result<IesListResponse>> {
+    const params = buildSearchParams(query, page, limit, filters)
 
-    const params = new URLSearchParams()
-    const normalizedQuery = query?.trim() ?? ''
-    if (normalizedQuery.length > 0) {
-      params.set('q', normalizedQuery)
-    }
-    params.set('page', String(page))
-    params.set('limit', String(limit))
-
-    if (filters) {
-      for (const [key, value] of Object.entries(filters)) {
-        if (
-          value !== null &&
-          value !== '' &&
-          key !== 'q' &&
-          key !== 'page' &&
-          key !== 'limit'
-        ) {
-          params.set(key, value)
-        }
-      }
-    }
-
-    const result = await apiClient<IesListResponse>(
+    return apiClient<IesListResponse>(
       `${API_CONFIG.ENDPOINTS.SEARCH_IES}?${params.toString()}`,
     )
-
-    return result.success ? result.data : emptyResponse
   },
 
   /**
@@ -101,7 +63,7 @@ export const iesService = {
     const params = new URLSearchParams()
     params.set('q', normalized)
 
-    const result = await apiClient<SugestoesIesResponse>(
+    const result = await apiClient<SugestoesResponse>(
       `${API_CONFIG.ENDPOINTS.SUGESTOES_IES}?${params.toString()}`,
     )
 

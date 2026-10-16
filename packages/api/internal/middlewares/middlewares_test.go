@@ -168,7 +168,7 @@ func TestAccessLogRegistraStatusPadraoEContexto(t *testing.T) {
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/cursos", nil))
 
-	var entry map[string]interface{}
+	var entry map[string]any
 	if err := json.Unmarshal(buf.Bytes(), &entry); err != nil {
 		t.Fatalf("log não é JSON: %v (%s)", err, buf.String())
 	}

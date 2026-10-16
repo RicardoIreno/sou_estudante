@@ -54,12 +54,12 @@ const routes = [
   {
     module: '5',
     title: 'Comparar cursos',
-    description: 'Analise até 4 cursos lado a lado',
+    description: 'Analise até 5 cursos lado a lado',
     badge: 'SEXTANTE',
     list: {
       title: 'Compare lado a lado',
       description:
-        'O sextante mede posições para orientar a escolha: até quatro cursos comparados pelos mesmos critérios, sem ranking.',
+        'O sextante mede posições para orientar a escolha: até cinco cursos comparados pelos mesmos critérios, sem ranking.',
     },
     href: '/comparar',
   },
@@ -177,6 +177,20 @@ describe('Route', () => {
       expect(
         screen.getByText('Indicadores oficiais e perfil da IES — Telescópio'),
       ).toBeInTheDocument()
+    })
+
+    it('uses a custom href when provided', () => {
+      render(
+        <Route
+          module="2"
+          variant="inline"
+          href="/ingresso/42"
+          title="Como ingressar neste curso"
+          description="Notas de corte, vagas e cotas no Sisu — Bússola"
+        />,
+      )
+
+      expect(screen.getByRole('link')).toHaveAttribute('href', '/ingresso/42')
     })
 
     it('does not render the module badge', () => {

@@ -3,9 +3,13 @@ import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createQueryWrapper } from '@/test/query-client'
 import { cursoService } from './curso.service'
 import type { CursoListResponse } from './types'
 import { useSearchCursos } from './use-search-cursos'
+
+const renderUseSearchCursos = () =>
+  renderHook(() => useSearchCursos(), { wrapper: createQueryWrapper() })
 
 vi.mock('next/navigation', () => ({
   useSearchParams: vi.fn(),
@@ -25,7 +29,9 @@ describe('useSearchCursos', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(cursoService.searchCursos).mockReturnValue(new Promise(() => {}))
+    vi.mocked(cursoService.searchCursos).mockReturnValue(
+      new Promise<never>(() => {}),
+    )
     vi.mocked(usePathname).mockReturnValue('/cursos')
     vi.mocked(useRouter).mockReturnValue({
       replace: mockReplace,
@@ -70,9 +76,12 @@ describe('useSearchCursos', () => {
       },
     }
 
-    vi.mocked(cursoService.searchCursos).mockResolvedValue(mockResponse)
+    vi.mocked(cursoService.searchCursos).mockResolvedValue({
+      success: true,
+      data: mockResponse,
+    })
 
-    const { result } = renderHook(() => useSearchCursos())
+    const { result } = renderUseSearchCursos()
 
     expect(result.current.query).toBe('medicina')
     expect(result.current.currentPage).toBe(2)
@@ -90,13 +99,32 @@ describe('useSearchCursos', () => {
     })
   })
 
+  it('expõe o erro da API quando a busca falha', async () => {
+    const params = new URLSearchParams('q=medicina')
+    vi.mocked(useSearchParams).mockReturnValue(
+      params as unknown as ReadonlyURLSearchParams,
+    )
+
+    vi.mocked(cursoService.searchCursos).mockResolvedValue({
+      success: false,
+      error: { type: 'network', message: 'sem conexão' },
+    })
+
+    const { result } = renderUseSearchCursos()
+
+    await waitFor(() => {
+      expect(result.current.error).toBe('Sem conexão com a internet 📡')
+      expect(result.current.results).toEqual([])
+    })
+  })
+
   it('repassa os filtros ativos da URL para cursoService.searchCursos', async () => {
     const params = new URLSearchParams('q=medicina&page=1&uf=SP&turno=Noturno')
     vi.mocked(useSearchParams).mockReturnValue(
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchCursos())
+    const { result } = renderUseSearchCursos()
 
     expect(result.current.query).toBe('medicina')
 
@@ -116,7 +144,7 @@ describe('useSearchCursos', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchCursos())
+    const { result } = renderUseSearchCursos()
 
     expect(result.current.query).toBe('med')
     expect(result.current.results).toEqual([])
@@ -129,7 +157,7 @@ describe('useSearchCursos', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchCursos())
+    const { result } = renderUseSearchCursos()
 
     act(() => {
       result.current.setQuery('engenharia')
@@ -144,7 +172,7 @@ describe('useSearchCursos', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchCursos())
+    const { result } = renderUseSearchCursos()
 
     act(() => {
       result.current.navigateToPage(3)
@@ -159,7 +187,7 @@ describe('useSearchCursos', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchCursos())
+    const { result } = renderUseSearchCursos()
 
     act(() => {
       result.current.updateParams({ sort: 'enade', page: '2' })
@@ -178,7 +206,7 @@ describe('useSearchCursos', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchCursos())
+    const { result } = renderUseSearchCursos()
 
     act(() => {
       result.current.resetFilters()

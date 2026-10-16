@@ -64,6 +64,14 @@ describe('Profile', () => {
     expect(screen.queryByText('Conteúdo geral')).not.toBeInTheDocument()
   })
 
+  it('makes the active panel reachable by keyboard', () => {
+    renderTabs()
+
+    const panel = screen.getByRole('tabpanel', { name: 'Visão geral' })
+
+    expect(panel).toHaveAttribute('tabindex', '0')
+  })
+
   it('moves selection to the next tab with ArrowRight', () => {
     renderTabs()
 
@@ -76,23 +84,6 @@ describe('Profile', () => {
       'true',
     )
     expect(screen.getByText('Conteúdo qualidade')).toBeInTheDocument()
-  })
-
-  it('renders the top bar back link and action', () => {
-    render(
-      <Profile module="1">
-        <Profile.TopBar backLabel="Resultados" backHref="/cursos">
-          <button type="button">Escolher curso</button>
-        </Profile.TopBar>
-      </Profile>,
-    )
-
-    expect(
-      screen.getByRole('button', { name: 'Resultados' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Escolher curso' }),
-    ).toBeInTheDocument()
   })
 
   it('omits overview items without a value', () => {

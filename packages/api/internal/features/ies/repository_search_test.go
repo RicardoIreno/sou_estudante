@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"testing"
 
@@ -18,15 +17,6 @@ const iesSearchResponse = `{
 	},
 	"aggregations": {"ufs": {"buckets": [{"key": "SP", "doc_count": 1}]}}
 }`
-
-func decodeRequest(t *testing.T, raw string) map[string]interface{} {
-	t.Helper()
-	var body map[string]interface{}
-	if err := json.Unmarshal([]byte(raw), &body); err != nil {
-		t.Fatalf("corpo da requisição inválido: %v (%s)", err, raw)
-	}
-	return body
-}
 
 func TestParseAggregationsVazioEhNil(t *testing.T) {
 	if got := parseAggregations(map[string]json.RawMessage{}); got != nil {
@@ -65,11 +55,11 @@ func TestBuildFilterClausesCategoria(t *testing.T) {
 	if len(clauses) != 1 {
 		t.Fatalf("esperado 1 cláusula, obtido %d", len(clauses))
 	}
-	boolNode, ok := clauses[0]["bool"].(map[string]interface{})
+	boolNode, ok := clauses[0]["bool"].(map[string]any)
 	if !ok {
 		t.Fatalf("esperado nó bool, obtido %T", clauses[0]["bool"])
 	}
-	if should, ok := boolNode["should"].([]map[string]interface{}); !ok || len(should) != 1 {
+	if should, ok := boolNode["should"].([]map[string]any); !ok || len(should) != 1 {
 		t.Errorf("esperado 1 should de categoria, obtido %v", boolNode["should"])
 	}
 }
@@ -95,7 +85,7 @@ func TestSearchDecodificaHitsEAgregacoes(t *testing.T) {
 		_, _ = w.Write([]byte(iesSearchResponse))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "ies")
 	result, err := repo.Search(context.Background(), "anhanguera", SearchFilterParams{}, 1, 10)
 	if err != nil {
 		t.Fatalf("erro inesperado: %v", err)
@@ -114,33 +104,13 @@ func TestSearchDecodificaHitsEAgregacoes(t *testing.T) {
 	}
 }
 
-func TestSearchTermoVazioUsaMatchAll(t *testing.T) {
-	var body map[string]interface{}
-	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
-		raw, _ := io.ReadAll(r.Body)
-		body = decodeRequest(t, string(raw))
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"hits":{"total":{"value":0},"hits":[]}}`))
-	})
-
-	repo := NewElasticsearchRepository(client)
-	if _, err := repo.Search(context.Background(), "   ", SearchFilterParams{}, 1, 10); err != nil {
-		t.Fatalf("erro inesperado: %v", err)
-	}
-
-	must := body["query"].(map[string]interface{})["bool"].(map[string]interface{})["must"].(map[string]interface{})
-	if _, ok := must["match_all"]; !ok {
-		t.Errorf("esperado match_all, obtido %v", must)
-	}
-}
-
 func TestSearchRetornaErroEmFalha(t *testing.T) {
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(`{"error":"boom"}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "ies")
 	if _, err := repo.Search(context.Background(), "anhanguera", SearchFilterParams{}, 1, 10); err == nil {
 		t.Fatal("esperado erro para status 500")
 	}
@@ -152,7 +122,7 @@ func TestGetByIDDecodificaIES(t *testing.T) {
 		_, _ = w.Write([]byte(`{"found":true,"_source":{"co_ies":"376","no_ies":"ANHANGUERA"}}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "ies")
 	iesDoc, err := repo.GetByID(context.Background(), "376")
 	if err != nil {
 		t.Fatalf("erro inesperado: %v", err)
@@ -168,8 +138,23 @@ func TestGetByIDRetornaErrNotFound(t *testing.T) {
 		_, _ = w.Write([]byte(`{"found":false}`))
 	})
 
-	repo := NewElasticsearchRepository(client)
+	repo := NewElasticsearchRepository(client, "ies")
 	if _, err := repo.GetByID(context.Background(), "999"); !errors.Is(err, ErrNotFound) {
 		t.Fatalf("esperado ErrNotFound, obtido %v", err)
+	}
+}
+
+func TestSearchUsaOIndiceConfigurado(t *testing.T) {
+	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/ies_v2/_search" {
+			t.Errorf("path = %q, esperado /ies_v2/_search", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(iesSearchResponse))
+	})
+
+	repo := NewElasticsearchRepository(client, "ies_v2")
+	if _, err := repo.Search(context.Background(), "anhanguera", SearchFilterParams{}, 1, 10); err != nil {
+		t.Fatalf("erro inesperado: %v", err)
 	}
 }

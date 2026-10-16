@@ -1,6 +1,5 @@
 import { MapPin } from 'lucide-react'
-import Menu from '@/components/layout/menu/menu'
-import { Callout } from '@/components/ui/callout/callout'
+import { Callout } from '@/components/ui/callout'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
 import type { Module } from '@/lib/module'
@@ -21,13 +20,16 @@ export const ProfileIngresso = ({
   curso,
   module = '2',
 }: ProfileIngressoProps) => {
-  const nomeCurso = curso.curso.no_curso
-  const grau = curso.curso.no_grau_academico
-  const titulo = `${nomeCurso} — ${grau}`
-  const subtitulo = `${curso.instituicao.no_ies} · ${curso.instituicao.sg_ies}`
-  const cidade = curso.localizacao.no_municipio
-  const uf = curso.localizacao.sg_uf
-  const ofertas = curso.sisu.ofertas
+  const nomeCurso = curso.curso?.no_curso ?? 'Curso não especificado'
+  const grau = curso.curso?.no_grau_academico
+  const titulo = grau ? `${nomeCurso} — ${grau}` : nomeCurso
+  const subtitulo =
+    [curso.instituicao?.no_ies, curso.instituicao?.sg_ies]
+      .filter(Boolean)
+      .join(' · ') || undefined
+  const cidade = curso.localizacao?.no_municipio
+  const uf = curso.localizacao?.sg_uf
+  const ofertas = curso.sisu?.ofertas ?? []
 
   const ofertasPorTurno = ofertas.reduce<OfertasPorTurno>((dic, oferta) => {
     const turno = oferta.turno || 'OUTROS'
@@ -42,32 +44,24 @@ export const ProfileIngresso = ({
 
   return (
     <Profile module={module} className="p-4">
-      <Profile.TopBar
-        backLabel="Voltar para a lista"
-        backHref="/ingressos"
-        className="p-0"
-      >
-        <div className="flex items-center gap-2">
-          <Tag
-            label={'Como ingressar'}
-            module={'2'}
-            className="font-semibold px-[10px] py-[3px] tracking-[0.5px] mr-0"
-          />
-          <Menu />
-        </div>
-      </Profile.TopBar>
-
       <Profile.Header
         badge={'Ingresso via Sisu'}
         title={titulo}
         subtitle={subtitulo}
         className="px-0"
       >
-        <Tag label={'Tem Sisu'} module={'2'} className="py-[2px]" />
+        <Tag
+          label={'Tem Sisu'}
+          module={module}
+          className="text-2xs py-[2px] bg-accent/10 border-accent/30"
+          variant="module"
+        />
         {turnosUnicos.map((turno) => (
-          <Tag key={turno} label={turno} className="py-[2px]" />
+          <Tag key={turno} label={turno} className="text-2xs py-[2px]" />
         ))}
-        {cidade && <Tag label={`${cidade}, ${uf}`} className="py-[2px]" />}
+        {cidade && (
+          <Tag label={`${cidade}, ${uf}`} className="text-2xs py-[2px]" />
+        )}
       </Profile.Header>
 
       {cidade && (
@@ -77,7 +71,7 @@ export const ProfileIngresso = ({
           value={cidade}
           source="Sisu · 2026"
           tag={uf}
-          module="2"
+          module={module}
           variant={true}
           className="mb-4"
         />
@@ -90,7 +84,7 @@ export const ProfileIngresso = ({
         return (
           <div key={turno} className="mb-4">
             {temMaisDeUmTurno && (
-              <div className="mb-2 text-coadjuvant-xs font-bold uppercase tracking-[0.6px] text-text-muted">
+              <div className="mb-2 text-xs font-bold uppercase tracking-[0.6px] text-fg-muted">
                 Turno: {turno}
               </div>
             )}
@@ -100,7 +94,7 @@ export const ProfileIngresso = ({
         )
       })}
 
-      <span className="mt-3 flex items-start gap-2 px-1 text-coadjuvant-xs leading-[1.6] text-text-muted">
+      <span className="mt-3 flex items-start gap-2 px-1 text-xs leading-[1.6] text-fg-muted">
         &ldquo;Escola pública&rdquo; inclui escolas comunitárias de educação do
         campo conveniadas com o poder público. &ldquo;Baixa renda&rdquo; é renda
         familiar de até 1 salário mínimo por pessoa. Modalidades definidas pela
@@ -110,7 +104,7 @@ export const ProfileIngresso = ({
 
       <Callout
         v="info"
-        className="bg-accent/10 border-accent/50 text-accent-deep mt-5"
+        className="bg-accent/10 border-accent/50 text-accent-deep mt-5 text-xs"
       >
         A nota de corte que você está vendo é da plataforma Sisu — e é da{' '}
         <strong>primeira chamada</strong>. As universidades fazem várias
@@ -121,7 +115,7 @@ export const ProfileIngresso = ({
         <strong>a lista de espera também resulta em matrículas.</strong>
       </Callout>
 
-      <Callout v="info" className="mt-3">
+      <Callout v="info" className="mt-3 text-xs">
         <strong>Prazos valem vaga.</strong> Inscrição, chamadas e matrícula têm
         datas definidas no edital de cada universidade — perder um prazo pode
         significar perder a vaga. Leia o edital e acompanhe o processo até o

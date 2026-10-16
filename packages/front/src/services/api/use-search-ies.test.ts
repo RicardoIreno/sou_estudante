@@ -3,9 +3,13 @@ import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createQueryWrapper } from '@/test/query-client'
 import { iesService } from './ies.service'
 import type { IesListResponse } from './types'
 import { useSearchIes } from './use-search-ies'
+
+const renderUseSearchIes = () =>
+  renderHook(() => useSearchIes(), { wrapper: createQueryWrapper() })
 
 vi.mock('next/navigation', () => ({
   useSearchParams: vi.fn(),
@@ -24,7 +28,9 @@ describe('useSearchIes', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(iesService.searchIes).mockReturnValue(new Promise(() => {}))
+    vi.mocked(iesService.searchIes).mockReturnValue(
+      new Promise<never>(() => {}),
+    )
     vi.mocked(usePathname).mockReturnValue('/ies')
     vi.mocked(useRouter).mockReturnValue({
       replace: mockReplace,
@@ -49,14 +55,37 @@ describe('useSearchIes', () => {
       results: [{ co_ies: '376', no_ies: 'ANHANGUERA', uf: 'SP' }],
       links: { self: '/ies?page=1', first: '/ies?page=1', last: '/ies?page=1' },
     }
-    vi.mocked(iesService.searchIes).mockResolvedValue(mockResponse)
+    vi.mocked(iesService.searchIes).mockResolvedValue({
+      success: true,
+      data: mockResponse,
+    })
 
-    const { result } = renderHook(() => useSearchIes())
+    const { result } = renderUseSearchIes()
 
     await waitFor(() => {
       expect(iesService.searchIes).toHaveBeenCalledWith('', 1, 20, {})
       expect(result.current.results).toHaveLength(1)
       expect(result.current.total).toBe(1)
+    })
+  })
+
+  it('expõe o erro da API quando a busca falha', async () => {
+    const params = new URLSearchParams('q=federal')
+    vi.mocked(useSearchParams).mockReturnValue(
+      params as unknown as ReadonlyURLSearchParams,
+    )
+
+    vi.mocked(iesService.searchIes).mockResolvedValue({
+      success: false,
+      error: { type: 'server', message: 'erro no servidor' },
+    })
+
+    const { result } = renderUseSearchIes()
+
+    await waitFor(() => {
+      expect(result.current.error).toBe(
+        'Serviço temporariamente indisponível ⚙️',
+      )
     })
   })
 
@@ -66,7 +95,7 @@ describe('useSearchIes', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    renderHook(() => useSearchIes())
+    renderUseSearchIes()
 
     await waitFor(() => {
       expect(iesService.searchIes).toHaveBeenCalledWith('federal', 1, 20, {
@@ -82,7 +111,7 @@ describe('useSearchIes', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchIes())
+    const { result } = renderUseSearchIes()
 
     act(() => {
       result.current.resetFilters()
@@ -97,7 +126,7 @@ describe('useSearchIes', () => {
       params as unknown as ReadonlyURLSearchParams,
     )
 
-    const { result } = renderHook(() => useSearchIes())
+    const { result } = renderUseSearchIes()
 
     act(() => {
       result.current.setQuery('nova')

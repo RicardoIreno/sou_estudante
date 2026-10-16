@@ -17,19 +17,23 @@ type Repository interface {
 
 // ElasticsearchRepository implementa Repository usando Elasticsearch
 type ElasticsearchRepository struct {
-	client *es.Client
-	index  string
-	field  string
+	client  *es.Client
+	index   string
+	display string
+	search  []string
 }
 
 // NewElasticsearchRepository cria nova instância do repository.
-// index é o índice de dicionário e field é o campo de texto do documento
-// (ex.: "no_curso" para dicionario_cursos, "no_ies" para dicionario_ies).
-func NewElasticsearchRepository(client *es.Client, index, field string) Repository {
+// index é o índice de dicionário, display é o campo de texto exibido na
+// sugestão (ex.: "no_curso", "no_ies") e search são campos adicionais também
+// consultados. O campo display é sempre incluído na busca; o autocomplete de
+// IES, por exemplo, busca por "no_ies" e "sg_ies" mas devolve "no_ies".
+func NewElasticsearchRepository(client *es.Client, index, display string, search ...string) Repository {
 	return &ElasticsearchRepository{
-		client: client,
-		index:  index,
-		field:  field,
+		client:  client,
+		index:   index,
+		display: display,
+		search:  append([]string{display}, search...),
 	}
 }
 
@@ -38,27 +42,30 @@ func NewElasticsearchRepository(client *es.Client, index, field string) Reposito
 const exactMatchBoost = 100
 
 // buildSugestoesQuery monta a query de sugestões: match exato com boost alto
-// seguido do match por prefixo (bool_prefix) como fallback.
-func buildSugestoesQuery(termo, field string) map[string]interface{} {
-	return map[string]interface{}{
-		"bool": map[string]interface{}{
-			"should": []map[string]interface{}{
-				{
-					"term": map[string]interface{}{
-						field + ".exato": map[string]interface{}{
-							"value": termo,
-							"boost": exactMatchBoost,
-						},
-					},
-				},
-				{
-					"multi_match": map[string]interface{}{
-						"query":  termo,
-						"type":   "bool_prefix",
-						"fields": []string{field},
-					},
+// por campo, seguido do match por prefixo (bool_prefix) como fallback.
+func buildSugestoesQuery(termo string, fields []string) map[string]any {
+	should := make([]map[string]any, 0, len(fields)+1)
+	for _, field := range fields {
+		should = append(should, map[string]any{
+			"term": map[string]any{
+				field + ".exato": map[string]any{
+					"value": termo,
+					"boost": exactMatchBoost,
 				},
 			},
+		})
+	}
+	should = append(should, map[string]any{
+		"multi_match": map[string]any{
+			"query":  termo,
+			"type":   "bool_prefix",
+			"fields": fields,
+		},
+	})
+
+	return map[string]any{
+		"bool": map[string]any{
+			"should":               should,
 			"minimum_should_match": 1,
 		},
 	}
@@ -67,9 +74,9 @@ func buildSugestoesQuery(termo, field string) map[string]interface{} {
 // BuscarSugestoes consulta nomes no índice de dicionário priorizando o match
 // exato e, em seguida, o match por prefixo.
 func (r *ElasticsearchRepository) BuscarSugestoes(ctx context.Context, termo string, limit int) ([]string, error) {
-	queryBody := map[string]interface{}{
+	queryBody := map[string]any{
 		"size":  limit,
-		"query": buildSugestoesQuery(termo, r.field),
+		"query": buildSugestoesQuery(termo, r.search),
 	}
 
 	resp, err := elasticsearch.ExecuteSearch[map[string]string](ctx, r.client, r.index, queryBody)
@@ -81,7 +88,7 @@ func (r *ElasticsearchRepository) BuscarSugestoes(ctx context.Context, termo str
 	seen := make(map[string]struct{}, len(resp.Hits))
 	sugestoes := make([]string, 0, len(resp.Hits))
 	for _, hit := range resp.Hits {
-		nome := strings.TrimSpace(hit[r.field])
+		nome := strings.TrimSpace(hit[r.display])
 		if nome == "" {
 			continue
 		}

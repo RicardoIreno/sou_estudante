@@ -4,16 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"api_estudante/internal/apperr"
 	"api_estudante/internal/httpx"
-)
-
-// Regras de paginação da busca de IES.
-const (
-	defaultPageSize = httpx.DefaultPageSize
-	maxPageSize     = httpx.MaxPageSize
 )
 
 // Service define a interface de negócio para IES.
@@ -43,12 +38,10 @@ func (s *ServiceImpl) BuscarIES(
 	if query == "" {
 		return nil, fmt.Errorf("%w: query não pode ser vazio", apperr.ErrInvalidInput)
 	}
-	if page < 1 {
-		page = 1
+	if !validSort(filters.Sort) {
+		return nil, fmt.Errorf("%w: sort inválido %q (use az ou relevancia)", apperr.ErrInvalidInput, filters.Sort)
 	}
-	if limit < 1 || limit > maxPageSize {
-		limit = defaultPageSize
-	}
+	page, limit = httpx.NormalizePagination(page, limit)
 
 	result, err := s.Repository.Search(ctx, query, filters, page, limit)
 	if err != nil {
@@ -65,11 +58,28 @@ func (s *ServiceImpl) BuscarIES(
 	}, nil
 }
 
+// validID restringe o co_ies a letras, dígitos, "_" e "-", para que o texto
+// do caminho não altere a rota usada na consulta ao Elasticsearch.
+var validID = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
+
+// validSort informa se o critério de ordenação é conhecido. Vazio significa
+// o padrão ("az"); "_score" equivale a "relevancia".
+func validSort(sort string) bool {
+	switch sort {
+	case "", "az", "relevancia", "_score":
+		return true
+	}
+	return false
+}
+
 // BuscarIESPorID retorna uma IES específica pelo co_ies.
 func (s *ServiceImpl) BuscarIESPorID(ctx context.Context, coIES string) (*IES, error) {
 	coIES = strings.TrimSpace(coIES)
 	if coIES == "" {
 		return nil, fmt.Errorf("%w: co_ies não pode ser vazio", apperr.ErrInvalidInput)
+	}
+	if !validID.MatchString(coIES) {
+		return nil, fmt.Errorf("%w: co_ies contém caracteres inválidos", apperr.ErrInvalidInput)
 	}
 
 	item, err := s.Repository.GetByID(ctx, coIES)
@@ -86,18 +96,10 @@ func iesFilterValues(query string, filters SearchFilterParams) url.Values {
 	if query != "" {
 		values.Set("q", query)
 	}
-	if len(filters.UF) > 0 {
-		values.Set("uf", strings.Join(filters.UF, ","))
-	}
-	if len(filters.Regiao) > 0 {
-		values.Set("regiao", strings.Join(filters.Regiao, ","))
-	}
-	if len(filters.Categoria) > 0 {
-		values.Set("categoria", strings.Join(filters.Categoria, ","))
-	}
-	if len(filters.Organizacao) > 0 {
-		values.Set("organizacao", strings.Join(filters.Organizacao, ","))
-	}
+	httpx.SetCSV(values, "uf", filters.UF)
+	httpx.SetCSV(values, "regiao", filters.Regiao)
+	httpx.SetCSV(values, "categoria", filters.Categoria)
+	httpx.SetCSV(values, "organizacao", filters.Organizacao)
 	if filters.Sort != "" {
 		values.Set("sort", filters.Sort)
 	}

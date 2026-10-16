@@ -7,10 +7,12 @@ import { ProfileTab } from './profile-tab'
 import { ProfileTabList } from './profile-tab-list'
 import { ProfileTabPanel } from './profile-tab-panel'
 import { ProfileTabs } from './profile-tabs'
-import { ProfileTopBar } from './profile-top-bar'
 
+// Exceção (docs/01, seção 13): 9 subcomponentes, acima do limite de ~5. Cada parte
+// é usada de forma independente nos perfis de curso, IES e ingresso e as abas
+// (Tabs/TabList/Tab/TabPanel) coordenam estado; consolidar reduziria a
+// flexibilidade de composição.
 export const Profile = Object.assign(ProfileRoot, {
-  TopBar: ProfileTopBar,
   Header: ProfileHeader,
   Location: ProfileLocation,
   Tabs: ProfileTabs,
@@ -30,4 +32,3 @@ export type { ProfileTabProps } from './profile-tab'
 export type { ProfileTabListProps } from './profile-tab-list'
 export type { ProfileTabPanelProps } from './profile-tab-panel'
 export type { ProfileTabsProps } from './profile-tabs'
-export type { ProfileTopBarProps } from './profile-top-bar'
