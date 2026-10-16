@@ -83,7 +83,7 @@ func newRouter(esClient *es.Client, cfg *config.Config) http.Handler {
 	mux.Handle("GET /ies", &ies.Handler{Service: iesService})
 	mux.Handle("GET /ies/{co_ies}", &ies.DetailHandler{Service: iesService})
 
-	iesSugestaoRepo := sugestoes.NewElasticsearchRepository(esClient, cfg.IESDictIndexName, "no_ies")
+	iesSugestaoRepo := sugestoes.NewElasticsearchRepository(esClient, cfg.IESDictIndexName, "no_ies", "sg_ies")
 	mux.Handle("GET /ies/sugestoes", &sugestoes.Handler{Service: sugestoes.NewService(iesSugestaoRepo)})
 
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {

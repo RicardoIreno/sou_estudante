@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { CompareProvider } from '@/components/compare/compare-provider'
 import { ShellHeader } from './shell-header'
 
 vi.mock('next/navigation', () => ({
@@ -10,7 +11,11 @@ vi.mock('next/navigation', () => ({
 
 const renderAt = (pathname: string) => {
   vi.mocked(usePathname).mockReturnValue(pathname)
-  return render(<ShellHeader />)
+  return render(
+    <CompareProvider>
+      <ShellHeader />
+    </CompareProvider>,
+  )
 }
 
 describe('ShellHeader', () => {

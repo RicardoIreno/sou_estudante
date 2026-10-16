@@ -8,6 +8,22 @@
   src: url("/fonts/RubikMonoOne-Regular.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("/fonts/SourceSans3-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: italic;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("/fonts/SourceSans3-Italic-VariableFont_wght.ttf") format("truetype");
+}
+
 @theme {
   /* Cores · Acentos por módulo */
   --color-m1-accent: #d4ff00; /* M1 Carta Náutica — neon-lime  */
@@ -95,7 +111,7 @@
   --text-xl: 1.25rem;
   --text-4xl: 2.25rem;
   --text-2xs: 0.688rem;
-  --text-display: clamp(2rem, 4vw, 2.75rem);
+  --text-display: clamp(1.6rem, 4vw, 2.35rem);
 
   /* Formas */
   --radius-card: 20px;
@@ -167,9 +183,7 @@
 body {
   font-family: var(--font-sans);
   color: var(--color-fg);
-  /* Títulos usam a mesma família do corpo. O `next/font` sobrescreve
-     `--font-sans` no <body> com o nome hasheado; re-herdar aqui evita que
-     `--font-display` (string literal "Source Sans 3") caia em system-ui. */
+  /* Títulos usam a mesma família do corpo. */
   --font-display: var(--font-sans);
 }
 
