@@ -30,7 +30,7 @@ describe('Card', () => {
         <Card.Tags
           source={[
             { label: 'Tubarão, SC', source: 'Censo' },
-            { label: '19 vagas', source: 'Censo', tone: 'neutral' },
+            { label: '19 vagas', source: 'Censo' },
           ]}
         />
       </Card>,

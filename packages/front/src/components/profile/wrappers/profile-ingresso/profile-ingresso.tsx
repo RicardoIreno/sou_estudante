@@ -30,6 +30,10 @@ export const ProfileIngresso = ({
   const cidade = curso.localizacao?.no_municipio
   const uf = curso.localizacao?.sg_uf
   const ofertas = curso.sisu?.ofertas ?? []
+  const id = curso.sequencial
+  const permanenciaHref = id !== undefined ? `/permanencia/${id}` : undefined
+  const idIes = curso.instituicao.co_ies
+  const iesHref = idIes !== undefined ? `/ies/${idIes}` : undefined
 
   const ofertasPorTurno = ofertas.reduce<OfertasPorTurno>((dic, oferta) => {
     const turno = oferta.turno || 'OUTROS'
@@ -128,12 +132,14 @@ export const ProfileIngresso = ({
         <Route
           module="3"
           variant="inline"
+          href={permanenciaHref}
           title="Vou conseguir me manter?"
           description="Bolsas, cotas e apoios à permanência — Âncora"
         />
         <Route
           module="4"
           variant="inline"
+          href={iesHref}
           title="Conheça a instituição"
           description="Indicadores oficiais e perfil da IES — Telescópio"
         />

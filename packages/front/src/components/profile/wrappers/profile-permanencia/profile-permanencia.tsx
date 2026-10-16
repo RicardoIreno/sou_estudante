@@ -27,6 +27,8 @@ export const ProfilePermanencia = ({
   const categoriaAdministrativa = curso.instituicao.categoria_administrativa
   const metricas = curso.censo_metricas
   const gratuito = curso.curso.in_gratuito
+  const idIes = curso.instituicao.co_ies
+  const iesHref = idIes !== undefined ? `/ies/${idIes}` : undefined
 
   const DESC_APOIO =
     'Auxílios de moradia, alimentação e transporte para quem mais precisa. O Censo agrega esses tipos em um único campo.'
@@ -164,6 +166,7 @@ export const ProfilePermanencia = ({
         <Route
           module="4"
           variant="inline"
+          href={iesHref}
           title="Conheça a instituição"
           description="Indicadores e perfil da universidade — Telescópio"
         />
