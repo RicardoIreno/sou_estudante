@@ -105,11 +105,11 @@
   --font-sans: "Source Sans 3", system-ui, sans-serif;
   --font-selo: "Rubik Mono One", system-ui;
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-xl: 1.25rem;
-  --text-4xl: 2.25rem;
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-4xl: 2.25rem;    /* 36px */
   --text-2xs: 0.688rem;
   --text-display: clamp(1.6rem, 4vw, 2.35rem);
 

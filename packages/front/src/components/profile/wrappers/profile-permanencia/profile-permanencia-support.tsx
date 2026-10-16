@@ -12,32 +12,32 @@ export const ProfilePermanenciaSupport = ({titulo, valor, matriculados, descrica
     return (
         <div className="mb-3 rounded-card border border-plum-100 bg-surface p-[1.125rem]">
             <div className="mb-[0.625rem] flex items-start justify-between gap-3">
-                <p className="text-protagonist-sm font-bold text-text">{titulo}</p>
+                <p className="text-sm font-bold text-fg">{titulo}</p>
                 <Tag
                     label={'PERMANÊNCIA'}
                     module={'2'}
-                    className="border-none bg-accent/20 font-bold text-accent-deep/80 py-[2px]"
+                    className="border-none bg-accent/20 font-bold text-accent-deep/80 py-[2px] text-2xs"
                 />
             </div>
 
             {valor === 0 ?
-                <div className="mb-[0.375rem] text-protagonist-sm font-semibold text-text-muted">
+                <div className="mb-[0.375rem] text-sm font-semibold text-fg-muted">
                     Nenhum beneficiário registrado em 2024
                 </div> 
                 :
-                <div className="mb-2 font-mono text-protagonist-lg font-bold leading-none text-text">
+                <div className="mb-2 font-mono text-xl font-bold leading-none text-fg">
                     {valor}{" "}
-                    <small className="font-coadjuvant text-coadjuvant-sm font-medium text-text-muted">
+                    <small className="font-sans text-xs font-medium text-fg-muted">
                         de {matriculados} matriculados
                     </small>
                 </div>
             }
 
 
-            <p className="mb-1 text-coadjuvant-sm leading-[1.55] text-text-muted">
+            <p className="mb-1 text-xs leading-[1.55] text-fg-muted">
                 {descricao}
             </p>
-            <div className="mt-2 flex items-center gap-[6px] text-coadjuvant-xs text-text-muted">
+            <div className="mt-2 flex items-center gap-[6px] text-2xs text-fg-muted">
                 <Info className="size-3"/>
                 Censo · 2024
             </div>
