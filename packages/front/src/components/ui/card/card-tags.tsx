@@ -12,7 +12,7 @@ export interface CardTag {
   icon?: ReactNode
   source?: string
   /** Reservado para a estilização em andamento: hoje não altera o visual. */
-  tone?: 'accent' | 'neutral'
+  tone?: 'blue' | 'green'
 }
 
 interface Props {
@@ -38,7 +38,7 @@ export const CardTags = ({ className, source }: Props) => {
             label={tag.label}
             icon={tag.icon}
             source={tag.source}
-            variant="curso"
+            variant={tag.tone ?? "curso"}
           />
         )
       })}
