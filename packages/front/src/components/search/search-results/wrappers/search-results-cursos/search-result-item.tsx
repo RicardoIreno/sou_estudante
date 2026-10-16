@@ -60,22 +60,23 @@ export function SearchResultItem({
 
   // Montar tags dinâmicas
   const tags: Array<string | CardTag | ReactElement> = []
-  if (gratuito) tags.push('Gratuito')
+  const tagsBottom: Array<string | CardTag | ReactElement> = []
+  tags.push(<TagEnade key="enade" level={conceitoEnade} />)
+  if (gratuito) tags.push({ label: 'Gratuito', tone: 'green' })
+  if (temSisu) tags.push({ label: 'Tem Sisu', tone: 'blue' })
   if (modalidade) tags.push(modalidade)
   if (turno) tags.push(turno)
-  if (temSisu) tags.push('Tem Sisu')
   if (localizacaoTag) {
-    tags.push({
+    tagsBottom.push({
       label: localizacaoTag,
       icon: <MapPin aria-hidden className="size-3" />,
       source: 'Censo',
-      tone: 'accent',
+      tone: 'blue',
     })
   }
   if (vagasTag) {
-    tags.push({ label: vagasTag, source: 'Censo', tone: 'neutral' })
+    tagsBottom.push({ label: vagasTag, source: 'Censo' })
   }
-  tags.push(<TagEnade key="enade" level={conceitoEnade} />)
 
   const cardContent = (
     <>
@@ -89,11 +90,11 @@ export function SearchResultItem({
           subtitle={`${instituicao} • ${localizacaoCompleta}`}
         />
       </Card.Header>
-      <hr className="border-t-[1px] border-plum-100 my-3 relative -z-20" />
+      <hr className="border-t-[1px] border-plum-100 my-2 relative -z-20" />
 
       {tags.length > 0 && <Card.Tags source={tags} />}
 
-      <hr className="border-t-[1px] border-plum-100 my-3 relative -z-20" />
+      <hr className="border-t-[1px] border-plum-100 my-2 relative -z-20" />
       <Card.ProgressBar
         title="Taxa de desistência acumulada (5 anos)"
         percentage={
@@ -103,6 +104,9 @@ export function SearchResultItem({
         }
         emptyHint="sem dados"
       />
+
+      <hr className="border-t-[1px] border-plum-100 my-2 relative -z-20" />
+      {tagsBottom.length > 0 && <Card.Tags source={tagsBottom} />}
     </>
   )
 
@@ -114,7 +118,7 @@ export function SearchResultItem({
   return (
     <div className="space-y-2" data-module={module}>
       <Card module={module}>
-        <div className="flex items-start gap-3">
+        <div className="flex flex-col items-start gap-3">
           {comparing && (
             <Checkbox
               module={module}
@@ -132,19 +136,20 @@ export function SearchResultItem({
           >
             {cardContent}
           </Link>
+          {temSisu && (
+            <Link
+              href={`/ingresso/${id}`}
+              aria-label={`Ver ingresso via Sisu de ${nomeCurso}`}
+              className="inline-flex items-center gap-1 rounded-full px-1 font-sans text-xs font-bold text-accent-deep hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
+            >
+              Ver ingresso via Sisu
+              <ArrowRight className="size-3" aria-hidden="true" />
+            </Link>
+          )}
         </div>
       </Card>
 
-      {temSisu && (
-        <Link
-          href={`/ingresso/${id}`}
-          aria-label={`Ver ingresso via Sisu de ${nomeCurso}`}
-          className="inline-flex items-center gap-1 rounded-full px-1 font-sans text-xs font-bold text-accent-deep hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
-        >
-          Ver ingresso via Sisu
-          <ArrowRight className="size-3" aria-hidden="true" />
-        </Link>
-      )}
+      
     </div>
   )
 }
