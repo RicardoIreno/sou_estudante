@@ -38,7 +38,7 @@ export function RoutesBar({ module, className }: RoutesBarProps) {
       aria-label="Rotas"
       data-module={module}
       className={cn(
-        'border-b border-card-border bg-site-background',
+        'border-b border-card-border bg-surface-lv1',
         className,
       )}
     >

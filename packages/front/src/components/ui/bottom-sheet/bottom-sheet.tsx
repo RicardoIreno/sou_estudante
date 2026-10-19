@@ -94,12 +94,12 @@ export function BottomSheet({
         aria-labelledby={labelledBy}
         inert={!open}
         className={cn(
-          'fixed inset-x-0 bottom-0 z-[1310] mx-auto flex max-h-[85dvh] w-full max-w-[34rem] flex-col overflow-y-auto rounded-t-card bg-filter-surface shadow-[0_-12px_40px_color-mix(in_srgb,var(--color-navy-900)_25%,transparent)] transition-transform duration-cruise ease-tide',
+          'fixed inset-x-0 bottom-0 z-[1310] mx-auto flex max-h-[85dvh] w-full max-w-[34rem] flex-col overflow-y-auto rounded-t-card bg-surface-lv1 shadow-[0_-12px_40px_color-mix(in_srgb,var(--color-navy-900)_25%,transparent)] transition-transform duration-cruise ease-tide',
           open ? 'translate-y-0' : 'translate-y-full',
           className,
         )}
       >
-        <div className="sticky top-0 z-10 grid grid-cols-[1fr_auto_1fr] items-center rounded-t-card bg-filter-surface px-4 pb-2 pt-3">
+        <div className="sticky top-0 z-10 grid grid-cols-[1fr_auto_1fr] items-center rounded-t-card bg-surface-lv1 px-4 pb-2 pt-3">
           <span aria-hidden="true" />
           <span
             aria-hidden="true"

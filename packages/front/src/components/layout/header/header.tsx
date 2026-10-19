@@ -61,7 +61,7 @@ export const Header = ({
       <div className="w-full">
         <header
           className={cn(
-            'flex items-center justify-between p-4 pb-0 bg-site-background',
+            'flex items-center justify-between p-4 pb-0 bg-surface-lv1',
             'mx-auto w-full max-w-2xl',
             className,
           )}

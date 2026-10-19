@@ -29,7 +29,7 @@ export function ProfileTab({ value, children, className }: ProfileTabProps) {
         'h-[38px] flex-1 cursor-pointer whitespace-nowrap rounded-control font-sans text-xs font-semibold transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
         selected
-          ? 'bg-card-surface text-accent-deep shadow-sm'
+          ? 'bg-surface-lv2 text-accent-deep shadow-sm'
           : 'bg-transparent text-fg-muted hover:text-fg',
         className,
       )}

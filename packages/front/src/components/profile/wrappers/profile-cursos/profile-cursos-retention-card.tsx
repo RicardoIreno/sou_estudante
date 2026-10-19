@@ -39,7 +39,7 @@ export const ProfileCursosRetentionCard = ({
   return (
     <section
       className={cn(
-        'flex flex-col gap-4 rounded-card border border-card-border bg-card-surface px-6 py-6 shadow',
+        'flex flex-col gap-4 rounded-card border border-card-border bg-surface-lv2 px-6 py-6 shadow',
         className,
       )}
     >

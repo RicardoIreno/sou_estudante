@@ -49,7 +49,7 @@ export function Switch({
       <span
         aria-hidden="true"
         className={cn(
-          'inline-block rounded-full bg-card-surface shadow transition-transform duration-200',
+          'inline-block rounded-full bg-surface-lv2 shadow transition-transform duration-200',
           isMedium ? 'h-5 w-5' : 'h-4 w-4',
           checked && (isMedium ? 'translate-x-5' : 'translate-x-4'),
         )}

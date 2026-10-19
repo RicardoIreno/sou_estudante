@@ -119,7 +119,7 @@ export const ProfilePermanencia = ({
             descricao={DESC_FIES}
           />
 
-          <Callout className="border-plum-100 bg-site-background text-fg-muted text-xs">
+          <Callout className="border-plum-100 bg-surface-lv1 text-fg-muted text-xs">
             <strong className="text-fg">Bolsa não é financiamento.</strong> Uma
             bolsa não é devolvida — mas pode não cobrir tudo: o ProUni integral
             cobre a mensalidade inteira, enquanto o parcial cobre 50%, e o
@@ -128,7 +128,7 @@ export const ProfilePermanencia = ({
             entender a diferença antes de decidir.
           </Callout>
 
-          <Callout className="border-plum-100 bg-site-background text-fg-muted text-xs mt-2">
+          <Callout className="border-plum-100 bg-surface-lv1 text-fg-muted text-xs mt-2">
             <span className="flex items-start gap-2">
               <LifeBuoy className="mt-[1.5px] shrink-0 size-3.5" />
               <span>
@@ -138,7 +138,7 @@ export const ProfilePermanencia = ({
             </span>
           </Callout>
 
-          <Callout className="border-plum-100 bg-site-background text-fg-muted text-xs mt-2">
+          <Callout className="border-plum-100 bg-surface-lv1 text-fg-muted text-xs mt-2">
             <strong className="text-fg">
               Existem outras formas de financiamento
             </strong>

@@ -62,7 +62,7 @@ export function State({
   return (
     <figure
       className={cn(
-        'flex min-w-36 flex-col gap-2 rounded-panel border border-card-border bg-card-surface p-4',
+        'flex min-w-36 flex-col gap-2 rounded-panel border border-card-border bg-surface-lv2 p-4',
         className,
       )}
     >

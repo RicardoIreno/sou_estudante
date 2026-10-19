@@ -148,14 +148,14 @@ export function Menu({ mode = 'light' }: MenuProps) {
         <div className={cn(ITEM, 'cursor-default hover:bg-transparent')}>
           <span aria-hidden className={cn(PONTO, 'bg-plum-100')} />
           Metodologia
-          <span className="ml-auto rounded-full bg-site-background px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
+          <span className="ml-auto rounded-full bg-surface-lv1 px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
             em breve
           </span>
         </div>
         <div className={cn(ITEM, 'cursor-default hover:bg-transparent')}>
           <span aria-hidden className={cn(PONTO, 'bg-plum-100')} />
           Sobre
-          <span className="ml-auto rounded-full bg-site-background px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
+          <span className="ml-auto rounded-full bg-surface-lv1 px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
             em breve
           </span>
         </div>

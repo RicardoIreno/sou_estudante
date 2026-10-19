@@ -43,7 +43,7 @@ export function Tokens() {
             </span>
             <span className="font-mono text-base text-fg">Mono · dados</span>
           </div>
-          <div className="flex flex-wrap items-baseline gap-6 rounded-panel border border-card-border bg-card-surface p-5">
+          <div className="flex flex-wrap items-baseline gap-6 rounded-panel border border-card-border bg-surface-lv2 p-5">
             {FONT_SCALE.map(({ className, label }) => (
               <span key={label} className={className}>
                 {label}
@@ -54,7 +54,7 @@ export function Tokens() {
       </SubSection>
 
       <SubSection title="Formas (raios)">
-        <div className="flex flex-wrap items-center gap-6 rounded-panel border border-card-border bg-card-surface p-5">
+        <div className="flex flex-wrap items-center gap-6 rounded-panel border border-card-border bg-surface-lv2 p-5">
           {RADII.map(({ className, label }) => (
             <div key={label} className="flex flex-col items-center gap-2">
               <span

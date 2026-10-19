@@ -27,7 +27,7 @@ export function CompareMatrix({
   return (
     <div
       data-module={module}
-      className="overflow-x-auto rounded-panel border border-card-border bg-card-surface"
+      className="overflow-x-auto rounded-panel border border-card-border bg-surface-lv2"
     >
       <table className="w-full border-collapse text-left">
         <thead className={cn('border-b-2 border-m5-deep')}>
