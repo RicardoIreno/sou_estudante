@@ -38,7 +38,7 @@ export function RoutesBar({ module, className }: RoutesBarProps) {
       aria-label="Rotas"
       data-module={module}
       className={cn(
-        'border-b border-surface-border bg-surface-lv1',
+        'border-b border-border-primary bg-surface-lv1',
         className,
       )}
     >
@@ -48,7 +48,7 @@ export function RoutesBar({ module, className }: RoutesBarProps) {
           Rota
         </span>
 
-        <span aria-hidden className="h-4 w-px shrink-0 bg-surface-border" />
+        <span aria-hidden className="h-4 w-px shrink-0 bg-border-border-primary" />
 
         <ul className="flex items-center gap-6">
           {MODULES.map((item) => {

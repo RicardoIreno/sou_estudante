@@ -12,7 +12,7 @@ export function SearchHeaderSorting({
   className,
 }: SearchHeaderSortingProps) {
   return (
-    <div className={cn('my-4 border-t border-surface-border pt-4', className)}>
+    <div className={cn('my-4 border-t border-border-primary pt-4', className)}>
       {children}
     </div>
   )

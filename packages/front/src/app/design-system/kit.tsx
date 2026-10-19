@@ -62,7 +62,7 @@ export function State({
   return (
     <figure
       className={cn(
-        'flex min-w-36 flex-col gap-2 rounded-panel border border-surface-border bg-surface-lv2 p-4',
+        'flex min-w-36 flex-col gap-2 rounded-panel border border-border-primary bg-surface-lv2 p-4',
         className,
       )}
     >
@@ -89,7 +89,7 @@ export function Swatch({
   return (
     <div className="flex min-w-28 flex-col gap-1.5">
       <div
-        className="h-14 w-full rounded-control border border-surface-border"
+        className="h-14 w-full rounded-control border border-border-primary"
         style={{ background: `var(${token})` }}
       />
       <span className="font-sans text-xs font-semibold text-fg">{name}</span>

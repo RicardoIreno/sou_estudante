@@ -21,7 +21,7 @@ export function SkeletonCard({ className }: SkeletonCardProps) {
   return (
     <div
       className={cn(
-        'animate-pulse rounded-card border border-surface-border bg-surface-lv2 p-4 shadow',
+        'animate-pulse rounded-card border border-border-primary bg-surface-lv2 p-4 shadow',
         className,
       )}
       aria-hidden="true"

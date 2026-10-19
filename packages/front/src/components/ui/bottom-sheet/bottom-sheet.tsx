@@ -103,7 +103,7 @@ export function BottomSheet({
           <span aria-hidden="true" />
           <span
             aria-hidden="true"
-            className="h-1.5 w-10 rounded-full bg-surface-border"
+            className="h-1.5 w-10 rounded-full bg-border-border-primary"
           />
           <button
             ref={closeRef}

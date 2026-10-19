@@ -43,7 +43,7 @@ export function Comparar({ module }: CompararProps) {
 
   if (ids.length === 0) {
     return (
-      <div className="rounded-card border border-surface-border bg-surface-lv2 p-8 text-center">
+      <div className="rounded-card border border-border-primary bg-surface-lv2 p-8 text-center">
         <Typo v="title" s="lg" t="h2" className="block">
           Nenhum curso selecionado
         </Typo>

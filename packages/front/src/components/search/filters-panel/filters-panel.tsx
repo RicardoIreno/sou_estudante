@@ -123,14 +123,14 @@ export function FiltersPanel({
       {leading && (
         <>
           {leading}
-          <hr className={cn('m-0 h-px w-full border-0 bg-surface-border')} />
+          <hr className={cn('m-0 h-px w-full border-0 bg-border-border-primary')} />
         </>
       )}
 
       {sections.map((section, index) => (
         <Fragment key={section.key}>
           {index > 0 && (
-            <hr className={cn('m-0 h-px w-full border-0 bg-surface-border')} />
+            <hr className={cn('m-0 h-px w-full border-0 bg-border-border-primary')} />
           )}
           <FilterSection
             section={section}
@@ -192,7 +192,7 @@ export function FiltersPanel({
     <div
       data-module={module}
       className={cn(
-        'flex flex-col gap-6 rounded-card border border-surface-border bg-surface-lv1 p-6 font-sans text-fg shadow-sm',
+        'flex flex-col gap-6 rounded-card border border-border-primary bg-surface-lv1 p-6 font-sans text-fg shadow-sm',
         className,
       )}
     >

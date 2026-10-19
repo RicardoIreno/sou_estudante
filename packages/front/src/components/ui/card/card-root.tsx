@@ -24,7 +24,7 @@ export const CardRoot = ({
     <div
       data-module={module}
       className={cn(
-        'bg-surface-lv2 border border-surface-border font-sans rounded-card text-fg shadow',
+        'bg-surface-lv2 border border-border-primary font-sans rounded-card text-fg shadow',
         'relative isolate overflow-hidden',
         'px-6 py-4',
         variants[v],

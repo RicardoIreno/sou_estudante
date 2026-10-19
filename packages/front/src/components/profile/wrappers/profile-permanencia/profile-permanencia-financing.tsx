@@ -26,7 +26,7 @@ export const ProfilePermanenciaFinancing = ({
 
   if (tipo === 'prouni') {
     return (
-      <div className="mb-3 rounded-card border border-plum-100 bg-surface-lv2 p-[1.125rem]">
+      <div className="mb-3 rounded-card border border-border-secondary bg-surface-lv2 p-[1.125rem]">
         <div className="mb-[0.625rem] flex items-start justify-between gap-3">
           <p className="text-sm font-bold text-fg">ProUni</p>
           <Tag
@@ -51,7 +51,7 @@ export const ProfilePermanenciaFinancing = ({
             <div className="mb-2 text-2xs text-fg-muted">
               {integrais} integrais · {parciais} parciais
             </div>
-            <div className="mb-2 h-[9px] overflow-hidden rounded-[5px] bg-plum-100">
+            <div className="mb-2 h-[9px] overflow-hidden rounded-[5px] bg-surface-deep">
               <div
                 className="h-full rounded-[5px]"
                 style={{
@@ -74,7 +74,7 @@ export const ProfilePermanenciaFinancing = ({
 
   if (tipo === 'fies') {
     return (
-      <div className="mb-3 rounded-card border border-plum-100 bg-surface-lv2 p-[1.125rem]">
+      <div className="mb-3 rounded-card border border-border-secondary bg-surface-lv2 p-[1.125rem]">
         <div className="mb-[0.625rem] flex items-start justify-between gap-3">
           <p className="text-sm font-bold text-fg">Fies</p>
           <Tag
@@ -96,7 +96,7 @@ export const ProfilePermanenciaFinancing = ({
                 de {ingressantes} ingressantes · {porcentagem}%
               </small>
             </div>
-            <div className="mb-2 h-[9px] overflow-hidden rounded-[5px] bg-plum-100">
+            <div className="mb-2 h-[9px] overflow-hidden rounded-[5px] bg-surface-deep">
               <div
                 className="h-full rounded-[5px]"
                 style={{
@@ -118,7 +118,7 @@ export const ProfilePermanenciaFinancing = ({
   }
 
   return (
-    <div className="mb-3 rounded-card border border-plum-100 bg-surface-lv2 p-[1.125rem]">
+    <div className="mb-3 rounded-card border border-border-secondary bg-surface-lv2 p-[1.125rem]">
       <div className="mb-[0.625rem] flex items-start justify-between gap-3">
         <p className="text-sm font-bold text-fg">Cotas · reserva de vagas</p>
         <Tag
@@ -140,7 +140,7 @@ export const ProfilePermanenciaFinancing = ({
               de {ingressantes} ingressantes · {porcentagem}%
             </small>
           </div>
-          <div className="mb-2 h-[9px] overflow-hidden rounded-[5px] bg-plum-100">
+          <div className="mb-2 h-[9px] overflow-hidden rounded-[5px] bg-surface-deep">
             <div
               className="h-full rounded-[5px] bg-accent"
               style={{

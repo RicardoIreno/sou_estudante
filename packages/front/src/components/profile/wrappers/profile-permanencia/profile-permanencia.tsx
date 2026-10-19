@@ -77,7 +77,7 @@ export const ProfilePermanencia = ({
         <span className="whitespace-nowrap text-2xs font-bold uppercase tracking-[0.7px] text-fg-muted">
           Apoio à permanência
         </span>
-        <div className="flex-1 h-[1.5px] bg-plum-100"></div>
+        <div className="flex-1 h-[1.5px] bg-surface-deep"></div>
       </div>
 
       <ProfilePermanenciaSupport
@@ -99,7 +99,7 @@ export const ProfilePermanencia = ({
             <span className="whitespace-nowrap text-2xs font-bold uppercase tracking-[0.7px] text-fg-muted">
               Bolsas e financiamento
             </span>
-            <div className="flex-1 h-[1.5px] bg-plum-100"></div>
+            <div className="flex-1 h-[1.5px] bg-surface-deep"></div>
           </div>
 
           <ProfilePermanenciaFinancing
@@ -119,7 +119,7 @@ export const ProfilePermanencia = ({
             descricao={DESC_FIES}
           />
 
-          <Callout className="border-plum-100 bg-surface-lv1 text-fg-muted text-xs">
+          <Callout className="border-border-secondary bg-surface-lv1 text-fg-muted text-xs">
             <strong className="text-fg">Bolsa não é financiamento.</strong> Uma
             bolsa não é devolvida — mas pode não cobrir tudo: o ProUni integral
             cobre a mensalidade inteira, enquanto o parcial cobre 50%, e o
@@ -128,7 +128,7 @@ export const ProfilePermanencia = ({
             entender a diferença antes de decidir.
           </Callout>
 
-          <Callout className="border-plum-100 bg-surface-lv1 text-fg-muted text-xs mt-2">
+          <Callout className="border-border-secondary bg-surface-lv1 text-fg-muted text-xs mt-2">
             <span className="flex items-start gap-2">
               <LifeBuoy className="mt-[1.5px] shrink-0 size-3.5" />
               <span>
@@ -138,7 +138,7 @@ export const ProfilePermanencia = ({
             </span>
           </Callout>
 
-          <Callout className="border-plum-100 bg-surface-lv1 text-fg-muted text-xs mt-2">
+          <Callout className="border-border-secondary bg-surface-lv1 text-fg-muted text-xs mt-2">
             <strong className="text-fg">
               Existem outras formas de financiamento
             </strong>
@@ -152,7 +152,7 @@ export const ProfilePermanencia = ({
         <span className="whitespace-nowrap text-2xs font-bold uppercase tracking-[0.7px] text-fg-muted">
           Reserva de vagas · cotas
         </span>
-        <div className="flex-1 h-[1.5px] bg-plum-100"></div>
+        <div className="flex-1 h-[1.5px] bg-surface-deep"></div>
       </div>
 
       <ProfilePermanenciaFinancing

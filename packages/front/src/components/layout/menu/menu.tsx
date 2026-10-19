@@ -70,7 +70,7 @@ export function Menu({ mode = 'light' }: MenuProps) {
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
           mode === 'dark'
             ? 'bg-on-dark/10 text-on-dark hover:bg-on-dark/[.18]'
-            : 'bg-plum-100 hover:bg-plum-100/70',
+            : 'bg-surface-deep hover:bg-surface-deep/70',
         )}
       >
         <svg
@@ -111,7 +111,7 @@ export function Menu({ mode = 'light' }: MenuProps) {
         )}
       >
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between border-b border-plum-100 px-5 py-[1.1rem]">
+        <div className="flex items-center justify-between border-b border-border-secondary px-5 py-[1.1rem]">
           <span className="font-display text-base font-semibold text-fg">
             SoU_Estudante
           </span>
@@ -146,14 +146,14 @@ export function Menu({ mode = 'light' }: MenuProps) {
         </Link>
 
         <div className={cn(ITEM, 'cursor-default hover:bg-transparent')}>
-          <span aria-hidden className={cn(PONTO, 'bg-plum-100')} />
+          <span aria-hidden className={cn(PONTO, 'bg-surface-deep')} />
           Metodologia
           <span className="ml-auto rounded-full bg-surface-lv1 px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
             em breve
           </span>
         </div>
         <div className={cn(ITEM, 'cursor-default hover:bg-transparent')}>
-          <span aria-hidden className={cn(PONTO, 'bg-plum-100')} />
+          <span aria-hidden className={cn(PONTO, 'bg-surface-deep')} />
           Sobre
           <span className="ml-auto rounded-full bg-surface-lv1 px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
             em breve

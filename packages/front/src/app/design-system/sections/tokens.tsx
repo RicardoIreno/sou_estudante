@@ -43,7 +43,7 @@ export function Tokens() {
             </span>
             <span className="font-mono text-base text-fg">Mono · dados</span>
           </div>
-          <div className="flex flex-wrap items-baseline gap-6 rounded-panel border border-surface-border bg-surface-lv2 p-5">
+          <div className="flex flex-wrap items-baseline gap-6 rounded-panel border border-border-primary bg-surface-lv2 p-5">
             {FONT_SCALE.map(({ className, label }) => (
               <span key={label} className={className}>
                 {label}
@@ -54,7 +54,7 @@ export function Tokens() {
       </SubSection>
 
       <SubSection title="Formas (raios)">
-        <div className="flex flex-wrap items-center gap-6 rounded-panel border border-surface-border bg-surface-lv2 p-5">
+        <div className="flex flex-wrap items-center gap-6 rounded-panel border border-border-primary bg-surface-lv2 p-5">
           {RADII.map(({ className, label }) => (
             <div key={label} className="flex flex-col items-center gap-2">
               <span
@@ -113,7 +113,7 @@ const NEUTRAL_COLORS = [
   { token: '--color-fg-muted', name: 'fg muted', value: '#5b5266' },
   { token: '--color-muted', name: 'muted', value: 'gray-100' },
   { token: '--color-card-surface', name: 'card surface', value: 'white' },
-  { token: '--color-surface-border', name: 'card border', value: 'oklch 0.92' },
+  { token: '--color-border-border-primary', name: 'card border', value: 'oklch 0.92' },
   {
     token: '--color-site-background',
     name: 'site background',

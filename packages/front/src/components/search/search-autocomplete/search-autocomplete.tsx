@@ -237,7 +237,7 @@ export function SearchAutocomplete({
           id={listboxId}
           role="listbox"
           aria-label={listLabel}
-          className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-surface-border bg-surface-lv2 py-1 shadow-lg"
+          className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-border-primary bg-surface-lv2 py-1 shadow-lg"
         >
           {sugestoes.map((sugestao, index) => (
             <div

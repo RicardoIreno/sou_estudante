@@ -43,8 +43,11 @@
   --color-surface-lv1: oklch(97% 0.0102 311);
   --color-surface-lv2: oklch(100% 0 0);
 
+  --color-surface-deep: #efe6f5;
   --color-surface-footer: color-mix(in oklab, var(--color-blue-900) 75%, transparent);
-  --color-surface-border: oklch(0.92 0 0);
+
+  --color-border-primary: oklch(0.92 0 0);
+  --color-border-secondary: oklch(93.6% 0.022 312.18);
 
   /* Cores · Feedback (faixas do Enade e progresso) */
 

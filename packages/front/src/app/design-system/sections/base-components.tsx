@@ -176,13 +176,13 @@ export function BaseComponents() {
 
       <SubSection title="Route · variant (card | inline | list)">
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-panel border border-surface-border bg-surface-lv2 p-4">
+          <div className="rounded-panel border border-border-primary bg-surface-lv2 p-4">
             <Route module="2" />
           </div>
-          <div className="rounded-panel border border-surface-border bg-surface-lv2 p-4">
+          <div className="rounded-panel border border-border-primary bg-surface-lv2 p-4">
             <Route module="3" variant="inline" />
           </div>
-          <div className="rounded-panel border border-surface-border bg-surface-lv2 p-4 md:col-span-2">
+          <div className="rounded-panel border border-border-primary bg-surface-lv2 p-4 md:col-span-2">
             <Route module="5" variant="list" />
           </div>
         </div>
