@@ -106,7 +106,7 @@ export function Menu({ mode = 'light' }: MenuProps) {
         aria-label="Menu"
         inert={!opened}
         className={cn(
-          'fixed inset-y-0 right-0 z-[1210] flex w-[280px] max-w-[84vw] flex-col overflow-y-auto bg-surface shadow-[-12px_0_40px_color-mix(in_srgb,var(--color-navy-900)_25%,transparent)] transition-transform duration-cruise ease-tide',
+          'fixed inset-y-0 right-0 z-[1210] flex w-[280px] max-w-[84vw] flex-col overflow-y-auto bg-surface-lv2 shadow-[-12px_0_40px_color-mix(in_srgb,var(--color-navy-900)_25%,transparent)] transition-transform duration-cruise ease-tide',
           opened ? 'translate-x-0' : 'translate-x-full',
         )}
       >

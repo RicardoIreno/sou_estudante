@@ -39,6 +39,10 @@
   --color-m4-deep: #5b21a8;
   --color-m5-deep: #a34a00;
 
+  --color-surface-lv0: oklch(93% 0.0222 312);
+  --color-surface-lv1: oklch(97% 0.0102 311);
+  --color-surface-lv2: oklch(100% 0 0);
+
   --color-filter-surface: #f9f9f9;
   --color-filter-title: #707070;
 
@@ -88,7 +92,6 @@
   --color-navy-950: #16263a;
   --color-navy-900: #1c2b3a;
   --color-plum-100: #efe6f5;
-  --color-surface: #fff;
 
   /* Cores · Rodapé */
   /* 75% garante contraste >= 4.5:1 do texto branco (WCAG AA) sobre o fundo. */

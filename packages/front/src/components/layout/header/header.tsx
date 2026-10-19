@@ -30,7 +30,7 @@ export const Header = ({
     return (
       <header
         className={cn(
-          'sticky top-0 z-[600] flex h-[64px] items-center justify-between bg-site-background px-5',
+          'sticky top-0 z-[600] flex h-[64px] items-center justify-between px-5',
           'mx-auto w-full',
           className,
         )}
@@ -58,7 +58,7 @@ export const Header = ({
 
   if (variant === 'profile') {
     return (
-      <div className="w-full bg-white">
+      <div className="w-full">
         <header
           className={cn(
             'flex items-center justify-between p-4 pb-0 bg-site-background',

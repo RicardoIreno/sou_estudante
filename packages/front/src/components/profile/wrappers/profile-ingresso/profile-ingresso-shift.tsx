@@ -29,8 +29,8 @@ export const ProfileIngressoShift = ({
   const cotas = ofertas.filter((o) => o.modalidade !== 'AC')
 
   return (
-    <article className="relative overflow-hidden rounded-card border-[1.5px] border-plum-100 bg-surface p-4 sm:p-[1.125rem]">
-      <div className="mb-[0.875rem] rounded-card border-[1.5px] border-plum-100 bg-surface p-5">
+    <article className="relative overflow-hidden rounded-card border-[1.5px] border-plum-100 bg-surface-lv2 p-4 sm:p-[1.125rem]">
+      <div className="mb-[0.875rem] rounded-card border-[1.5px] border-plum-100 bg-surface-lv2 p-5">
         <div className="mb-1 text-2xs font-bold uppercase tracking-[0.6px] text-fg-muted">
           Nota de corte · Chamada regular · Ampla concorrência
         </div>
@@ -62,7 +62,7 @@ export const ProfileIngressoShift = ({
       </div>
 
       <div className="mb-[0.875rem] grid grid-cols-1 gap-[0.625rem] sm:grid-cols-2">
-        <div className="rounded-panel border border-plum-100 bg-surface p-[0.875rem]">
+        <div className="rounded-panel border border-plum-100 bg-surface-lv2 p-[0.875rem]">
           <div className="mb-1 text-2xs font-bold uppercase tracking-[0.6px] text-fg-muted">
             Vagas ofertadas
           </div>
@@ -76,7 +76,7 @@ export const ProfileIngressoShift = ({
           </div>
         </div>
 
-        <div className="rounded-panel border border-plum-100 bg-surface p-[0.875rem]">
+        <div className="rounded-panel border border-plum-100 bg-surface-lv2 p-[0.875rem]">
           <div className="mb-1 text-2xs font-bold uppercase tracking-[0.6px] text-fg-muted">
             Turno · Sisu
           </div>

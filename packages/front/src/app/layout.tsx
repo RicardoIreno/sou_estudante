@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body
         className={cn(
-          'bg-site-background relative antialiased',
+          'bg-surface-lv0 relative antialiased',
           dmMono.variable,
         )}
       >

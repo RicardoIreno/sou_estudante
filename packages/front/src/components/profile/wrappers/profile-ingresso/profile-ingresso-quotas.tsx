@@ -29,7 +29,7 @@ export const ProfileIngressoQuotas = ({
         'flex items-center justify-between gap-2 rounded-panel border p-3',
         vazia
           ? 'border-dashed border-plum-100 bg-site-background'
-          : 'border-plum-100 bg-surface',
+          : 'border-plum-100 bg-surface-lv2',
       )}
     >
       <div>
