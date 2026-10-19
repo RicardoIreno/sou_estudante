@@ -16,7 +16,7 @@ describe('MaskEnade', () => {
 
     expect(
       container.querySelector('[data-mask="enade"]')?.getAttribute('style'),
-    ).toContain('--color-enade-low-surface')
+    ).toContain('--color-low-surface')
   })
 
   it('cai na neblina quando não há conceito (SC/null)', () => {

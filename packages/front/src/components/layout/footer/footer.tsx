@@ -10,8 +10,8 @@ export const Footer = ({ className }: FooterProps) => {
       <p
         className={cn(
           'inline-block',
-          'text-xs leading-[1.6] text-footer-text',
-          'bg-footer-background rounded-2xl m-3 p-2',
+          'text-xs leading-[1.6] text-on-dark',
+          'bg-surface-footer rounded-2xl m-3 p-2',
         )}
       >
         Um produto do <strong>SoU_Ciência · Unifesp</strong> · Dados públicos ·{' '}

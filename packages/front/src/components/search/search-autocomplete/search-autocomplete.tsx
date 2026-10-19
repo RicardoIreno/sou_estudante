@@ -196,7 +196,7 @@ export function SearchAutocomplete({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={cn(
-          'w-full rounded-full border border-input-border bg-surface-lv2 py-3.5 pl-11',
+          'w-full rounded-full border border-accent-deep/20 bg-surface-lv2 py-3.5 pl-11',
           submitLabel ? 'pr-28' : 'pr-4',
           'font-sans text-base text-fg placeholder:text-fg-muted',
           'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-deep',
@@ -237,7 +237,7 @@ export function SearchAutocomplete({
           id={listboxId}
           role="listbox"
           aria-label={listLabel}
-          className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-card-border bg-surface-lv2 py-1 shadow-lg"
+          className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-surface-border bg-surface-lv2 py-1 shadow-lg"
         >
           {sugestoes.map((sugestao, index) => (
             <div

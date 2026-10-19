@@ -7,16 +7,16 @@ export type MarPalette = { color: string; background: string }
 
 export const MAR_PALETTES: Record<string, MarPalette> = {
   ok: {
-    color: 'var(--color-enade-ok)',
-    background: 'var(--color-enade-ok-surface)',
+    color: 'var(--color-ok)',
+    background: 'var(--color-ok-surface)',
   }, // faixas 5 e 4
   md: {
-    color: 'var(--color-enade-warn)',
-    background: 'var(--color-enade-warn-surface)',
+    color: 'var(--color-warn)',
+    background: 'var(--color-warn-surface)',
   }, // faixa 3
   bad: {
-    color: 'var(--color-enade-low)',
-    background: 'var(--color-enade-low-surface)',
+    color: 'var(--color-low)',
+    background: 'var(--color-low-surface)',
   }, // faixas 2 e 1
   neblina: {
     color: 'var(--color-fg-muted)',

@@ -14,7 +14,7 @@ export function Experiments() {
           {MODULES.map((module) => (
             <div
               key={module}
-              className="overflow-hidden rounded-panel border border-card-border bg-surface-lv2-lv2-lv2"
+              className="overflow-hidden rounded-panel border border-surface-border bg-surface-lv2-lv2-lv2"
             >
               <p className="px-5 pt-3 text-xs font-semibold text-fg-muted">
                 module {module} · {MODULE_META[module].title}

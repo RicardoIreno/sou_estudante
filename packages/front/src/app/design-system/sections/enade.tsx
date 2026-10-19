@@ -93,7 +93,7 @@ export function EnadeSection() {
       </SubSection>
 
       <SubSection title="MarLegenda">
-        <div className="max-w-xl rounded-panel border border-card-border bg-surface-lv2 p-4">
+        <div className="max-w-xl rounded-panel border border-surface-border bg-surface-lv2 p-4">
           <MarLegenda />
         </div>
       </SubSection>

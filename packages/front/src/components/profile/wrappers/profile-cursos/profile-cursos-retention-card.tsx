@@ -39,7 +39,7 @@ export const ProfileCursosRetentionCard = ({
   return (
     <section
       className={cn(
-        'flex flex-col gap-4 rounded-card border border-card-border bg-surface-lv2 px-6 py-6 shadow',
+        'flex flex-col gap-4 rounded-card border border-surface-border bg-surface-lv2 px-6 py-6 shadow',
         className,
       )}
     >
@@ -96,7 +96,7 @@ export const ProfileCursosRetentionCard = ({
         </p>
       )}
 
-      <hr className="border-dashed border-card-border" />
+      <hr className="border-dashed border-surface-border" />
 
       <p className="font-sans text-xs text-fg-muted">
         A taxa varia muito conforme a área. Ela ganha sentido lado a lado com

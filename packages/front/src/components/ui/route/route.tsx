@@ -51,7 +51,7 @@ export function Route({
         data-module={module}
         href={routeHref}
         className={cn(
-          'group flex items-center gap-4 rounded-card border border-card-border bg-surface-lv2 px-4 py-4',
+          'group flex items-center gap-4 rounded-card border border-surface-border bg-surface-lv2 px-4 py-4',
           'transition-transform hover:-translate-y-0.5',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
           className,
@@ -75,7 +75,7 @@ export function Route({
       data-module={module}
       href={routeHref}
       className={cn(
-        'group relative overflow-hidden bg-surface-lv2 border border-card-border',
+        'group relative overflow-hidden bg-surface-lv2 border border-surface-border',
 
         isCard && [
           'flex flex-col items-center text-center rounded-card px-4 py-5 hover:-translate-y-0.5',

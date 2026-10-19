@@ -19,7 +19,7 @@ const VARIANTS: Record<
   { container: string; link: string; button: string }
 > = {
   neutral: {
-    container: 'border-card-border bg-surface-lv2',
+    container: 'border-surface-border bg-surface-lv2',
     link: 'text-fg',
     button: 'text-fg-muted hover:bg-muted hover:text-fg',
   },

@@ -16,14 +16,14 @@ export function MarLegenda() {
         >
           <path
             d="M2 14 Q6 12.5 10 14 T18 14 T26 14"
-            className="stroke-enade-ok"
+            className="stroke-ok"
             strokeWidth="1.6"
             fill="none"
             strokeLinecap="round"
           />
           <path
             d="M40 14 Q43 8 46 14 T52 14 T58 14 T64 14"
-            className="stroke-enade-low"
+            className="stroke-low"
             strokeWidth="1.6"
             fill="none"
             strokeLinecap="round"

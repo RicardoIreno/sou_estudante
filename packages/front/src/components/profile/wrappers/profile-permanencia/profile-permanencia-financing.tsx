@@ -32,7 +32,7 @@ export const ProfilePermanenciaFinancing = ({
           <Tag
             label={'INTEGRAL OU PARCIAL'}
             module={'3'}
-            className="border-none bg-enade-ok-surface font-bold text-enade-ok/85 py-[2px] text-2xs"
+            className="border-none bg-ok-surface font-bold text-ok/85 py-[2px] text-2xs"
           />
         </div>
 
@@ -80,7 +80,7 @@ export const ProfilePermanenciaFinancing = ({
           <Tag
             label={'REEMBOLSÁVEL · COM JUROS'}
             module={'3'}
-            className="border-none bg-enade-warn-surface font-bold text-enade-warn/85 py-[2px] text-2xs"
+            className="border-none bg-warn-surface font-bold text-warn/85 py-[2px] text-2xs"
           />
         </div>
 

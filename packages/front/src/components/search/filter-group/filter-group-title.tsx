@@ -17,7 +17,7 @@ export function FilterGroupTitle({
     <h4
       id={`${groupId}-title`}
       className={cn(
-        'mb-5 font-display font-semibold text-filter-title',
+        'mb-5 font-display font-semibold text-fg-muted',
         className,
       )}
     >

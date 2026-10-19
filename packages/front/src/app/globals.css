@@ -39,27 +39,38 @@
   --color-m4-deep: oklch(41% 0.1961 296);
   --color-m5-deep: oklch(51% 0.1368 049);
 
-
   --color-surface-lv0: oklch(93% 0.0222 312);
   --color-surface-lv1: oklch(97% 0.0102 311);
   --color-surface-lv2: oklch(100% 0 0);
 
-
-  --color-filter-title: #707070;
+  --color-surface-footer: color-mix(in oklab, var(--color-blue-900) 75%, transparent);
+  --color-surface-border: oklch(0.92 0 0);
 
   /* Cores · Feedback (faixas do Enade e progresso) */
-  --color-enade-ok: #1b8a5a;
-  --color-enade-ok-surface: #e8f7f0;
-  --color-enade-warn: #b06000;
-  --color-enade-warn-surface: #fff3e0;
-  --color-enade-low: #c0392b;
-  --color-enade-low-surface: #fdecea;
-  --color-progress-bar-foreground: oklch(55.4% 0.046 257.417);
-  --color-progress-bar-background: oklch(0.94 0.01 75);
+
+  --color-ok:             oklch(56% 0.121 158);
+  --color-ok-surface:     oklch(96% 0.018 166);
+
+  --color-warn:           oklch(57% 0.1350 59);
+  --color-warn-surface:   oklch(96% 0.0280 79);
+
+  --color-low:            oklch(54% 0.1740 29);
+  --color-low-surface:    oklch(95% 0.0180 25);
 
   /* Cores · Feedback genérico (erro) */
-  --color-error: var(--color-enade-low);
-  --color-error-surface: var(--color-enade-low-surface);
+  --color-error:          oklch(54% 0.1740 29);
+  --color-error-surface:  oklch(95% 0.0180 25);
+
+  /* Cores · Informação (banner de localização, tag de curso) */
+  --color-info:           oklch(81% 0.055 215);
+  --color-info-deep:      oklch(29% 0.066 243);
+  --color-info-border:    oklch(88% 0.051 221);
+  --color-info-surface:   oklch(100% 0 0);
+
+  --color-progress-bar-foreground: oklch(81.5% 0.055 215.5);
+  --color-progress-bar-background: oklch(0.94 0.01 75);
+
+  --color-muted: oklch(96.7% 0.0 264);
 
   /* Cores · Informação (banner de localização) */
   --color-info-surface: #f0f9ff;
@@ -72,39 +83,15 @@
   --color-tag-curso-deep: var(--color-slate-800);
 
   /* Cores · Callout (sobrescritas por [data-variant] em .callout) */
-  --color-callout-accent: var(--color-enade-warn);
-  --color-callout-surface: var(--color-enade-warn-surface);
-  --color-callout-accent-deep: var(--color-enade-warn);
+  --color-callout-accent: var(--color-warn);
+  --color-callout-surface: var(--color-warn-surface);
+  --color-callout-accent-deep: var(--color-warn);
 
   /* Cores · Acento escopado (sobrescrito por [data-module]) */
   --color-accent: var(--color-m1-accent);
   --color-accent-deep: var(--color-m1-deep);
   --color-accent-fg: var(--color-m1-deep);
 
-  /* Cores · Neutros semânticos */
-  --color-muted: var(--color-gray-100);
-  --color-input-border: var(--color-gray-300);
-  --color-on-dark: #fff; /* texto e véus sobre fundos escuros (navy) */
- 
-  --color-card-border: oklch(0.92 0 0);
-
-  /* Cores · Página inicial */
-  --color-navy-950: #16263a;
-  --color-navy-900: #1c2b3a;
-  --color-plum-100: #efe6f5;
-
-  /* Cores · Rodapé */
-  /* 75% garante contraste >= 4.5:1 do texto branco (WCAG AA) sobre o fundo. */
-  --color-footer-background: color-mix(
-    in oklab,
-    var(--color-blue-900) 75%,
-    transparent
-  );
-  --color-footer-text: #fff;
-
-  /* Cores · Texto (principal e secundário) */
-  --color-fg: #1a0e23;
-  --color-fg-muted: #5b5266;
 
   /*  Tipografia · Famílias */
   --font-mono: "DM Mono", ui-monospace, monospace; /* dados numéricos */

@@ -14,7 +14,7 @@ export const Checkbox = ({ className, module, ...props }: CheckboxProps) => {
       data-module={module}
       className={cn(
         'size-5 shrink-0 cursor-pointer appearance-none rounded-md',
-        'border border-card-border bg-surface-lv2 transition-colors',
+        'border border-surface-border bg-surface-lv2 transition-colors',
         'hover:border-fg-muted',
         'checked:border-accent checked:bg-accent',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
