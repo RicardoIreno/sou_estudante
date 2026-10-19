@@ -38,7 +38,7 @@ export default async function IngressoDetalhePage({
   const curso = await getCurso(id)
 
   return (
-    <div className="min-h-screen w-full bg-card-surface">
+    <div className="min-h-screen w-full bg-surface-lv2">
       <ProfileIngressoLoader id={id} initialData={curso} />
     </div>
   )

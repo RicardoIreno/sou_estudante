@@ -6,7 +6,7 @@ import { Typo } from '@/components/ui/typo'
  */
 export function EmBreve() {
   return (
-    <div className="rounded-card border border-card-border bg-card-surface p-4">
+    <div className="rounded-card border border-border-primary bg-surface-lv2 p-4">
       <Typo v="mute" s="sm" t="p">
         Este módulo ainda está em construção. Em breve você verá aqui os dados e
         a navegação completos.

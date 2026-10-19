@@ -26,40 +26,62 @@
 
 @theme {
   /* Cores · Acentos por módulo */
-  --color-m1-accent: #d4ff00; /* M1 Carta Náutica — neon-lime  */
-  --color-m2-accent: #00e5ff; /* M2 Bússola      — cyan        */
-  --color-m3-accent: #ff67be; /* M3 Âncora       — neon-pink   */
-  --color-m4-accent: #ae64fe; /* M4 Telescópio   — ultraviolet */
-  --color-m5-accent: #ff8d3b; /* M5 Sextante     — mango       */
+  --color-m1-accent: oklch(93.6% 0.225 121.24);
+  --color-m2-accent: oklch(84.4% 0.145 209.29);
+  --color-m3-accent: oklch(72.9% 0.205 347.95);
+  --color-m4-accent: oklch(65.7% 0.221 302.89);
+  --color-m5-accent: oklch(75.4% 0.165 52.47);
 
   /* Tons companheiros (texto legível sobre claro) */
-  --color-m1-deep: #5a6e00;
-  --color-m2-deep: #006b78;
-  --color-m3-deep: #a61e6b;
-  --color-m4-deep: #5b21a8;
-  --color-m5-deep: #a34a00;
+  --color-m1-deep: oklch(50% 0.1213 121);
+  --color-m2-deep: oklch(48% 0.0834 209);
+  --color-m3-deep: oklch(48% 0.1821 351);
+  --color-m4-deep: oklch(41% 0.1961 296);
+  --color-m5-deep: oklch(51% 0.1368 049);
 
-  --color-filter-surface: #f9f9f9;
-  --color-filter-title: #707070;
+  --color-surface-lv0: oklch(93% 0.0222 312);
+  --color-surface-lv1: oklch(97% 0.0102 311);
+  --color-surface-lv2: oklch(100% 0 0);
+
+  --color-surface-deep: oklch(93% 0.0222 312);
+  --color-surface-footer: color-mix(
+    in oklab,
+    var(--color-blue-900) 75%,
+    transparent
+  );
+  --color-surface-header: oklch(28.3% 0.034 249.13);
+
+  --color-border-primary: oklch(0.92 0 0);
+  --color-border-secondary: oklch(93.6% 0.022 312.18);
 
   /* Cores · Feedback (faixas do Enade e progresso) */
-  --color-enade-ok: #1b8a5a;
-  --color-enade-ok-surface: #e8f7f0;
-  --color-enade-warn: #b06000;
-  --color-enade-warn-surface: #fff3e0;
-  --color-enade-low: #c0392b;
-  --color-enade-low-surface: #fdecea;
-  --color-progress-bar-foreground: oklch(55.4% 0.046 257.417);
-  --color-progress-bar-background: oklch(0.94 0.01 75);
+
+  --color-ok: oklch(56% 0.121 158);
+  --color-ok-surface: oklch(96% 0.018 166);
+
+  --color-warn: oklch(57% 0.135 59);
+  --color-warn-surface: oklch(96% 0.028 79);
+
+  --color-low: oklch(54% 0.174 29);
+  --color-low-surface: oklch(95% 0.018 25);
 
   /* Cores · Feedback genérico (erro) */
-  --color-error: var(--color-enade-low);
-  --color-error-surface: var(--color-enade-low-surface);
+  --color-error: oklch(54% 0.174 29);
+  --color-error-surface: oklch(95% 0.018 25);
 
-  /* Cores · Informação (banner de localização) */
-  --color-info-surface: #f0f9ff;
-  --color-info-border: #b3e0f0;
-  --color-info-deep: var(--color-sky-950);
+  /* Cores · Informação (banner de localização, tag de curso) */
+  --color-info: oklch(81% 0.055 215);
+  --color-info-deep: oklch(29% 0.066 243);
+  --color-info-border: oklch(88% 0.051 221);
+  --color-info-surface: oklch(100% 0 0);
+
+  --color-progress-bar-foreground: oklch(81.5% 0.055 215.5);
+  --color-progress-bar-background: oklch(0.94 0.01 75);
+
+  --color-muted: oklch(96.7% 0 264);
+  --color-fg: oklch(19.19% 0.0441 309.16);
+  --color-fg-muted: oklch(45.48% 0.0339 305.48);
+  --color-on-dark: oklch(100% 0 0);
 
   /* Cores · tag de cursos */
   --color-tag-curso-surface: var(--color-slate-100);
@@ -67,41 +89,14 @@
   --color-tag-curso-deep: var(--color-slate-800);
 
   /* Cores · Callout (sobrescritas por [data-variant] em .callout) */
-  --color-callout-accent: var(--color-enade-warn);
-  --color-callout-surface: var(--color-enade-warn-surface);
-  --color-callout-accent-deep: var(--color-enade-warn);
+  --color-callout-accent: var(--color-warn);
+  --color-callout-surface: var(--color-warn-surface);
+  --color-callout-accent-deep: var(--color-warn);
 
   /* Cores · Acento escopado (sobrescrito por [data-module]) */
   --color-accent: var(--color-m1-accent);
   --color-accent-deep: var(--color-m1-deep);
   --color-accent-fg: var(--color-m1-deep);
-
-  /* Cores · Neutros semânticos */
-  --color-muted: var(--color-gray-100);
-  --color-input-border: var(--color-gray-300);
-  --color-on-dark: #fff; /* texto e véus sobre fundos escuros (navy) */
-  --color-site-background: #f8f4fb;
-  --color-card-surface: oklch(1 0 0);
-  --color-card-border: oklch(0.92 0 0);
-
-  /* Cores · Página inicial */
-  --color-navy-950: #16263a;
-  --color-navy-900: #1c2b3a;
-  --color-plum-100: #efe6f5;
-  --color-surface: #fff;
-
-  /* Cores · Rodapé */
-  /* 75% garante contraste >= 4.5:1 do texto branco (WCAG AA) sobre o fundo. */
-  --color-footer-background: color-mix(
-    in oklab,
-    var(--color-blue-900) 75%,
-    transparent
-  );
-  --color-footer-text: #fff;
-
-  /* Cores · Texto (principal e secundário) */
-  --color-fg: #1a0e23;
-  --color-fg-muted: #5b5266;
 
   /*  Tipografia · Famílias */
   --font-mono: "DM Mono", ui-monospace, monospace; /* dados numéricos */
@@ -127,13 +122,6 @@
   --container-home: 900px;
   --container-pages: 1100px;
 
-  /* Breakpoints · `md` (768px) é a fronteira do modo mobile: abaixo dela o
-     layout de busca empilha e o FilterPanel vira bottom sheet. Mantenha em
-     sincronia com `MOBILE_MEDIA_QUERY` em `src/components/ui/use-media-query.ts`. */
-  --breakpoint-md: 48rem;
-
-  --ease-wave: cubic-bezier(0.55, 0.5, 0.45, 0.5);
-
   /* Movimento · Durações e easings */
   --duration-fast: 150ms;
   --duration-cruise: 400ms;
@@ -142,8 +130,13 @@
   --ease-page: var(--ease-prow);
   --ease-tide: var(--ease-wave);
 
+  --ease-wave: cubic-bezier(0.55, 0.5, 0.45, 0.5);
+
   /* Transição de página (fade + subida) */
   --page-transition-offset: 8px;
+
+  /* em dois lugares: `MOBILE_MEDIA_QUERY` em `src/components/ui/use-media-query.ts`. */
+  --breakpoint-md: 48rem;
 }
 
 /* Temas por módulo */
@@ -286,5 +279,13 @@ body {
   .text-stroke-selo {
     color: white;
     -webkit-text-stroke: 1px rgb(20, 96, 150);
+  }
+
+  .min-h-page {
+    min-height: 700px;
+  }
+
+  .destak {
+    border: 2px solid red;
   }
 }

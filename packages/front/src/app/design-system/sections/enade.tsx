@@ -1,8 +1,8 @@
 import { MarLegenda } from '@/components/enade/formas-enade/mar-legenda'
 import { MaskEnade } from '@/components/enade/mask-enade/mask-enade'
 import { SeloEnade } from '@/components/enade/selo-enade/selo-enade'
-import { TagEnade } from '@/components/enade/tag-enade/tag-enade'
 import { Card } from '@/components/ui/card'
+import { TagEnade } from '@/components/ui/tag/wrappers/tag-enade/tag-enade'
 import type { EnadeLevel } from '@/lib/enade'
 import { Section, State, States, SubSection } from '../kit'
 
@@ -93,7 +93,7 @@ export function EnadeSection() {
       </SubSection>
 
       <SubSection title="MarLegenda">
-        <div className="max-w-xl rounded-panel border border-card-border bg-card-surface p-4">
+        <div className="max-w-xl rounded-panel border border-border-primary bg-surface-lv2 p-4">
           <MarLegenda />
         </div>
       </SubSection>

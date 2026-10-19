@@ -99,7 +99,7 @@ describe('Menu', () => {
     render(<Menu mode="light" />)
 
     expect(screen.getByRole('button', { name: 'Menu' })).toHaveClass(
-      'bg-plum-100',
+      'bg-surface-deep',
     )
   })
 

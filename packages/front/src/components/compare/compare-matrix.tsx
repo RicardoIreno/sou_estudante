@@ -27,11 +27,11 @@ export function CompareMatrix({
   return (
     <div
       data-module={module}
-      className="overflow-x-auto rounded-panel border border-card-border bg-card-surface"
+      className="overflow-x-auto rounded-panel border border-border-primary bg-surface-lv2"
     >
       <table className="w-full border-collapse text-left">
         <thead className={cn('border-b-2 border-m5-deep')}>
-          <tr className="border-b border-card-border">
+          <tr className="border-b border-border-primary">
             <th
               scope="col"
               className="w-40 min-w-40 p-4 align-top text-xs font-bold uppercase tracking-[0.9px] text-fg-muted"
@@ -71,7 +71,7 @@ export function CompareMatrix({
         <tbody>
           {sections.map((section) => (
             <Fragment key={section.title}>
-              <tr className="border-t border-card-border bg-muted">
+              <tr className="border-t border-border-primary bg-muted">
                 <th
                   scope="rowgroup"
                   colSpan={cursos.length + 1}
@@ -87,12 +87,15 @@ export function CompareMatrix({
               </tr>
               {section.rows.map((row) => {
                 const cellClass = cn(
-                  'border-l border-card-border p-4 text-sm text-fg',
+                  'border-l border-border-primary p-4 text-sm text-fg',
                   row.numeric ? 'font-mono font-bold' : 'font-sans',
                 )
 
                 return (
-                  <tr key={row.label} className="border-t border-card-border">
+                  <tr
+                    key={row.label}
+                    className="border-t border-border-primary"
+                  >
                     <th
                       scope="row"
                       className={cn(

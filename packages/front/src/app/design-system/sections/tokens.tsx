@@ -43,7 +43,7 @@ export function Tokens() {
             </span>
             <span className="font-mono text-base text-fg">Mono · dados</span>
           </div>
-          <div className="flex flex-wrap items-baseline gap-6 rounded-panel border border-card-border bg-card-surface p-5">
+          <div className="flex flex-wrap items-baseline gap-6 rounded-panel border border-border-primary bg-surface-lv2 p-5">
             {FONT_SCALE.map(({ className, label }) => (
               <span key={label} className={className}>
                 {label}
@@ -54,7 +54,7 @@ export function Tokens() {
       </SubSection>
 
       <SubSection title="Formas (raios)">
-        <div className="flex flex-wrap items-center gap-6 rounded-panel border border-card-border bg-card-surface p-5">
+        <div className="flex flex-wrap items-center gap-6 rounded-panel border border-border-primary bg-surface-lv2 p-5">
           {RADII.map(({ className, label }) => (
             <div key={label} className="flex flex-col items-center gap-2">
               <span
@@ -86,21 +86,21 @@ const MODULE_COLORS = [
 ]
 
 const FEEDBACK_COLORS = [
-  { token: '--color-enade-ok', name: 'enade ok', value: '#1b8a5a' },
+  { token: '--color-ok', name: 'enade ok', value: '#1b8a5a' },
   {
-    token: '--color-enade-ok-surface',
+    token: '--color-ok-surface',
     name: 'enade ok surface',
     value: '#e8f7f0',
   },
-  { token: '--color-enade-warn', name: 'enade warn', value: '#b06000' },
+  { token: '--color-warn', name: 'enade warn', value: '#b06000' },
   {
-    token: '--color-enade-warn-surface',
+    token: '--color-warn-surface',
     name: 'enade warn surface',
     value: '#fff3e0',
   },
-  { token: '--color-enade-low', name: 'enade low', value: '#c0392b' },
+  { token: '--color-low', name: 'enade low', value: '#c0392b' },
   {
-    token: '--color-enade-low-surface',
+    token: '--color-low-surface',
     name: 'enade low surface',
     value: '#fdecea',
   },
@@ -112,9 +112,12 @@ const NEUTRAL_COLORS = [
   { token: '--color-fg', name: 'fg', value: '#1a0e23' },
   { token: '--color-fg-muted', name: 'fg muted', value: '#5b5266' },
   { token: '--color-muted', name: 'muted', value: 'gray-100' },
-  { token: '--color-input-border', name: 'input border', value: 'gray-300' },
   { token: '--color-card-surface', name: 'card surface', value: 'white' },
-  { token: '--color-card-border', name: 'card border', value: 'oklch 0.92' },
+  {
+    token: '--color-border-border-primary',
+    name: 'card border',
+    value: 'oklch 0.92',
+  },
   {
     token: '--color-site-background',
     name: 'site background',

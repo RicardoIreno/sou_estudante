@@ -41,7 +41,7 @@ export default async function IesDetalhePage({ params }: IesDetalhePageProps) {
   const ies = await getIes(id)
 
   return (
-    <div className="min-h-screen w-full bg-card-surface">
+    <div className="min-h-screen w-full bg-surface-lv2">
       <ProfileIESLoader id={id} initialData={ies} />
     </div>
   )

@@ -40,7 +40,7 @@ export default async function CursoDetalhePage({
   const curso = await getCurso(id)
 
   return (
-    <div className="min-h-screen w-full bg-card-surface">
+    <div className="min-h-screen w-full">
       <ProfileCursosLoader id={id} initialData={curso} />
     </div>
   )

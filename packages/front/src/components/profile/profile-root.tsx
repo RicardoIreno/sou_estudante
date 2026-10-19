@@ -17,7 +17,7 @@ export function ProfileRoot({ children, module, className }: ProfileRootProps) {
       <div
         data-module={module}
         className={cn(
-          'mx-auto min-h-screen max-w-2xl bg-site-background pb-10',
+          'mx-auto min-h-screen max-w-2xl bg-surface-lv1 pb-10',
           className,
         )}
       >

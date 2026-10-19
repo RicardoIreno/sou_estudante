@@ -28,8 +28,8 @@ export const ProfileIngressoQuotas = ({
       className={cn(
         'flex items-center justify-between gap-2 rounded-panel border p-3',
         vazia
-          ? 'border-dashed border-plum-100 bg-site-background'
-          : 'border-plum-100 bg-surface',
+          ? 'border-dashed border-border-secondary bg-surface-lv1'
+          : 'border-border-secondary bg-surface-lv2',
       )}
     >
       <div>

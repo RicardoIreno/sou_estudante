@@ -11,14 +11,14 @@ describe('TagEnade', () => {
   it('usa a superfície da faixa do Enade como fundo', () => {
     render(<TagEnade level={1} />)
     expect(screen.getByText('Nota 1 no Enade').getAttribute('style')).toContain(
-      '--color-enade-low-surface',
+      '--color-low-surface',
     )
   })
 
   it('colore a nota 5 com a faixa ok', () => {
     render(<TagEnade level={5} />)
     expect(screen.getByText('Nota 5 no Enade').getAttribute('style')).toContain(
-      '--color-enade-ok',
+      '--color-ok',
     )
   })
 
