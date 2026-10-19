@@ -26,11 +26,11 @@
 
 @theme {
   /* Cores · Acentos por módulo */
-  --color-m1-accent: oklch(93.6% 0.225 121.24); 
-  --color-m2-accent: oklch(84.4% 0.145 209.29); 
-  --color-m3-accent: oklch(72.9% 0.205 347.95); 
-  --color-m4-accent: oklch(65.7% 0.221 302.89); 
-  --color-m5-accent: oklch(75.4% 0.165 52.470);
+  --color-m1-accent: oklch(93.6% 0.225 121.24);
+  --color-m2-accent: oklch(84.4% 0.145 209.29);
+  --color-m3-accent: oklch(72.9% 0.205 347.95);
+  --color-m4-accent: oklch(65.7% 0.221 302.89);
+  --color-m5-accent: oklch(75.4% 0.165 52.47);
 
   /* Tons companheiros (texto legível sobre claro) */
   --color-m1-deep: oklch(50% 0.1213 121);
@@ -44,7 +44,11 @@
   --color-surface-lv2: oklch(100% 0 0);
 
   --color-surface-deep: oklch(93% 0.0222 312);
-  --color-surface-footer: color-mix(in oklab, var(--color-blue-900) 75%, transparent);
+  --color-surface-footer: color-mix(
+    in oklab,
+    var(--color-blue-900) 75%,
+    transparent
+  );
   --color-surface-header: oklch(28.3% 0.034 249.13);
 
   --color-border-primary: oklch(0.92 0 0);
@@ -52,32 +56,32 @@
 
   /* Cores · Feedback (faixas do Enade e progresso) */
 
-  --color-ok:             oklch(56% 0.121 158);
-  --color-ok-surface:     oklch(96% 0.018 166);
+  --color-ok: oklch(56% 0.121 158);
+  --color-ok-surface: oklch(96% 0.018 166);
 
-  --color-warn:           oklch(57% 0.1350 59);
-  --color-warn-surface:   oklch(96% 0.0280 79);
+  --color-warn: oklch(57% 0.135 59);
+  --color-warn-surface: oklch(96% 0.028 79);
 
-  --color-low:            oklch(54% 0.1740 29);
-  --color-low-surface:    oklch(95% 0.0180 25);
+  --color-low: oklch(54% 0.174 29);
+  --color-low-surface: oklch(95% 0.018 25);
 
   /* Cores · Feedback genérico (erro) */
-  --color-error:          oklch(54% 0.1740 29);
-  --color-error-surface:  oklch(95% 0.0180 25);
+  --color-error: oklch(54% 0.174 29);
+  --color-error-surface: oklch(95% 0.018 25);
 
   /* Cores · Informação (banner de localização, tag de curso) */
-  --color-info:           oklch(81% 0.055 215);
-  --color-info-deep:      oklch(29% 0.066 243);
-  --color-info-border:    oklch(88% 0.051 221);
-  --color-info-surface:   oklch(100% 0 0);
+  --color-info: oklch(81% 0.055 215);
+  --color-info-deep: oklch(29% 0.066 243);
+  --color-info-border: oklch(88% 0.051 221);
+  --color-info-surface: oklch(100% 0 0);
 
   --color-progress-bar-foreground: oklch(81.5% 0.055 215.5);
   --color-progress-bar-background: oklch(0.94 0.01 75);
 
-  --color-muted:    oklch(96.7% 0.0 264);
-  --color-fg:       oklch(19.19% 0.0441 309.16);
+  --color-muted: oklch(96.7% 0 264);
+  --color-fg: oklch(19.19% 0.0441 309.16);
   --color-fg-muted: oklch(45.48% 0.0339 305.48);
-  --color-on-dark:  oklch(100% 0 0); 
+  --color-on-dark: oklch(100% 0 0);
 
   /* Cores · tag de cursos */
   --color-tag-curso-surface: var(--color-slate-100);
@@ -131,9 +135,8 @@
   /* Transição de página (fade + subida) */
   --page-transition-offset: 8px;
 
-    /* em dois lugares: `MOBILE_MEDIA_QUERY` em `src/components/ui/use-media-query.ts`. */
+  /* em dois lugares: `MOBILE_MEDIA_QUERY` em `src/components/ui/use-media-query.ts`. */
   --breakpoint-md: 48rem;
-
 }
 
 /* Temas por módulo */

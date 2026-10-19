@@ -113,7 +113,11 @@ const NEUTRAL_COLORS = [
   { token: '--color-fg-muted', name: 'fg muted', value: '#5b5266' },
   { token: '--color-muted', name: 'muted', value: 'gray-100' },
   { token: '--color-card-surface', name: 'card surface', value: 'white' },
-  { token: '--color-border-border-primary', name: 'card border', value: 'oklch 0.92' },
+  {
+    token: '--color-border-border-primary',
+    name: 'card border',
+    value: 'oklch 0.92',
+  },
   {
     token: '--color-site-background',
     name: 'site background',

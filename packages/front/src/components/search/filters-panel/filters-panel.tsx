@@ -123,14 +123,20 @@ export function FiltersPanel({
       {leading && (
         <>
           {leading}
-          <hr className={cn('m-0 h-px w-full border-0 bg-border-border-primary')} />
+          <hr
+            className={cn('m-0 h-px w-full border-0 bg-border-border-primary')}
+          />
         </>
       )}
 
       {sections.map((section, index) => (
         <Fragment key={section.key}>
           {index > 0 && (
-            <hr className={cn('m-0 h-px w-full border-0 bg-border-border-primary')} />
+            <hr
+              className={cn(
+                'm-0 h-px w-full border-0 bg-border-border-primary',
+              )}
+            />
           )}
           <FilterSection
             section={section}

@@ -92,7 +92,10 @@ export function CompareMatrix({
                 )
 
                 return (
-                  <tr key={row.label} className="border-t border-border-primary">
+                  <tr
+                    key={row.label}
+                    className="border-t border-border-primary"
+                  >
                     <th
                       scope="row"
                       className={cn(

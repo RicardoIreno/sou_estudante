@@ -49,8 +49,7 @@ export function LayoutSearchPage({
   const showPrompt = hasSearch || hasResults
 
   return (
-    <div data-module={module} className='min-h-screen'>
-
+    <div data-module={module} className="min-h-screen">
       <div className="mx-auto w-full max-w-pages px-5 py-8 min-h-page bg-surface-lv1 rounded-b-callout">
         <RoutesBar module={module} />
         {meta && module && (
