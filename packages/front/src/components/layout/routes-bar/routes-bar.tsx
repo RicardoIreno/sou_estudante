@@ -37,10 +37,7 @@ export function RoutesBar({ module, className }: RoutesBarProps) {
     <nav
       aria-label="Rotas"
       data-module={module}
-      className={cn(
-        'border-b border-border-primary bg-surface-lv1',
-        className,
-      )}
+      className={cn(className)}
     >
       <div className="mx-auto flex w-full max-w-pages items-center gap-5 overflow-x-auto px-5">
         <span className="flex shrink-0 items-center gap-[7px] py-3 text-xs font-bold uppercase tracking-[0.9px] text-fg-muted">

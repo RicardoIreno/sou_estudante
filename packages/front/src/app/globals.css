@@ -43,8 +43,9 @@
   --color-surface-lv1: oklch(97% 0.0102 311);
   --color-surface-lv2: oklch(100% 0 0);
 
-  --color-surface-deep: #efe6f5;
+  --color-surface-deep: oklch(93% 0.0222 312);
   --color-surface-footer: color-mix(in oklab, var(--color-blue-900) 75%, transparent);
+  --color-surface-header: oklch(28.3% 0.034 249.13);
 
   --color-border-primary: oklch(0.92 0 0);
   --color-border-secondary: oklch(93.6% 0.022 312.18);
@@ -73,12 +74,10 @@
   --color-progress-bar-foreground: oklch(81.5% 0.055 215.5);
   --color-progress-bar-background: oklch(0.94 0.01 75);
 
-  --color-muted: oklch(96.7% 0.0 264);
-
-  /* Cores · Informação (banner de localização) */
-  --color-info-surface: #f0f9ff;
-  --color-info-border: #b3e0f0;
-  --color-info-deep: var(--color-sky-950);
+  --color-muted:    oklch(96.7% 0.0 264);
+  --color-fg:       oklch(19.19% 0.0441 309.16);
+  --color-fg-muted: oklch(45.48% 0.0339 305.48);
+  --color-on-dark:  oklch(100% 0 0); 
 
   /* Cores · tag de cursos */
   --color-tag-curso-surface: var(--color-slate-100);
@@ -94,7 +93,6 @@
   --color-accent: var(--color-m1-accent);
   --color-accent-deep: var(--color-m1-deep);
   --color-accent-fg: var(--color-m1-deep);
-
 
   /*  Tipografia · Famílias */
   --font-mono: "DM Mono", ui-monospace, monospace; /* dados numéricos */
@@ -120,13 +118,6 @@
   --container-home: 900px;
   --container-pages: 1100px;
 
-  /* Breakpoints · `md` (768px) é a fronteira do modo mobile: abaixo dela o
-     layout de busca empilha e o FilterPanel vira bottom sheet. Mantenha em
-     sincronia com `MOBILE_MEDIA_QUERY` em `src/components/ui/use-media-query.ts`. */
-  --breakpoint-md: 48rem;
-
-  --ease-wave: cubic-bezier(0.55, 0.5, 0.45, 0.5);
-
   /* Movimento · Durações e easings */
   --duration-fast: 150ms;
   --duration-cruise: 400ms;
@@ -135,8 +126,14 @@
   --ease-page: var(--ease-prow);
   --ease-tide: var(--ease-wave);
 
+  --ease-wave: cubic-bezier(0.55, 0.5, 0.45, 0.5);
+
   /* Transição de página (fade + subida) */
   --page-transition-offset: 8px;
+
+    /* em dois lugares: `MOBILE_MEDIA_QUERY` em `src/components/ui/use-media-query.ts`. */
+  --breakpoint-md: 48rem;
+
 }
 
 /* Temas por módulo */
@@ -279,5 +276,13 @@ body {
   .text-stroke-selo {
     color: white;
     -webkit-text-stroke: 1px rgb(20, 96, 150);
+  }
+
+  .min-h-page {
+    min-height: 700px;
+  }
+
+  .destak {
+    border: 2px solid red;
   }
 }
