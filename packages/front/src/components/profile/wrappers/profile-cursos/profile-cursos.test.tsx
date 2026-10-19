@@ -73,4 +73,12 @@ describe('ProfileCursos', () => {
       screen.queryByRole('link', { name: /Como ingressar neste curso/ }),
     ).not.toBeInTheDocument()
   })
+
+  it('links to the permanence profile of the course', () => {
+    render(<ProfileCursos curso={curso} />)
+
+    expect(
+      screen.getByRole('link', { name: /Vou conseguir me manter/ }),
+    ).toHaveAttribute('href', '/permanencia/1')
+  })
 })

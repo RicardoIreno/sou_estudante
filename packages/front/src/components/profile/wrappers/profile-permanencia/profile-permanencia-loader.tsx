@@ -1,17 +1,20 @@
 'use client'
 
+import type { Curso } from '@/services/api/types'
 import { useCurso } from '@/services/api/use-curso'
 import { ProfileLoader } from '../../profile-loader'
 import { ProfilePermanencia } from './profile-permanencia'
 
 interface ProfilePermanenciaLoaderProps {
   id: string
+  initialData?: Curso
 }
 
 export const ProfilePermanenciaLoader = ({
   id,
+  initialData,
 }: ProfilePermanenciaLoaderProps) => {
-  const { curso, isLoading, error, notFound } = useCurso(id)
+  const { curso, isLoading, error, notFound } = useCurso(id, initialData)
 
   return (
     <ProfileLoader
