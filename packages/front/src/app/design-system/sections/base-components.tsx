@@ -188,15 +188,15 @@ export function BaseComponents() {
         </div>
       </SubSection>
 
-      <SubSection title="Callout · v (info | future)">
+      <SubSection title="Callout · v (blue | gold | module)">
         <div className="grid gap-4 md:grid-cols-2">
-          <Callout v="info">
+          <Callout v="blue">
             <Callout.Header>
               <Callout.Icon>
                 <Info aria-hidden="true" />
               </Callout.Icon>
               <Callout.HeaderContent>
-                <Callout.Tagline>Info</Callout.Tagline>
+                <Callout.Tagline>Blue</Callout.Tagline>
                 <Callout.Title>
                   O conceito Enade é avaliado por ciclos
                 </Callout.Title>
@@ -208,20 +208,37 @@ export function BaseComponents() {
             <Callout.Footer>Fonte: Inep</Callout.Footer>
           </Callout>
 
-          <Callout v="future">
+          <Callout v="gold">
             <Callout.Header>
               <Callout.Icon>
                 <TrendingUp aria-hidden="true" />
               </Callout.Icon>
               <Callout.HeaderContent>
-                <Callout.Tagline>Em breve</Callout.Tagline>
-                <Callout.Title>Progressão das notas</Callout.Title>
+                <Callout.Tagline>Gold</Callout.Tagline>
+                <Callout.Title>Prazos valem vaga</Callout.Title>
               </Callout.HeaderContent>
             </Callout.Header>
             <Callout.Content>
-              A evolução das notas ao longo dos ciclos, para ler tendências.
+              Inscrição, chamadas e matrícula têm datas definidas em edital.
             </Callout.Content>
           </Callout>
+
+          <div data-module="3">
+            <Callout v="module">
+              <Callout.Header>
+                <Callout.Icon>
+                  <Info aria-hidden="true" />
+                </Callout.Icon>
+                <Callout.HeaderContent>
+                  <Callout.Tagline>Module</Callout.Tagline>
+                  <Callout.Title>O que é o Sisu?</Callout.Title>
+                </Callout.HeaderContent>
+              </Callout.Header>
+              <Callout.Content>
+                Superfície branca com detalhes nas cores do módulo.
+              </Callout.Content>
+            </Callout>
+          </div>
         </div>
       </SubSection>
 

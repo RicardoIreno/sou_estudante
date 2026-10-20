@@ -106,10 +106,7 @@ export const ProfileIngresso = ({
         são políticas de cada instituição.
       </span>
 
-      <Callout
-        v="info"
-        className="bg-accent/10 border-accent/50 text-accent-deep mt-5 text-xs"
-      >
+      <Callout v="module" className="mt-5 text-xs">
         A nota de corte que você está vendo é da plataforma Sisu — e é da{' '}
         <strong>primeira chamada</strong>. As universidades fazem várias
         chamadas e esta nota <strong>tende a cair</strong>: portanto, fique
@@ -119,7 +116,7 @@ export const ProfileIngresso = ({
         <strong>a lista de espera também resulta em matrículas.</strong>
       </Callout>
 
-      <Callout v="info" className="mt-3 text-xs">
+      <Callout v="gold" className="mt-3 text-xs">
         <strong>Prazos valem vaga.</strong> Inscrição, chamadas e matrícula têm
         datas definidas no edital de cada universidade — perder um prazo pode
         significar perder a vaga. Leia o edital e acompanhe o processo até o

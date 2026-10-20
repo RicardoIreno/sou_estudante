@@ -89,9 +89,9 @@
   --color-tag-curso-deep: var(--color-slate-800);
 
   /* Cores · Callout (sobrescritas por [data-variant] em .callout) */
-  --color-callout-accent: var(--color-warn);
-  --color-callout-surface: var(--color-warn-surface);
-  --color-callout-accent-deep: var(--color-warn);
+  --color-callout-accent: var(--color-info);
+  --color-callout-surface: var(--color-info-surface);
+  --color-callout-accent-deep: var(--color-info-deep);
 
   /* Cores · Acento escopado (sobrescrito por [data-module]) */
   --color-accent: var(--color-m1-accent);
@@ -167,13 +167,25 @@
 }
 
 /* Temas do Callout (Scoped-Variable Pattern, sem React Context) */
-.callout[data-variant="future"] {
-  --color-callout-accent: var(--color-accent);
+.callout[data-variant="blue"] {
+  --color-callout-accent: var(--color-info);
   --color-callout-surface: color-mix(
     in oklab,
-    var(--color-accent) 12%,
-    transparent
+    var(--color-info) 12%,
+    var(--color-surface-lv2)
   );
+  --color-callout-accent-deep: var(--color-info-deep);
+}
+
+.callout[data-variant="gold"] {
+  --color-callout-accent: var(--color-warn);
+  --color-callout-surface: var(--color-warn-surface);
+  --color-callout-accent-deep: var(--color-warn);
+}
+
+.callout[data-variant="module"] {
+  --color-callout-accent: var(--color-accent);
+  --color-callout-surface: var(--color-surface-lv2);
   --color-callout-accent-deep: var(--color-accent-deep);
 }
 
