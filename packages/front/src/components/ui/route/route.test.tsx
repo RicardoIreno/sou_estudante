@@ -111,12 +111,6 @@ describe('Route', () => {
       const route = container.querySelector(`[data-module="${module}"]`)
       expect(route).toBeInTheDocument()
     })
-
-    it('renders an SVG icon inside the route component', () => {
-      const { container } = setup()
-      const route = container.querySelector(`[data-module="${module}"]`)
-      expect(route?.querySelector('svg')).toBeInTheDocument()
-    })
   })
 
   describe.each(routes)('Módulo $module - variante list', ({

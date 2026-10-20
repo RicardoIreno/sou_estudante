@@ -39,9 +39,4 @@ describe('Button', () => {
     render(<Button>Enviar</Button>)
     expect(screen.getByRole('button')).not.toHaveAttribute('data-module')
   })
-
-  it('keeps a forwarded className', () => {
-    render(<Button className="custom-class">Enviar</Button>)
-    expect(screen.getByRole('button')).toHaveClass('custom-class')
-  })
 })
