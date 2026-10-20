@@ -10,16 +10,14 @@ import (
 )
 
 func TestNewStreamRetornaErroParaArquivoInexistente(t *testing.T) {
-	if _, err := NewStream(filepath.Join(t.TempDir(), "inexistente.ndjson")); err == nil {
+	if _, err := NewStream(filepath.Join(t.TempDir(), "inexistente.json")); err == nil {
 		t.Fatal("esperado erro ao abrir arquivo inexistente")
 	}
 }
 
 func TestStreamNextUsaCoIESComoID(t *testing.T) {
-	content := `{"index": {"_index": "ies", "_id": "376"}}
-{"co_ies": "376", "no_ies": "ANHANGUERA", "uf": "SP"}
-`
-	stream, err := NewStream(testutil.WriteTempFile(t, "ies.ndjson", content))
+	content := `[{"ies_co_ies":376,"ies_no_ies":"CENTRO UNIVERSITÁRIO ANHANGUERA DE SÃO PAULO","ies_sg_uf":"SP"}]`
+	stream, err := NewStream(testutil.WriteTempFile(t, "ies.json", content))
 	if err != nil {
 		t.Fatalf("abrir stream: %v", err)
 	}

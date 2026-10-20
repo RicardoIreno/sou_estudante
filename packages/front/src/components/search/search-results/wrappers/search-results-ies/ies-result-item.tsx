@@ -11,12 +11,14 @@ interface IesResultItemProps {
 export function IesResultItem({ ies, module }: IesResultItemProps) {
   const nome = ies.no_ies || 'Instituição não especificada'
   const sigla = ies.sg_ies || ''
-  const localizacao = [ies.municipio, ies.uf].filter(Boolean).join(' - ')
+  const localizacao = [ies.localizacao?.no_municipio, ies.localizacao?.sg_uf]
+    .filter(Boolean)
+    .join(' - ')
 
   const tags = [
-    ies.categoria_administrativa,
-    ies.organizacao_academica,
-    ies.regiao,
+    ies.categoria_administrativa?.no_categoria_administrativa,
+    ies.organizacao_academica?.no_organizacao_academica,
+    ies.localizacao?.no_regiao,
   ].filter(Boolean) as string[]
 
   const card = (

@@ -52,7 +52,7 @@ describe('useSearchIes', () => {
       total: 1,
       page: 1,
       limit: 20,
-      results: [{ co_ies: '376', no_ies: 'ANHANGUERA', uf: 'SP' }],
+      results: [{ co_ies: '376', no_ies: 'ANHANGUERA' }],
       links: { self: '/ies?page=1', first: '/ies?page=1', last: '/ies?page=1' },
     }
     vi.mocked(iesService.searchIes).mockResolvedValue({

@@ -60,7 +60,7 @@ func TestCategoriaFilterUsaCategoriaAdministrativaDaIES(t *testing.T) {
 		t.Fatalf("esperado nó terms, obtido %T", built["terms"])
 	}
 
-	want := []string{"Privada com fins lucrativos", "Privada sem fins lucrativos"}
+	want := []string{"Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"}
 	if got := terms["instituicao.categoria_administrativa"]; !reflect.DeepEqual(got, want) {
 		t.Errorf("categoria_administrativa = %v, esperado %v", got, want)
 	}
@@ -253,7 +253,7 @@ func TestBuildFilterClausesCategoriaPrivadaIncluiComESemFinsLucrativos(t *testin
 
 	should := shouldClausesFrom(t, clauses[0])
 	terms := should[0]["terms"].(map[string]any)["instituicao.categoria_administrativa"]
-	want := []string{"Privada com fins lucrativos", "Privada sem fins lucrativos"}
+	want := []string{"Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"}
 	if !reflect.DeepEqual(terms, want) {
 		t.Errorf("categorias = %v, esperado %v", terms, want)
 	}

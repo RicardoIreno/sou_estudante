@@ -2,21 +2,20 @@ package ingest
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"os"
 )
 
-// Reader lê, de forma incremental, os registros de um arquivo NDJSON no
-// formato bulk do Elasticsearch: uma linha de metadata (ação "index") seguida
-// de uma linha de source.
+// Reader lê, de forma incremental, os registros de um arquivo JSON contendo um array.
 type Reader struct {
 	file    *os.File
 	decoder *json.Decoder
+	started bool
 	done    bool
 }
 
-// Open abre o arquivo NDJSON de origem para leitura incremental.
+// Open abre o arquivo JSON de origem para leitura incremental.
 func Open(filePath string) (*Reader, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -25,60 +24,40 @@ func Open(filePath string) (*Reader, error) {
 	return &Reader{file: file, decoder: json.NewDecoder(file)}, nil
 }
 
-// Next retorna o próximo registro de origem, ignorando as linhas de metadata.
+// Next retorna o próximo registro do array.
 // Retorna io.EOF quando não há mais registros.
 func (r *Reader) Next() (*SourceRecord, error) {
 	if r.done {
 		return nil, io.EOF
 	}
 
-	for {
-		var raw json.RawMessage
-		if err := r.decoder.Decode(&raw); err != nil {
-			if errors.Is(err, io.EOF) {
-				r.done = true
-			}
+	if !r.started {
+		r.started = true
+		token, err := r.decoder.Token()
+		if err != nil {
 			return nil, err
 		}
-		if isMetadata(raw) {
-			continue
+		if delim, ok := token.(json.Delim); !ok || delim != '[' {
+			// Formato inesperado não pode ser tratado como "arquivo vazio",
+			// sob pena de a ingestão silenciosamente não indexar nada.
+			r.done = true
+			return nil, fmt.Errorf("arquivo de origem deve ser um array JSON iniciado por '['")
 		}
-
-		var record SourceRecord
-		if err := json.Unmarshal(raw, &record); err != nil {
-			return nil, err
-		}
-		return &record, nil
 	}
+
+	if !r.decoder.More() {
+		r.done = true
+		return nil, io.EOF
+	}
+
+	var record SourceRecord
+	if err := r.decoder.Decode(&record); err != nil {
+		return nil, err
+	}
+	return &record, nil
 }
 
 // Close fecha o arquivo de origem.
 func (r *Reader) Close() error {
 	return r.file.Close()
-}
-
-// bulkActions são as chaves de ação reconhecidas em uma linha de metadata.
-var bulkActions = map[string]struct{}{
-	"index":  {},
-	"create": {},
-	"update": {},
-	"delete": {},
-}
-
-// isMetadata indica se a linha decodificada é um cabeçalho de ação do bulk.
-// Exige chave única de ação para não confundir um documento de origem (que
-// jamais possui exatamente uma chave "index"/"create"/"update"/"delete").
-func isMetadata(raw []byte) bool {
-	var meta map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &meta); err != nil {
-		return false
-	}
-	if len(meta) != 1 {
-		return false
-	}
-	for key := range meta {
-		_, ok := bulkActions[key]
-		return ok
-	}
-	return false
 }

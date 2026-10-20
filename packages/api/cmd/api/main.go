@@ -70,20 +70,20 @@ func main() {
 func newRouter(esClient *es.Client, cfg *config.Config) http.Handler {
 	mux := http.NewServeMux()
 
-	cursoRepo := cursos.NewElasticsearchRepository(esClient, cfg.CursosIndexName)
+	cursoRepo := cursos.NewElasticsearchRepository(esClient, config.LatestIndexName(cfg.CursosIndexName))
 	cursoService := cursos.NewService(cursoRepo)
 	mux.Handle("GET /cursos", &cursos.Handler{Service: cursoService})
 	mux.Handle("GET /cursos/{id}", &cursos.DetailHandler{Service: cursoService})
 
-	sugestaoRepo := sugestoes.NewElasticsearchRepository(esClient, cfg.DictIndexName, "no_curso")
+	sugestaoRepo := sugestoes.NewElasticsearchRepository(esClient, config.LatestIndexName(cfg.DictIndexName), "no_curso")
 	mux.Handle("GET /cursos/sugestoes", &sugestoes.Handler{Service: sugestoes.NewService(sugestaoRepo)})
 
-	iesRepo := ies.NewElasticsearchRepository(esClient, cfg.IESIndexName)
+	iesRepo := ies.NewElasticsearchRepository(esClient, config.LatestIndexName(cfg.IESIndexName))
 	iesService := ies.NewService(iesRepo)
 	mux.Handle("GET /ies", &ies.Handler{Service: iesService})
 	mux.Handle("GET /ies/{co_ies}", &ies.DetailHandler{Service: iesService})
 
-	iesSugestaoRepo := sugestoes.NewElasticsearchRepository(esClient, cfg.IESDictIndexName, "no_ies", "sg_ies")
+	iesSugestaoRepo := sugestoes.NewElasticsearchRepository(esClient, config.LatestIndexName(cfg.IESDictIndexName), "no_ies", "sg_ies")
 	mux.Handle("GET /ies/sugestoes", &sugestoes.Handler{Service: sugestoes.NewService(iesSugestaoRepo)})
 
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {

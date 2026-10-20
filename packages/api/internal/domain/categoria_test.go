@@ -11,11 +11,11 @@ func TestCategoriaTerms(t *testing.T) {
 		input string
 		want  []string
 	}{
-		{"privada", "privada", []string{"Privada com fins lucrativos", "Privada sem fins lucrativos"}},
+		{"privada", "privada", []string{"Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"}},
 		{"federal", "federal", []string{"Pública Federal"}},
 		{"estadual", "estadual", []string{"Pública Estadual"}},
 		{"municipal", "municipal", []string{"Pública Municipal"}},
-		{"case-insensitive", "PRIVADA", []string{"Privada com fins lucrativos", "Privada sem fins lucrativos"}},
+		{"case-insensitive", "PRIVADA", []string{"Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"}},
 		{"desconhecida", "especial", nil},
 		{"vazia", "", nil},
 	}

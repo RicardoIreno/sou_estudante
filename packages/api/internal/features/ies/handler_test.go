@@ -99,7 +99,7 @@ func TestHandlerSerializaRespostaJSON(t *testing.T) {
 			Total:   1,
 			Page:    1,
 			Limit:   20,
-			Results: []IES{{CoIES: "376", NoIES: "ANHANGUERA", UF: "SP"}},
+			Results: []IES{{CoIES: "376", NoIES: "ANHANGUERA", Localizacao: Localizacao{SgUF: "SP"}}},
 			Links:   PaginationLinks{Self: "/ies?page=1&limit=20"},
 		},
 	}
@@ -136,7 +136,7 @@ func TestHandlerRetornaErro500QuandoServiceFalha(t *testing.T) {
 }
 
 func TestDetailHandlerRetornaIES(t *testing.T) {
-	mockService := &MockService{ReturnIES: &IES{CoIES: "376", UF: "SP"}}
+	mockService := &MockService{ReturnIES: &IES{CoIES: "376", Localizacao: Localizacao{SgUF: "SP"}}}
 	handler := &DetailHandler{Service: mockService}
 
 	req := httptest.NewRequest(http.MethodGet, "/ies/376", nil)

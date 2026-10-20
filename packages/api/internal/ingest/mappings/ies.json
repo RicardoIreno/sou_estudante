@@ -20,6 +20,8 @@
   "mappings": {
     "dynamic": "strict",
     "properties": {
+      "nu_ano_censo": { "type": "integer" },
+      "dt_carga": { "type": "date", "format": "yyyy/MM/dd HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||strict_date_optional_time" },
       "co_ies": { "type": "keyword" },
       "no_ies": {
         "type": "text",
@@ -30,11 +32,89 @@
         }
       },
       "sg_ies": { "type": "keyword" },
-      "categoria_administrativa": { "type": "keyword" },
-      "organizacao_academica": { "type": "keyword" },
-      "municipio": { "type": "keyword" },
-      "uf": { "type": "keyword" },
-      "regiao": { "type": "keyword" }
+      "mantenedora": {
+        "properties": {
+          "co_mantenedora": { "type": "keyword" },
+          "no_mantenedora": { "type": "keyword" }
+        }
+      },
+      "categoria_administrativa": {
+        "properties": {
+          "tp_categoria_administrativa": { "type": "keyword" },
+          "no_categoria_administrativa": { "type": "keyword" }
+        }
+      },
+      "organizacao_academica": {
+        "properties": {
+          "tp_organizacao_academica": { "type": "keyword" },
+          "no_organizacao_academica": { "type": "keyword" }
+        }
+      },
+      "rede": {
+        "properties": {
+          "tp_rede": { "type": "keyword" },
+          "in_comunitaria": { "type": "boolean" },
+          "in_confessional": { "type": "boolean" }
+        }
+      },
+      "localizacao": {
+        "properties": {
+          "co_regiao": { "type": "keyword" },
+          "no_regiao": { "type": "keyword" },
+          "co_uf": { "type": "keyword" },
+          "no_uf": { "type": "keyword" },
+          "sg_uf": { "type": "keyword" },
+          "co_municipio": { "type": "keyword" },
+          "no_municipio": { "type": "keyword" },
+          "in_capital": { "type": "boolean" },
+          "co_mesorregiao": { "type": "keyword" },
+          "no_mesorregiao": { "type": "keyword" },
+          "co_microrregiao": { "type": "keyword" },
+          "no_microrregiao": { "type": "keyword" },
+          "endereco": {
+            "properties": {
+              "ds_endereco": { "type": "keyword" },
+              "ds_numero_endereco": { "type": "keyword" },
+              "ds_complemento_endereco": { "type": "keyword" },
+              "no_bairro": { "type": "keyword" },
+              "nu_cep": { "type": "keyword" }
+            }
+          }
+        }
+      },
+      "docentes": {
+        "properties": {
+          "qt_doc_total": { "type": "integer" },
+          "qt_doc_exe": { "type": "integer" },
+          "qt_cursos": { "type": "integer" },
+          "doc_por_curso": { "type": "float" },
+          "qt_doc_ex_sem_grad": { "type": "integer" },
+          "media_sem_grad_por_curso": { "type": "float" },
+          "perc_sem_grad": { "type": "float" },
+          "qt_doc_ex_grad": { "type": "integer" },
+          "media_grad_por_curso": { "type": "float" },
+          "perc_grad": { "type": "float" },
+          "qt_doc_ex_esp": { "type": "integer" },
+          "media_esp_por_curso": { "type": "float" },
+          "perc_esp": { "type": "float" },
+          "qt_doc_ex_mest": { "type": "integer" },
+          "media_mest_por_curso": { "type": "float" },
+          "perc_mestres": { "type": "float" },
+          "qt_doc_ex_dout": { "type": "integer" },
+          "media_dout_por_curso": { "type": "float" },
+          "perc_doutores": { "type": "float" }
+        }
+      },
+      "vagas_matriculas": {
+        "properties": {
+          "qt_vg": { "type": "integer" },
+          "qt_ing": { "type": "integer" },
+          "qt_mat": { "type": "integer" },
+          "media_ing_por_curso": { "type": "float" },
+          "media_mat_por_curso": { "type": "float" },
+          "media_vg_por_curso": { "type": "float" }
+        }
+      }
     }
   }
 }

@@ -209,14 +209,94 @@ export interface Oferta {
 // ---------------------------------------------------------------------------
 
 export interface IES {
+  nu_ano_censo?: number
+  dt_carga?: string
   co_ies?: string
   no_ies?: string
   sg_ies?: string
-  categoria_administrativa?: string
-  organizacao_academica?: string
-  municipio?: string
-  uf?: string
-  regiao?: string
+  mantenedora?: IesMantenedora
+  categoria_administrativa?: IesCategoriaAdministrativa
+  organizacao_academica?: IesOrganizacaoAcademica
+  rede?: IesRede
+  localizacao?: IesLocalizacao
+  docentes?: IesDocentes
+  vagas_matriculas?: IesVagasMatriculas
+}
+
+export interface IesMantenedora {
+  co_mantenedora?: string
+  no_mantenedora?: string
+}
+
+export interface IesCategoriaAdministrativa {
+  tp_categoria_administrativa?: string
+  no_categoria_administrativa?: string
+}
+
+export interface IesOrganizacaoAcademica {
+  tp_organizacao_academica?: string
+  no_organizacao_academica?: string
+}
+
+export interface IesRede {
+  tp_rede?: string
+  in_comunitaria: boolean
+  in_confessional: boolean
+}
+
+export interface IesLocalizacao {
+  co_regiao?: string
+  no_regiao?: string
+  co_uf?: string
+  no_uf?: string
+  sg_uf?: string
+  co_municipio?: string
+  no_municipio?: string
+  in_capital: boolean
+  co_mesorregiao?: string
+  no_mesorregiao?: string
+  co_microrregiao?: string
+  no_microrregiao?: string
+  endereco?: IesEndereco
+}
+
+export interface IesEndereco {
+  ds_endereco?: string
+  ds_numero_endereco?: string
+  ds_complemento_endereco?: string
+  no_bairro?: string
+  nu_cep?: string
+}
+
+export interface IesDocentes {
+  qt_doc_total?: number
+  qt_doc_exe?: number
+  qt_cursos?: number
+  doc_por_curso?: number
+  qt_doc_ex_sem_grad?: number
+  media_sem_grad_por_curso?: number
+  perc_sem_grad?: number
+  qt_doc_ex_grad?: number
+  media_grad_por_curso?: number
+  perc_grad?: number
+  qt_doc_ex_esp?: number
+  media_esp_por_curso?: number
+  perc_esp?: number
+  qt_doc_ex_mest?: number
+  media_mest_por_curso?: number
+  perc_mestres?: number
+  qt_doc_ex_dout?: number
+  media_dout_por_curso?: number
+  perc_doutores?: number
+}
+
+export interface IesVagasMatriculas {
+  qt_vg?: number
+  qt_ing?: number
+  qt_mat?: number
+  media_ing_por_curso?: number
+  media_mat_por_curso?: number
+  media_vg_por_curso?: number
 }
 
 export interface IesSearchAggregations {

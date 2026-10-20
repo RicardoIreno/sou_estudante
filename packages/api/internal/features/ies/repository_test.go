@@ -54,20 +54,20 @@ func TestBuildTextQueryExigeTodosOsTermosNoNomeESigla(t *testing.T) {
 	}
 }
 
-func TestBuildFilterClausesUsaCamposKeywordSemSufixo(t *testing.T) {
+func TestBuildFilterClausesUsaCamposKeywordAninhados(t *testing.T) {
 	clauses := buildFilterClauses(SearchFilterParams{
 		UF:          []string{"sp"},
 		Regiao:      []string{"Sudeste"},
 		Organizacao: []string{"Universidade"},
 	})
 
-	if got := termsValues(t, clauses, "uf"); !reflect.DeepEqual(got, []string{"SP"}) {
+	if got := termsValues(t, clauses, "localizacao.sg_uf"); !reflect.DeepEqual(got, []string{"SP"}) {
 		t.Errorf("uf = %v, esperado [SP] (maiúsculas)", got)
 	}
-	if got := termsValues(t, clauses, "regiao"); !reflect.DeepEqual(got, []string{"Sudeste"}) {
+	if got := termsValues(t, clauses, "localizacao.no_regiao"); !reflect.DeepEqual(got, []string{"Sudeste"}) {
 		t.Errorf("regiao = %v, esperado [Sudeste]", got)
 	}
-	if got := termsValues(t, clauses, "organizacao_academica"); !reflect.DeepEqual(got, []string{"Universidade"}) {
+	if got := termsValues(t, clauses, "organizacao_academica.no_organizacao_academica"); !reflect.DeepEqual(got, []string{"Universidade"}) {
 		t.Errorf("organizacao_academica = %v, esperado [Universidade]", got)
 	}
 }
@@ -86,8 +86,8 @@ func TestCategoriaFilterUsaCategoriaAdministrativa(t *testing.T) {
 		t.Fatalf("esperado nó terms, obtido %T", built["terms"])
 	}
 
-	want := []string{"Privada com fins lucrativos", "Privada sem fins lucrativos"}
-	if got := terms["categoria_administrativa"]; !reflect.DeepEqual(got, want) {
+	want := []string{"Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"}
+	if got := terms["categoria_administrativa.no_categoria_administrativa"]; !reflect.DeepEqual(got, want) {
 		t.Errorf("categoria_administrativa = %v, esperado %v", got, want)
 	}
 }

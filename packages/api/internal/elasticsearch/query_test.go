@@ -75,7 +75,7 @@ func TestFiltersAggEmbrulhaOsFiltrosNomeados(t *testing.T) {
 func TestCategoriaFilterTraduzOsRotulosDaUI(t *testing.T) {
 	assertJSON(t, CategoriaFilter("categoria_administrativa", "Privada"),
 		`{"terms": {"categoria_administrativa": [
-			"Privada com fins lucrativos", "Privada sem fins lucrativos"
+			"Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"
 		]}}`)
 }
 
@@ -107,7 +107,7 @@ func TestCategoriaAnyOfDevolveNilQuandoNenhumaCategoriaEConhecida(t *testing.T) 
 
 func TestCategoriasAggTemUmBucketPorGrupoDeCategoria(t *testing.T) {
 	assertJSON(t, CategoriasAgg("cat"), `{"filters": {"filters": {
-		"Privada":   {"terms": {"cat": ["Privada com fins lucrativos", "Privada sem fins lucrativos"]}},
+		"Privada":   {"terms": {"cat": ["Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"]}},
 		"Federal":   {"terms": {"cat": ["Pública Federal"]}},
 		"Estadual":  {"terms": {"cat": ["Pública Estadual"]}},
 		"Municipal": {"terms": {"cat": ["Pública Municipal"]}}

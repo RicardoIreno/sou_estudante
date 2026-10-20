@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	es "github.com/elastic/go-elasticsearch/v8"
 
@@ -18,6 +19,10 @@ import (
 	"api_estudante/internal/ingest/dictionary"
 	"api_estudante/internal/testutil"
 )
+
+// testDate é uma data fixa usada nos testes para tornar os nomes de índice
+// determinísticos (<nome>-<data>).
+const testDate = "2026-10-20"
 
 // sliceStream implementa bulk.Stream sobre uma lista em memória.
 type sliceStream struct {
@@ -42,8 +47,8 @@ func testConfig() *config.Config {
 		ESIngestAPIKey:   "chave",
 		CursosIndexName:  "cursos",
 		IESIndexName:     "ies",
-		DictIndexName:    "dicionario_cursos",
-		IESDictIndexName: "dicionario_ies",
+		DictIndexName:    "dicionario-cursos",
+		IESDictIndexName: "dicionario-ies",
 		JSONFilePath:     "/data/cursos.json",
 		IESJSONFilePath:  "/data/ies.json",
 		NumWorkers:       1,
@@ -88,13 +93,13 @@ func TestEnsureDataIngereEmNovoIndiceEApontaAlias(t *testing.T) {
 	var deletedOld int32
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-"+testDate:
 			w.WriteHeader(http.StatusNotFound)
 		case r.Method == http.MethodDelete:
 			atomic.AddInt32(&deletedOld, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
-		case r.Method == http.MethodPut && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodPut && r.URL.Path == "/cursos-"+testDate:
 			atomic.AddInt32(&created, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
@@ -111,7 +116,7 @@ func TestEnsureDataIngereEmNovoIndiceEApontaAlias(t *testing.T) {
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
 			atomic.AddInt32(&refreshed, 1)
 			w.WriteHeader(http.StatusOK)
-		case r.Method == http.MethodGet && r.URL.Path == "/_alias/cursos":
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/cursos-latest":
 			w.WriteHeader(http.StatusNotFound)
 		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
 			atomic.AddInt32(&aliasPointed, 1)
@@ -133,11 +138,11 @@ func TestEnsureDataIngereEmNovoIndiceEApontaAlias(t *testing.T) {
 		open:    func(string) (bulk.Stream, error) { return stream, nil },
 	}
 
-	if err := ensureData(context.Background(), client, testConfig(), spec); err != nil {
+	if err := ensureData(context.Background(), client, testConfig(), spec, testDate); err != nil {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 	if atomic.LoadInt32(&created) != 1 {
-		t.Errorf("índice -latest criado %d vezes, esperado 1", created)
+		t.Errorf("índice datado criado %d vezes, esperado 1", created)
 	}
 	if got := atomic.LoadInt32(&indexed); got != 2 {
 		t.Errorf("documentos indexados = %d, esperado 2", got)
@@ -157,13 +162,13 @@ func TestEnsureDataTrocaAliasEApagaIndiceAntigo(t *testing.T) {
 	var deletedOld int32
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-"+testDate:
 			w.WriteHeader(http.StatusNotFound)
-		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-antigo":
+		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-2026-10-19":
 			atomic.AddInt32(&deletedOld, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
-		case r.Method == http.MethodPut && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodPut && r.URL.Path == "/cursos-"+testDate:
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_bulk"):
@@ -177,9 +182,9 @@ func TestEnsureDataTrocaAliasEApagaIndiceAntigo(t *testing.T) {
 			_, _ = w.Write([]byte(`{"took":1,"errors":false,"items":[` + strings.Join(items, ",") + `]}`))
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
 			w.WriteHeader(http.StatusOK)
-		case r.Method == http.MethodGet && r.URL.Path == "/_alias/cursos":
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/cursos-latest":
 			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write([]byte(`{"cursos-antigo":{"aliases":{"cursos":{}}}}`))
+			_, _ = w.Write([]byte(`{"cursos-2026-10-19":{"aliases":{"cursos-latest":{}}}}`))
 		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
@@ -196,7 +201,7 @@ func TestEnsureDataTrocaAliasEApagaIndiceAntigo(t *testing.T) {
 		open:    func(string) (bulk.Stream, error) { return stream, nil },
 	}
 
-	if err := ensureData(context.Background(), client, testConfig(), spec); err != nil {
+	if err := ensureData(context.Background(), client, testConfig(), spec, testDate); err != nil {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 	if atomic.LoadInt32(&deletedOld) != 1 {
@@ -208,9 +213,9 @@ func TestEnsureDataNaoTrocaAliasQuandoIngestaoFalha(t *testing.T) {
 	var refreshed, aliasListed, aliasPointed int32
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-"+testDate:
 			w.WriteHeader(http.StatusNotFound)
-		case r.Method == http.MethodPut && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodPut && r.URL.Path == "/cursos-"+testDate:
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_bulk"):
@@ -225,7 +230,7 @@ func TestEnsureDataNaoTrocaAliasQuandoIngestaoFalha(t *testing.T) {
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
 			atomic.AddInt32(&refreshed, 1)
 			w.WriteHeader(http.StatusOK)
-		case r.Method == http.MethodGet && r.URL.Path == "/_alias/cursos":
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/cursos-latest":
 			atomic.AddInt32(&aliasListed, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{}`))
@@ -246,7 +251,7 @@ func TestEnsureDataNaoTrocaAliasQuandoIngestaoFalha(t *testing.T) {
 		open:    func(string) (bulk.Stream, error) { return stream, nil },
 	}
 
-	err := ensureData(context.Background(), client, testConfig(), spec)
+	err := ensureData(context.Background(), client, testConfig(), spec, testDate)
 	if err == nil || !strings.Contains(err.Error(), "rejeitado") {
 		t.Fatalf("esperado erro de rejeição, obtido %v", err)
 	}
@@ -260,9 +265,9 @@ func TestEnsureDicionarioReconstroiSempre(t *testing.T) {
 	var created, refreshed, aliasPointed int32
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_cursos-latest":
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario-cursos-"+testDate:
 			w.WriteHeader(http.StatusNotFound)
-		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_cursos-latest":
+		case r.Method == http.MethodPut && r.URL.Path == "/dicionario-cursos-"+testDate:
 			atomic.AddInt32(&created, 1)
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
@@ -281,7 +286,7 @@ func TestEnsureDicionarioReconstroiSempre(t *testing.T) {
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
 			atomic.AddInt32(&refreshed, 1)
 			w.WriteHeader(http.StatusOK)
-		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario_cursos":
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario-cursos-latest":
 			w.WriteHeader(http.StatusNotFound)
 		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
 			atomic.AddInt32(&aliasPointed, 1)
@@ -293,14 +298,14 @@ func TestEnsureDicionarioReconstroiSempre(t *testing.T) {
 	})
 
 	spec := dictionary.Spec{
-		SourceIndex: "cursos",
-		TargetIndex: "dicionario_cursos",
+		SourceIndex: "cursos-latest",
+		TargetIndex: "dicionario-cursos",
 		SourceField: "curso.no_curso.keyword",
 		DocField:    "no_curso",
 		Mapping:     []byte(`{"mappings":{}}`),
 	}
 
-	if err := ensureDicionario(context.Background(), client, testConfig(), spec); err != nil {
+	if err := ensureDicionario(context.Background(), client, testConfig(), testDate, spec); err != nil {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 	if atomic.LoadInt32(&created) != 1 {
@@ -319,9 +324,9 @@ func TestEnsureIESDicionarioIndexaNomeESigla(t *testing.T) {
 	var aliasPointed int32
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario_ies-latest":
+		case r.Method == http.MethodDelete && r.URL.Path == "/dicionario-ies-"+testDate:
 			w.WriteHeader(http.StatusNotFound)
-		case r.Method == http.MethodPut && r.URL.Path == "/dicionario_ies-latest":
+		case r.Method == http.MethodPut && r.URL.Path == "/dicionario-ies-"+testDate:
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_bulk"):
@@ -336,7 +341,7 @@ func TestEnsureIESDicionarioIndexaNomeESigla(t *testing.T) {
 			_, _ = w.Write([]byte(`{"took":1,"errors":false,"items":[` + strings.Join(items, ",") + `]}`))
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_refresh"):
 			w.WriteHeader(http.StatusOK)
-		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario_ies":
+		case r.Method == http.MethodGet && r.URL.Path == "/_alias/dicionario-ies-latest":
 			w.WriteHeader(http.StatusNotFound)
 		case r.Method == http.MethodPost && r.URL.Path == "/_aliases":
 			atomic.AddInt32(&aliasPointed, 1)
@@ -351,7 +356,7 @@ func TestEnsureIESDicionarioIndexaNomeESigla(t *testing.T) {
 		"376": {CoIES: "376", NoIES: "UNIVERSIDADE DE SÃO PAULO", SgIES: "USP"},
 	}
 
-	if err := ensureIESDicionario(context.Background(), client, testConfig(), docs); err != nil {
+	if err := ensureIESDicionario(context.Background(), client, testConfig(), docs, testDate); err != nil {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 	if !strings.Contains(capturedBulk, `"no_ies":"UNIVERSIDADE DE SÃO PAULO"`) {
@@ -370,9 +375,9 @@ func TestRunParaNaFalhaDeIngestaoDeCursosSemTocarNoRestante(t *testing.T) {
 	client := testutil.NewESClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch {
-		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodDelete && r.URL.Path == "/cursos-"+testDate:
 			w.WriteHeader(http.StatusNotFound)
-		case r.Method == http.MethodPut && r.URL.Path == "/cursos-latest":
+		case r.Method == http.MethodPut && r.URL.Path == "/cursos-"+testDate:
 			_, _ = w.Write([]byte(`{"acknowledged":true}`))
 		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/_bulk"):
 			body, _ := io.ReadAll(r.Body)
@@ -392,6 +397,7 @@ func TestRunParaNaFalhaDeIngestaoDeCursosSemTocarNoRestante(t *testing.T) {
 
 	deps := defaultDeps()
 	deps.Stat = func(string) error { return nil }
+	deps.Now = func() time.Time { return time.Date(2026, 10, 20, 0, 0, 0, 0, time.UTC) }
 	deps.NewClient = func(string, string) (*es.Client, error) { return client, nil }
 	deps.LoadIES = func(string) (map[string]ies.IES, error) { return nil, nil }
 	deps.OpenCursos = func(string, map[string]cursosingest.InstituicaoInfo) (bulk.Stream, error) {

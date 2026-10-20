@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
 	es "github.com/elastic/go-elasticsearch/v8"
 
@@ -33,6 +34,7 @@ type Deps struct {
 	LoadIES    func(path string) (map[string]ies.IES, error)
 	OpenCursos func(path string, lookup map[string]cursosingest.InstituicaoInfo) (bulk.Stream, error)
 	OpenIES    func(path string) (bulk.Stream, error)
+	Now        func() time.Time
 }
 
 func defaultDeps() Deps {
@@ -49,12 +51,14 @@ func defaultDeps() Deps {
 		OpenIES: func(path string) (bulk.Stream, error) {
 			return iesingest.NewStream(path)
 		},
+		Now: time.Now,
 	}
 }
 
 // Run executa a ingestão por troca atômica de índice: ingere os dados num
-// índice novo (<nome>-latest) e aponta o alias <nome> para ele ao final.
-// Se qualquer etapa falhar, o alias continua apontando para o índice anterior.
+// índice novo datado (<nome>-<AAAA-MM-DD>) e aponta o alias <nome>-latest para
+// ele ao final. Se qualquer etapa falhar, o alias continua apontando para o
+// índice anterior.
 func Run(ctx context.Context, cfg *config.Config) error {
 	return run(ctx, cfg, defaultDeps())
 }
@@ -84,10 +88,12 @@ func run(ctx context.Context, cfg *config.Config, deps Deps) error {
 		lookup[coIES] = cursosingest.InstituicaoInfo{
 			NoIES:                   doc.NoIES,
 			SgIES:                   doc.SgIES,
-			CategoriaAdministrativa: doc.CategoriaAdministrativa,
-			OrganizacaoAcademica:    doc.OrganizacaoAcademica,
+			CategoriaAdministrativa: doc.CategoriaAdministrativa.NoCategoriaAdministrativa,
+			OrganizacaoAcademica:    doc.OrganizacaoAcademica.NoOrganizacaoAcademica,
 		}
 	}
+
+	date := config.IndexDate(deps.Now())
 
 	cursosSpec := indexSpec{
 		name:    cfg.CursosIndexName,
@@ -97,7 +103,7 @@ func run(ctx context.Context, cfg *config.Config, deps Deps) error {
 			return deps.OpenCursos(path, lookup)
 		},
 	}
-	if err := ensureData(ctx, client, cfg, cursosSpec); err != nil {
+	if err := ensureData(ctx, client, cfg, cursosSpec, date); err != nil {
 		return err
 	}
 
@@ -107,25 +113,26 @@ func run(ctx context.Context, cfg *config.Config, deps Deps) error {
 		mapping: mappings.IES,
 		open:    deps.OpenIES,
 	}
-	if err := ensureData(ctx, client, cfg, iesSpec); err != nil {
+	if err := ensureData(ctx, client, cfg, iesSpec, date); err != nil {
 		return err
 	}
 
-	if err := ensureCursosDicionario(ctx, client, cfg); err != nil {
+	if err := ensureCursosDicionario(ctx, client, cfg, date); err != nil {
 		return err
 	}
-	return ensureIESDicionario(ctx, client, cfg, iesDocs)
+	return ensureIESDicionario(ctx, client, cfg, iesDocs, date)
 }
 
-// ensureData ingere os documentos do arquivo de origem num índice novo
-// (<name>-latest) e, ao final, troca o alias <name> para ele de forma atômica,
-// apagando o índice anterior. Se a ingestão falhar antes da troca, o alias
-// continua apontando para o índice antigo, que permanece íntegro: nunca há
-// dados parciais dados como completos.
-func ensureData(ctx context.Context, client *es.Client, cfg *config.Config, spec indexSpec) error {
-	concrete := spec.name + "-latest"
+// ensureData ingere os documentos do arquivo de origem num índice novo datado
+// (<name>-<AAAA-MM-DD>) e, ao final, troca o alias <name>-latest para ele de
+// forma atômica, apagando o índice anterior. Se a ingestão falhar antes da
+// troca, o alias continua apontando para o índice antigo, que permanece
+// íntegro: nunca há dados parciais dados como completos.
+func ensureData(ctx context.Context, client *es.Client, cfg *config.Config, spec indexSpec, date string) error {
+	alias := config.LatestIndexName(spec.name)
+	concrete := config.DatedIndexName(spec.name, date)
 
-	// Remove um "-latest" de uma execução anterior que falhou no meio.
+	// Remove um índice de mesmo nome de uma execução anterior que falhou no meio.
 	if err := bulk.Delete(ctx, client, concrete); err != nil {
 		return err
 	}
@@ -147,11 +154,11 @@ func ensureData(ctx context.Context, client *es.Client, cfg *config.Config, spec
 		return err
 	}
 
-	previous, err := bulk.AliasIndices(ctx, client, spec.name)
+	previous, err := bulk.AliasIndices(ctx, client, alias)
 	if err != nil {
 		return err
 	}
-	if err := bulk.PointAlias(ctx, client, spec.name, concrete, previous); err != nil {
+	if err := bulk.PointAlias(ctx, client, alias, concrete, previous); err != nil {
 		return err
 	}
 
@@ -167,9 +174,9 @@ func ensureData(ctx context.Context, client *es.Client, cfg *config.Config, spec
 	return nil
 }
 
-func ensureCursosDicionario(ctx context.Context, client *es.Client, cfg *config.Config) error {
-	return ensureDicionario(ctx, client, cfg, dictionary.Spec{
-		SourceIndex: cfg.CursosIndexName,
+func ensureCursosDicionario(ctx context.Context, client *es.Client, cfg *config.Config, date string) error {
+	return ensureDicionario(ctx, client, cfg, date, dictionary.Spec{
+		SourceIndex: config.LatestIndexName(cfg.CursosIndexName),
 		TargetIndex: cfg.DictIndexName,
 		SourceField: cursosingest.DictionarySourceField,
 		DocField:    cursosingest.DictionaryDocField,
@@ -177,8 +184,8 @@ func ensureCursosDicionario(ctx context.Context, client *es.Client, cfg *config.
 	})
 }
 
-func ensureIESDicionario(ctx context.Context, client *es.Client, cfg *config.Config, docs map[string]ies.IES) error {
-	inserted, err := dictionary.BuildStream(ctx, client, cfg, cfg.IESDictIndexName, mappings.IESDictionary, iesingest.NewDictionaryStream(docs))
+func ensureIESDicionario(ctx context.Context, client *es.Client, cfg *config.Config, docs map[string]ies.IES, date string) error {
+	inserted, err := dictionary.BuildStream(ctx, client, cfg, cfg.IESDictIndexName, mappings.IESDictionary, iesingest.NewDictionaryStream(docs), date)
 	if err != nil {
 		return fmt.Errorf("construir dicionário %s: %w", cfg.IESDictIndexName, err)
 	}
@@ -186,8 +193,8 @@ func ensureIESDicionario(ctx context.Context, client *es.Client, cfg *config.Con
 	return nil
 }
 
-func ensureDicionario(ctx context.Context, client *es.Client, cfg *config.Config, spec dictionary.Spec) error {
-	terms, err := dictionary.Build(ctx, client, cfg, spec)
+func ensureDicionario(ctx context.Context, client *es.Client, cfg *config.Config, date string, spec dictionary.Spec) error {
+	terms, err := dictionary.Build(ctx, client, cfg, spec, date)
 	if err != nil {
 		return fmt.Errorf("construir dicionário %s: %w", spec.TargetIndex, err)
 	}
