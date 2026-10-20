@@ -55,9 +55,14 @@ func buildTextQuery(query string) map[string]any {
 	}
 }
 
-// categoriaField é o campo keyword da categoria administrativa no índice ies
-// (já keyword, portanto sem sufixo ".keyword").
-const categoriaField = "categoria_administrativa"
+// Campos keyword usados nos filtros e agregações do índice ies. A localização,
+// a categoria e a organização são objetos aninhados no documento.
+const (
+	ufField          = "localizacao.sg_uf"
+	regiaoField      = "localizacao.no_regiao"
+	categoriaField   = "categoria_administrativa.no_categoria_administrativa"
+	organizacaoField = "organizacao_academica.no_organizacao_academica"
+)
 
 // categoriaFilter monta a cláusula de filtro por categoria administrativa.
 func categoriaFilter(categoria string) map[string]any {
@@ -69,11 +74,11 @@ func buildFilterClauses(filters SearchFilterParams) []map[string]any {
 	clauses := []map[string]any{}
 
 	if len(filters.UF) > 0 {
-		clauses = append(clauses, elasticsearch.UpperTermsFilter("uf", filters.UF))
+		clauses = append(clauses, elasticsearch.UpperTermsFilter(ufField, filters.UF))
 	}
 
 	if len(filters.Regiao) > 0 {
-		clauses = append(clauses, elasticsearch.TermsFilter("regiao", filters.Regiao))
+		clauses = append(clauses, elasticsearch.TermsFilter(regiaoField, filters.Regiao))
 	}
 
 	if clause := elasticsearch.CategoriaAnyOf(categoriaField, filters.Categoria); clause != nil {
@@ -81,7 +86,7 @@ func buildFilterClauses(filters SearchFilterParams) []map[string]any {
 	}
 
 	if len(filters.Organizacao) > 0 {
-		clauses = append(clauses, elasticsearch.TermsFilter("organizacao_academica", filters.Organizacao))
+		clauses = append(clauses, elasticsearch.TermsFilter(organizacaoField, filters.Organizacao))
 	}
 
 	return clauses
@@ -104,9 +109,9 @@ func buildSortClauses(sort string) []map[string]any {
 // buildAggregations monta as agregações usadas pelos filtros da UI.
 func buildAggregations() map[string]any {
 	return map[string]any{
-		"ufs":          elasticsearch.TermsAgg("uf", 30),
-		"regioes":      elasticsearch.TermsAgg("regiao", 10),
-		"organizacoes": elasticsearch.TermsAgg("organizacao_academica", 20),
+		"ufs":          elasticsearch.TermsAgg(ufField, 30),
+		"regioes":      elasticsearch.TermsAgg(regiaoField, 10),
+		"organizacoes": elasticsearch.TermsAgg(organizacaoField, 20),
 		"categorias":   elasticsearch.CategoriasAgg(categoriaField),
 	}
 }

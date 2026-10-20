@@ -47,7 +47,7 @@ func TestIESMappingIsEmbeddedAndStrict(t *testing.T) {
 		t.Errorf("dynamic = %q, esperado %q", mapping.Mappings.Dynamic, "strict")
 	}
 
-	for _, field := range []string{"co_ies", "no_ies", "sg_ies", "categoria_administrativa", "organizacao_academica", "municipio", "uf", "regiao"} {
+	for _, field := range []string{"nu_ano_censo", "dt_carga", "co_ies", "no_ies", "sg_ies", "mantenedora", "categoria_administrativa", "organizacao_academica", "rede", "localizacao", "docentes", "vagas_matriculas"} {
 		if _, ok := mapping.Mappings.Properties[field]; !ok {
 			t.Errorf("mapping de IES não declara o campo %q", field)
 		}

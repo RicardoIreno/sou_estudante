@@ -26,8 +26,8 @@ env_value() {
 command -v curl >/dev/null || die "curl não encontrado"
 
 case "$1" in
-  cursos) index="$(env_value ES_INDEX_NAME)"; index="${index:-cursos}" ;;
-  ies)    index="$(env_value IES_INDEX_NAME)"; index="${index:-ies}" ;;
+  cursos) index="$(env_value ES_INDEX_NAME)"; index="${index:-cursos}-latest" ;;
+  ies)    index="$(env_value IES_INDEX_NAME)"; index="${index:-ies}-latest" ;;
   *)      die "índice inválido: $1 (use cursos ou ies)" ;;
 esac
 

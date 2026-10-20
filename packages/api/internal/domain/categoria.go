@@ -4,11 +4,12 @@ package domain
 import "strings"
 
 // CategoriaTerms traduz o rótulo de categoria exibido na UI para os valores de
-// categoria_administrativa indexados a partir dos dados da IES.
+// categoria_administrativa indexados a partir dos dados da IES. Os valores
+// refletem a normalização textcase.Title aplicada na ingestão.
 func CategoriaTerms(categoria string) []string {
 	switch strings.ToLower(categoria) {
 	case "privada":
-		return []string{"Privada com fins lucrativos", "Privada sem fins lucrativos"}
+		return []string{"Privada Com Fins Lucrativos", "Privada Sem Fins Lucrativos"}
 	case "federal":
 		return []string{"Pública Federal"}
 	case "estadual":

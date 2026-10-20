@@ -12,8 +12,8 @@ const (
 	defaultPort             = "8080"
 	defaultCursosIndexName  = "cursos"
 	defaultIESIndexName     = "ies"
-	defaultDictIndexName    = "dicionario_cursos"
-	defaultIESDictIndexName = "dicionario_ies"
+	defaultDictIndexName    = "dicionario-cursos"
+	defaultIESDictIndexName = "dicionario-ies"
 	defaultJSONFilePath     = "/data/dados_curso_completo.json"
 	defaultIESJSONFilePath  = "/data/dados_ies.json"
 	defaultNumWorkers       = 4

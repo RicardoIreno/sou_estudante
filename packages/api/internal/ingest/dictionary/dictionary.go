@@ -22,26 +22,27 @@ type Spec struct {
 }
 
 // Build constrói o índice de dicionário a partir dos termos únicos do índice
-// de origem, por troca atômica: indexa num índice novo (<TargetIndex>-latest) e
-// aponta o alias TargetIndex para ele ao final. Retorna a quantidade de termos
-// inseridos.
-func Build(ctx context.Context, client *elasticsearch.Client, cfg *config.Config, spec Spec) (int, error) {
+// de origem, por troca atômica: indexa num índice novo datado
+// (<TargetIndex>-<AAAA-MM-DD>) e aponta o alias <TargetIndex>-latest para ele ao
+// final. Retorna a quantidade de termos inseridos.
+func Build(ctx context.Context, client *elasticsearch.Client, cfg *config.Config, spec Spec, date string) (int, error) {
 	terms, err := uniqueTerms(ctx, client, spec.SourceIndex, spec.SourceField)
 	if err != nil {
 		return 0, err
 	}
 
 	stream := &termStream{field: spec.DocField, terms: terms}
-	return BuildStream(ctx, client, cfg, spec.TargetIndex, spec.Mapping, stream)
+	return BuildStream(ctx, client, cfg, spec.TargetIndex, spec.Mapping, stream, date)
 }
 
 // BuildStream constrói o índice de dicionário a partir de um stream de
 // documentos já prontos, por troca atômica. Retorna a quantidade de documentos
 // inseridos.
-func BuildStream(ctx context.Context, client *elasticsearch.Client, cfg *config.Config, targetIndex string, mapping []byte, stream bulk.Stream) (int, error) {
-	concrete := targetIndex + "-latest"
+func BuildStream(ctx context.Context, client *elasticsearch.Client, cfg *config.Config, targetIndex string, mapping []byte, stream bulk.Stream, date string) (int, error) {
+	alias := config.LatestIndexName(targetIndex)
+	concrete := config.DatedIndexName(targetIndex, date)
 
-	// Remove um "-latest" de uma execução anterior que falhou no meio.
+	// Remove um índice de mesmo nome de uma execução anterior que falhou no meio.
 	if err := bulk.Delete(ctx, client, concrete); err != nil {
 		return 0, err
 	}
@@ -57,11 +58,11 @@ func BuildStream(ctx context.Context, client *elasticsearch.Client, cfg *config.
 		return 0, err
 	}
 
-	previous, err := bulk.AliasIndices(ctx, client, targetIndex)
+	previous, err := bulk.AliasIndices(ctx, client, alias)
 	if err != nil {
 		return 0, err
 	}
-	if err := bulk.PointAlias(ctx, client, targetIndex, concrete, previous); err != nil {
+	if err := bulk.PointAlias(ctx, client, alias, concrete, previous); err != nil {
 		return 0, err
 	}
 	for _, old := range previous {

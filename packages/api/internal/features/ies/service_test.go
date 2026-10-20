@@ -99,9 +99,9 @@ func TestBuscarIESRepassaHitsTipados(t *testing.T) {
 			Total: 1,
 			Hits: []IES{
 				{
-					CoIES: "376",
-					NoIES: "CENTRO UNIVERSITÁRIO ANHANGUERA DE SÃO PAULO",
-					UF:    "SP",
+					CoIES:       "376",
+					NoIES:       "CENTRO UNIVERSITÁRIO ANHANGUERA DE SÃO PAULO",
+					Localizacao: Localizacao{SgUF: "SP"},
 				},
 			},
 		},
@@ -116,7 +116,7 @@ func TestBuscarIESRepassaHitsTipados(t *testing.T) {
 	if len(resp.Results) != 1 {
 		t.Fatalf("esperado 1 resultado, obtido %d", len(resp.Results))
 	}
-	if resp.Results[0].CoIES != "376" || resp.Results[0].UF != "SP" {
+	if resp.Results[0].CoIES != "376" || resp.Results[0].Localizacao.SgUF != "SP" {
 		t.Errorf("hit repassado incorretamente: %+v", resp.Results[0])
 	}
 }
@@ -169,7 +169,7 @@ func TestBuscarIESPorIDPropagaNaoEncontrado(t *testing.T) {
 }
 
 func TestBuscarIESPorIDRetornaIES(t *testing.T) {
-	mockRepo := &MockRepository{ReturnIES: &IES{CoIES: "376", UF: "SP"}}
+	mockRepo := &MockRepository{ReturnIES: &IES{CoIES: "376", Localizacao: Localizacao{SgUF: "SP"}}}
 	service := NewService(mockRepo)
 
 	item, err := service.BuscarIESPorID(context.Background(), "376")

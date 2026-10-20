@@ -14,8 +14,8 @@ import (
 // abaixo só exercitam caminhos que respondem antes de tocar no Elasticsearch.
 func newTestRouter() http.Handler {
 	return newRouter(nil, &config.Config{
-		DictIndexName:    "dicionario_cursos",
-		IESDictIndexName: "dicionario_ies",
+		DictIndexName:    "dicionario-cursos",
+		IESDictIndexName: "dicionario-ies",
 	})
 }
 
