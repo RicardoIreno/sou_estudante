@@ -12,7 +12,6 @@ vi.mock('./ies.service', () => ({
 const makeIes = (): IES => ({
   co_ies: '376',
   no_ies: 'CENTRO UNIVERSITÁRIO ANHANGUERA',
-  uf: 'SP',
 })
 
 describe('useIes', () => {

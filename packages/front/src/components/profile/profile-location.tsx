@@ -92,7 +92,7 @@ export function ProfileLocation({
       )}
 
       {tag && !region && (
-        <span className="rounded-full bg-accent-deep px-[9px] py-[2px] font-sans text-xs font-bold text-card-surface">
+        <span className="rounded-full bg-accent-deep px-[9px] py-[2px] font-sans text-xs font-bold text-card-surface text-on-dark">
           {tag}
         </span>
       )}

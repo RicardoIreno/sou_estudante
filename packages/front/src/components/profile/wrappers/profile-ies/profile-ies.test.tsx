@@ -10,11 +10,14 @@ const ies = {
   co_ies: '376',
   no_ies: 'UNIVERSIDADE FEDERAL DE MATO GROSSO',
   sg_ies: 'UFMT',
-  categoria_administrativa: 'Pública Federal',
-  organizacao_academica: 'Universidade',
-  municipio: 'Cuiabá',
-  uf: 'MT',
-  regiao: 'Centro-Oeste',
+  categoria_administrativa: { no_categoria_administrativa: 'Pública Federal' },
+  organizacao_academica: { no_organizacao_academica: 'Universidade' },
+  localizacao: {
+    no_municipio: 'Cuiabá',
+    sg_uf: 'MT',
+    no_regiao: 'Centro-Oeste',
+    in_capital: true,
+  },
 }
 
 describe('ProfileIES', () => {

@@ -19,7 +19,6 @@ describe('SearchResultsIes', () => {
         {
           co_ies: '3172',
           no_ies: 'UNIVERSIDADE DO ESTADO DO AMAZONAS',
-          uf: 'AM',
         },
       ],
       isLoading: false,

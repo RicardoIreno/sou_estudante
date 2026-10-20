@@ -19,15 +19,18 @@ export const ProfileIES = ({ ies, module = '4' }: ProfileIESProps) => {
   const titulo = ies.sg_ies || nome
   const subtitulo = ies.sg_ies ? nome : undefined
 
-  const descritores = [ies.organizacao_academica, ies.categoria_administrativa]
-    .filter(Boolean)
-    .join(' · ')
+  const organizacao = ies.organizacao_academica?.no_organizacao_academica
+  const categoria = ies.categoria_administrativa?.no_categoria_administrativa
 
-  const tags = [ies.organizacao_academica, ies.categoria_administrativa].filter(
-    Boolean,
-  ) as string[]
+  const descritores = [organizacao, categoria].filter(Boolean).join(' · ')
 
-  const regiao = ies.regiao ? `Região ${ies.regiao}` : undefined
+  const tags = [organizacao, categoria].filter(Boolean) as string[]
+
+  const municipio = ies.localizacao?.no_municipio
+  const uf = ies.localizacao?.sg_uf
+  const regiao = ies.localizacao?.no_regiao
+    ? `Região ${ies.localizacao.no_regiao}`
+    : undefined
 
   return (
     <Profile module={module}>
@@ -50,13 +53,13 @@ export const ProfileIES = ({ ies, module = '4' }: ProfileIESProps) => {
         )}
       </Profile.Header>
 
-      {ies.municipio && (
+      {municipio && (
         <Profile.Location
           icon={<MapPin className="size-6" />}
           eyebrow="Localização"
-          value={ies.municipio}
+          value={municipio}
           source={regiao}
-          tag={ies.uf}
+          tag={uf}
         />
       )}
 

@@ -24,7 +24,10 @@ export async function generateMetadata({
     return { title: 'Instituição não encontrada | SoU_Estudante' }
   }
 
-  const local = [ies?.uf, ies?.categoria_administrativa]
+  const local = [
+    ies?.localizacao?.sg_uf,
+    ies?.categoria_administrativa?.no_categoria_administrativa,
+  ]
     .filter(Boolean)
     .join(' · ')
 
