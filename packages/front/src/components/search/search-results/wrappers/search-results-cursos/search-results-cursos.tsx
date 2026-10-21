@@ -1,5 +1,6 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import {
   MAX_COMPARE,
   useCompareCursos,
@@ -27,6 +28,8 @@ export function SearchResultsCursos({ module }: SearchResultsCursosProps) {
     navigateToPage,
   } = useSearchCursos()
   const { ids, isComparing, isSelected, toggle } = useCompareCursos()
+  const searchParams = useSearchParams()
+  const to = searchParams?.get('to') ?? undefined
 
   const selectionFull = ids.length >= MAX_COMPARE
 
@@ -61,6 +64,7 @@ export function SearchResultsCursos({ module }: SearchResultsCursosProps) {
             selected={selected}
             disabled={id !== undefined && !selected && selectionFull}
             onToggle={toggle}
+            to={to}
           />
         )
       }}

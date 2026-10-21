@@ -33,6 +33,30 @@ describe('SearchResultItem', () => {
     ).toHaveAttribute('href', '/cursos/101')
   })
 
+  it('links to the ingresso profile when originating from ingresso', () => {
+    render(<SearchResultItem curso={buildCurso(false)} to="ingresso" />)
+
+    expect(
+      screen.getByRole('link', { name: /Ciência da Computação/ }),
+    ).toHaveAttribute('href', '/ingresso/101')
+  })
+
+  it('links to the permanencia profile when originating from permanencia', () => {
+    render(<SearchResultItem curso={buildCurso(false)} to="permanencia" />)
+
+    expect(
+      screen.getByRole('link', { name: /Ciência da Computação/ }),
+    ).toHaveAttribute('href', '/permanencia/101')
+  })
+
+  it('hides the Sisu link when the card already points to ingresso', () => {
+    render(<SearchResultItem curso={buildCurso(true)} to="ingresso" />)
+
+    expect(
+      screen.queryByRole('link', { name: /Ver ingresso via Sisu/ }),
+    ).not.toBeInTheDocument()
+  })
+
   it('shows a link to the Sisu admission profile when the course has Sisu', () => {
     render(<SearchResultItem curso={buildCurso(true)} />)
 

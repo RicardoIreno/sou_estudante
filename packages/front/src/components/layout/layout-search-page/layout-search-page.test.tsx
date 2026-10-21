@@ -99,6 +99,31 @@ describe('LayoutSearchPage', () => {
     expect(screen.getByText('resultados')).toBeInTheDocument()
   })
 
+  it('hides the notice once a search is made', () => {
+    mockSearchParams.value = new URLSearchParams('')
+
+    const { rerender } = render(
+      <LayoutSearchPage
+        module="4"
+        notice={<p>aviso</p>}
+        searchHeader={<p>cabeçalho</p>}
+      />,
+    )
+
+    expect(screen.getByText('aviso')).toBeInTheDocument()
+
+    mockSearchParams.value = new URLSearchParams('q=medicina')
+    rerender(
+      <LayoutSearchPage
+        module="4"
+        notice={<p>aviso</p>}
+        searchHeader={<p>cabeçalho</p>}
+      />,
+    )
+
+    expect(screen.queryByText('aviso')).not.toBeInTheDocument()
+  })
+
   it('omits the module attribute when not provided', () => {
     const { container } = renderLayout()
 
@@ -115,5 +140,19 @@ describe('LayoutSearchPage', () => {
     ).toBeInTheDocument()
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument()
     expect(screen.queryByText('Buscar')).not.toBeInTheDocument()
+  })
+
+  it('renders the search entry slot between the hero and the notice', () => {
+    mockSearchParams.value = new URLSearchParams('')
+
+    render(
+      <LayoutSearchPage
+        searchEntry={<p>entrada de busca</p>}
+        notice={<p>aviso</p>}
+      />,
+    )
+
+    expect(screen.getByText('entrada de busca')).toBeInTheDocument()
+    expect(screen.getByText('aviso')).toBeInTheDocument()
   })
 })
