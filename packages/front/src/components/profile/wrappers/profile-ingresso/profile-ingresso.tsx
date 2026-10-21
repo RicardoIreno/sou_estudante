@@ -3,6 +3,7 @@ import { Callout } from '@/components/ui/callout'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
 import type { Module } from '@/lib/module'
+import { buildIesHref } from '@/lib/profile-links'
 import type { Curso, Oferta } from '@/services/api'
 import { Profile } from '../..'
 import { ProfileIngressoShift } from './profile-ingresso-shift'
@@ -33,7 +34,7 @@ export const ProfileIngresso = ({
   const id = curso.sequencial
   const permanenciaHref = id !== undefined ? `/permanencia/${id}` : undefined
   const idIes = curso.instituicao.co_ies
-  const iesHref = idIes !== undefined ? `/ies/${idIes}` : undefined
+  const iesHref = idIes !== undefined ? buildIesHref(idIes, id) : undefined
 
   const ofertasPorTurno = ofertas.reduce<OfertasPorTurno>((dic, oferta) => {
     const turno = oferta.turno || 'OUTROS'
@@ -47,7 +48,7 @@ export const ProfileIngresso = ({
   const turnosUnicos = Object.keys(ofertasPorTurno)
 
   return (
-    <Profile module={module} className="p-4">
+    <Profile module={module} className="p-4" courseId={id} iesId={idIes}>
       <Profile.Header
         badge={'Ingresso via Sisu'}
         title={titulo}

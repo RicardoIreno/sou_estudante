@@ -3,6 +3,7 @@ import { Callout } from '@/components/ui/callout'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
 import type { Module } from '@/lib/module'
+import { buildIesHref } from '@/lib/profile-links'
 import type { Curso } from '@/services/api'
 import { Profile } from '../..'
 import { ProfilePermanenciaFinancing } from './profile-permanencia-financing'
@@ -28,7 +29,8 @@ export const ProfilePermanencia = ({
   const metricas = curso.censo_metricas
   const gratuito = curso.curso.in_gratuito
   const idIes = curso.instituicao.co_ies
-  const iesHref = idIes !== undefined ? `/ies/${idIes}` : undefined
+  const iesHref =
+    idIes !== undefined ? buildIesHref(idIes, curso.sequencial) : undefined
 
   const DESC_APOIO =
     'Auxílios de moradia, alimentação e transporte para quem mais precisa. O Censo agrega esses tipos em um único campo.'
@@ -42,7 +44,12 @@ export const ProfilePermanencia = ({
     'A Lei de Cotas reserva metade das vagas das instituições federais para quem cursou todo o ensino médio em escola pública. Dentro dessa metade, parte das vagas é destinada a estudantes com renda familiar de até 1 salário mínimo por pessoa, e há reservas específicas para pessoas pretas, pardas e indígenas, quilombolas e pessoas com deficiência. As instituições estaduais, municipais e privadas têm regras próprias. Veja os tipos e os documentos exigidos no Painel de Cotas.'
 
   return (
-    <Profile module={module} className="p-4 pt-0">
+    <Profile
+      module={module}
+      className="p-4 pt-0"
+      courseId={curso.sequencial}
+      iesId={idIes}
+    >
       <Profile.Header
         badge={'Permanência'}
         title={titulo}

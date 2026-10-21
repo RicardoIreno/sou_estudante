@@ -3,6 +3,7 @@ import { Profile } from '@/components/profile'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
 import { MODULE_META, type Module } from '@/lib/module'
+import { buildIesHref } from '@/lib/profile-links'
 import type { Curso } from '@/services/api/types'
 import { buildOverviewItems } from './profile-cursos-overview-items'
 import { ProfileCursosQuality } from './profile-cursos-quality'
@@ -30,10 +31,10 @@ export const ProfileCursos = ({ curso, module = '1' }: ProfileCursosProps) => {
     temSisu && id !== undefined ? `/ingresso/${id}` : undefined
   const permanenciaHref = id !== undefined ? `/permanencia/${id}` : undefined
   const idIes = curso.instituicao.co_ies
-  const iesHref = idIes !== undefined ? `/ies/${idIes}` : undefined
+  const iesHref = idIes !== undefined ? buildIesHref(idIes, id) : undefined
 
   return (
-    <Profile module={module}>
+    <Profile module={module} courseId={id} iesId={idIes}>
       <Profile.Header
         badge={MODULE_META[module].badge}
         title={titulo}

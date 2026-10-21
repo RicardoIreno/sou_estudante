@@ -3,6 +3,7 @@
 import { cn } from '@/utils/cn'
 import { BaseComponents } from './sections/base-components'
 import { EnadeSection } from './sections/enade'
+import { Experiments } from './sections/experiments'
 import { Patterns } from './sections/patterns'
 import { Tokens } from './sections/tokens'
 
@@ -11,6 +12,7 @@ const NAV = [
   { id: 'base', label: 'Componentes base' },
   { id: 'enade', label: 'Enade' },
   { id: 'patterns', label: 'Composições e padrões' },
+  { id: 'experiments', label: 'Experiments' },
 ]
 
 export default function DesignSystem() {
@@ -61,6 +63,7 @@ export default function DesignSystem() {
           <BaseComponents />
           <EnadeSection />
           <Patterns />
+          <Experiments />
         </div>
       </div>
     </div>
