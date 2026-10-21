@@ -1,11 +1,20 @@
 import { Info } from 'lucide-react'
 import { LayoutSearchPage } from '@/components/layout/layout-search-page'
+import { CourseSearchRedirect } from '@/components/search/course-search-redirect/course-search-redirect'
 import { Callout } from '@/components/ui/callout'
 
 export default function IngressoPage() {
   return (
     <LayoutSearchPage
       module="2"
+      searchEntry={
+        <CourseSearchRedirect
+          module="2"
+          to="ingresso"
+          title="Onde você quer estudar?"
+          description="O local de oferta é essencial — especialmente para quem mora no interior ou longe dos grandes centros."
+        />
+      }
       notice={
         <>
           <Callout v="module">

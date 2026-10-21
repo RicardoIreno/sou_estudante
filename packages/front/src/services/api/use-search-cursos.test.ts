@@ -214,4 +214,21 @@ describe('useSearchCursos', () => {
 
     expect(mockReplace).toHaveBeenCalledWith('/cursos?q=direito&page=1')
   })
+
+  it('preserva a origem (to) ao limpar os filtros', () => {
+    const params = new URLSearchParams('q=direito&page=2&to=ingresso&uf=SP')
+    vi.mocked(useSearchParams).mockReturnValue(
+      params as unknown as ReadonlyURLSearchParams,
+    )
+
+    const { result } = renderUseSearchCursos()
+
+    act(() => {
+      result.current.resetFilters()
+    })
+
+    expect(mockReplace).toHaveBeenCalledWith(
+      '/cursos?q=direito&page=1&to=ingresso',
+    )
+  })
 })

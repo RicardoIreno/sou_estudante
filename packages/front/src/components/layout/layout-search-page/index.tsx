@@ -20,6 +20,8 @@ interface LayoutSearchPageProps {
   /** Resumo dos resultados (ex.: contagem + tag), exibido ao lado da ordenação. */
   resultsSummary?: ReactNode
   results?: ReactNode
+  /** Entrada de busca exibida entre o cabeçalho e o aviso (ex.: redireciona para outra busca). */
+  searchEntry?: ReactNode
   /** Aviso exibido logo abaixo do cabeçalho (ex.: módulo em construção). */
   notice?: ReactNode
   /** Mínimo de caracteres em `q` para considerar que houve busca. */
@@ -37,6 +39,7 @@ export function LayoutSearchPage({
   toolbar,
   resultsSummary,
   results,
+  searchEntry,
   notice,
   minQueryLength,
   emptyPrompt,
@@ -71,6 +74,8 @@ export function LayoutSearchPage({
             </p>
           </header>
         )}
+
+        {searchEntry && <div className="mb-6">{searchEntry}</div>}
 
         {notice && <div className="mb-6">{notice}</div>}
 

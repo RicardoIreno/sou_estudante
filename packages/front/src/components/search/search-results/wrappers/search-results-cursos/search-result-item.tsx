@@ -17,6 +17,8 @@ interface SearchResultItemProps {
   selected?: boolean
   disabled?: boolean
   onToggle?: (id: string) => void
+  /** Origem da busca (ex.: `ingresso`), que define o perfil para onde o card aponta. */
+  to?: string
 }
 
 export function SearchResultItem({
@@ -26,6 +28,7 @@ export function SearchResultItem({
   selected = false,
   disabled = false,
   onToggle,
+  to,
 }: SearchResultItemProps) {
   // Extrair dados da estrutura completa
   const nomeCurso = curso.curso?.no_curso || 'Curso não especificado'
@@ -115,6 +118,13 @@ export function SearchResultItem({
     return <Card module={module}>{cardContent}</Card>
   }
 
+  const detailHref =
+    to === 'ingresso'
+      ? `/ingresso/${id}`
+      : to === 'permanencia'
+        ? `/permanencia/${id}`
+        : `/cursos/${id}`
+
   return (
     <div className="space-y-2" data-module={module}>
       <Card module={module}>
@@ -130,13 +140,13 @@ export function SearchResultItem({
             />
           )}
           <Link
-            href={`/cursos/${id}`}
+            href={detailHref}
             aria-label={`Ver detalhes do curso ${nomeCurso}`}
             className="block min-w-0 flex-1 rounded-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
           >
             {cardContent}
           </Link>
-          {temSisu && (
+          {temSisu && to !== 'ingresso' && (
             <Link
               href={`/ingresso/${id}`}
               aria-label={`Ver ingresso via Sisu de ${nomeCurso}`}

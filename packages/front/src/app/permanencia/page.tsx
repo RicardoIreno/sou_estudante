@@ -1,4 +1,5 @@
 import { LayoutSearchPage } from '@/components/layout/layout-search-page'
+import { CourseSearchRedirect } from '@/components/search/course-search-redirect/course-search-redirect'
 import { Callout } from '@/components/ui/callout'
 import { IconModule } from '@/components/ui/icon-module/icon-module'
 
@@ -6,6 +7,14 @@ export default function PermanenciaPage() {
   return (
     <LayoutSearchPage
       module="3"
+      searchEntry={
+        <CourseSearchRedirect
+          module="3"
+          to="permanencia"
+          title="De qual curso você quer saber?"
+          description="Busque seu curso."
+        />
+      }
       notice={
         <Callout v="module">
           <Callout.Header>

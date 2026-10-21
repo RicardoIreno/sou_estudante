@@ -51,7 +51,7 @@ export interface UseSearchReturn<TItem, TAgg> {
   resetFilters: () => void
 }
 
-const FILTER_META_KEYS = new Set(['q', 'page', 'limit'])
+const FILTER_META_KEYS = new Set(['q', 'page', 'limit', 'to'])
 
 /**
  * Converte o erro tipado da API (`ApiError`) na mensagem amigável do
@@ -120,7 +120,7 @@ export function useSearch<TItem, TAgg>(
     const toClear: Record<string, string | null> = {}
     if (searchParams) {
       for (const [key] of searchParams.entries()) {
-        if (key !== 'q') {
+        if (!FILTER_META_KEYS.has(key)) {
           toClear[key] = null
         }
       }

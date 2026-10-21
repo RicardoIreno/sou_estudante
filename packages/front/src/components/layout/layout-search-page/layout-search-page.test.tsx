@@ -116,4 +116,18 @@ describe('LayoutSearchPage', () => {
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument()
     expect(screen.queryByText('Buscar')).not.toBeInTheDocument()
   })
+
+  it('renders the search entry slot between the hero and the notice', () => {
+    mockSearchParams.value = new URLSearchParams('')
+
+    render(
+      <LayoutSearchPage
+        searchEntry={<p>entrada de busca</p>}
+        notice={<p>aviso</p>}
+      />,
+    )
+
+    expect(screen.getByText('entrada de busca')).toBeInTheDocument()
+    expect(screen.getByText('aviso')).toBeInTheDocument()
+  })
 })
