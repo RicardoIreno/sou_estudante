@@ -57,13 +57,13 @@ export const ProfileCursosQuality = ({
         <MarLegenda />
       </section>
 
-      <Callout v="info">
+      <Callout v="blue">
         O conceito Enade é avaliado por ciclos — nem todos os cursos são
         avaliados no mesmo ano. Áreas de saúde, exatas e humanidades têm
         calendários distintos.
       </Callout>
 
-      <Callout v="future">
+      <Callout v="blue">
         <span className="inline-flex gap-2">
           <TrendingUp
             className="size-3 scale-125 translate-y-0.5"

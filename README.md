@@ -32,7 +32,7 @@ Tudo é orquestrado por `docker-compose.yml` (desenvolvimento) e `docker-compose
 
 Os arquivos de dados **não estão no repositório** (a pasta `data/` é ignorada pelo Git). Peça-os à equipe de dados e coloque em `data/`:
 
-- `data/dados_curso_completo.json`
+- `data/dados_cursos.json`
 - `data/dados_ies.json`
 
 Sem eles o `setup.sh` apenas avisa e pula a ingestão: a API sobe, mas sem dados.

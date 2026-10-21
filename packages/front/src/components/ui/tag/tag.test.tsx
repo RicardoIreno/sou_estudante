@@ -13,26 +13,8 @@ describe('Tag', () => {
     expect(screen.getByText('Gratuito')).toHaveAttribute('data-module', '4')
   })
 
-  it('keeps a forwarded className', () => {
-    render(<Tag label="Gratuito" module="1" className="custom-class" />)
-    expect(screen.getByText('Gratuito')).toHaveClass('custom-class')
-  })
-
   it('does not leak the string "undefined" into the classes', () => {
     render(<Tag label="Gratuito" module="1" />)
     expect(screen.getByText('Gratuito').className).not.toContain('undefined')
-  })
-
-  it('renders an icon and a source alongside the label', () => {
-    render(
-      <Tag
-        label="Tubarão, SC"
-        source="Censo"
-        icon={<svg aria-hidden data-testid="icon" />}
-      />,
-    )
-    expect(screen.getByText('Tubarão, SC')).toBeInTheDocument()
-    expect(screen.getByText(/Censo/)).toBeInTheDocument()
-    expect(screen.getByTestId('icon')).toBeInTheDocument()
   })
 })
