@@ -8,13 +8,19 @@ import type { IES } from '@/services/api/types'
 interface ProfileIESProps {
   ies: IES
   module?: Module
+  /** Id do curso de origem, usado para voltar aos perfis do mesmo curso. */
+  courseId?: number
 }
 
 /**
  * Wrapper da IES sobre o núcleo agnóstico `Profile`: preenche os dados
  * cadastrais da instituição.
  */
-export const ProfileIES = ({ ies, module = '4' }: ProfileIESProps) => {
+export const ProfileIES = ({
+  ies,
+  module = '4',
+  courseId,
+}: ProfileIESProps) => {
   const nome = ies.no_ies ?? 'Instituição não especificada'
   const titulo = ies.sg_ies || nome
   const subtitulo = ies.sg_ies ? nome : undefined
@@ -33,7 +39,7 @@ export const ProfileIES = ({ ies, module = '4' }: ProfileIESProps) => {
     : undefined
 
   return (
-    <Profile module={module}>
+    <Profile module={module} iesId={ies.co_ies} courseId={courseId}>
       <Profile.Header
         badge={MODULE_META[module].badge}
         title={titulo}

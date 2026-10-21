@@ -6,11 +6,18 @@ import type { IES } from '@/services/api/types'
 
 interface IesDetalhePageProps {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ curso?: string }>
 }
 
 async function getIes(id: string): Promise<IES | undefined> {
   const result = await serverFetch<IES>(API_CONFIG.ENDPOINTS.DETAIL_IES(id))
   return result.success ? result.data : undefined
+}
+
+/** Converte o id de curso vindo da query string em um inteiro válido. */
+function parseCourseId(raw?: string): number | undefined {
+  const parsed = Number(raw)
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined
 }
 
 export async function generateMetadata({
@@ -39,13 +46,18 @@ export async function generateMetadata({
   }
 }
 
-export default async function IesDetalhePage({ params }: IesDetalhePageProps) {
+export default async function IesDetalhePage({
+  params,
+  searchParams,
+}: IesDetalhePageProps) {
   const { id } = await params
+  const { curso } = await searchParams
   const ies = await getIes(id)
+  const courseId = parseCourseId(curso)
 
   return (
     <div className="min-h-screen w-full bg-surface-lv2">
-      <ProfileIESLoader id={id} initialData={ies} />
+      <ProfileIESLoader id={id} initialData={ies} courseId={courseId} />
     </div>
   )
 }

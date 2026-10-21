@@ -8,11 +8,14 @@ import { ProfileIES } from './profile-ies'
 interface ProfileIESLoaderProps {
   id: string
   initialData?: IES
+  /** Id do curso de origem, usado para voltar aos perfis do mesmo curso. */
+  courseId?: number
 }
 
 export const ProfileIESLoader = ({
   id,
   initialData,
+  courseId,
 }: ProfileIESLoaderProps) => {
   const { ies, isLoading, error, notFound } = useIes(id, initialData)
 
@@ -27,7 +30,7 @@ export const ProfileIESLoader = ({
       fallbackError="Não foi possível carregar a instituição."
       backHref="/ies"
     >
-      {(data) => <ProfileIES ies={data} />}
+      {(data) => <ProfileIES ies={data} courseId={courseId} />}
     </ProfileLoader>
   )
 }
