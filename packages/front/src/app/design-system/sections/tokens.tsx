@@ -73,57 +73,109 @@ export function Tokens() {
 }
 
 const MODULE_COLORS = [
-  { token: '--color-m1-accent', name: 'm1 accent', value: '#00e5ff' },
-  { token: '--color-m1-deep', name: 'm1 deep', value: '#006b78' },
-  { token: '--color-m2-accent', name: 'm2 accent', value: '#d4ff00' },
-  { token: '--color-m2-deep', name: 'm2 deep', value: '#5a6e00' },
-  { token: '--color-m3-accent', name: 'm3 accent', value: '#ff67be' },
-  { token: '--color-m3-deep', name: 'm3 deep', value: '#a61e6b' },
-  { token: '--color-m4-accent', name: 'm4 accent', value: '#ae64fe' },
-  { token: '--color-m4-deep', name: 'm4 deep', value: '#5b21a8' },
-  { token: '--color-m5-accent', name: 'm5 accent', value: '#ff8d3b' },
-  { token: '--color-m5-deep', name: 'm5 deep', value: '#a34a00' },
+  {
+    token: '--color-m1-accent',
+    name: 'm1 accent',
+    value: 'oklch(93.6% 0.225 121.24)',
+  },
+  { token: '--color-m1-deep', name: 'm1 deep', value: 'oklch(50% 0.1213 121)' },
+  {
+    token: '--color-m2-accent',
+    name: 'm2 accent',
+    value: 'oklch(84.4% 0.145 209.29)',
+  },
+  { token: '--color-m2-deep', name: 'm2 deep', value: 'oklch(48% 0.0834 209)' },
+  {
+    token: '--color-m3-accent',
+    name: 'm3 accent',
+    value: 'oklch(72.9% 0.205 347.95)',
+  },
+  { token: '--color-m3-deep', name: 'm3 deep', value: 'oklch(48% 0.1821 351)' },
+  {
+    token: '--color-m4-accent',
+    name: 'm4 accent',
+    value: 'oklch(65.7% 0.221 302.89)',
+  },
+  { token: '--color-m4-deep', name: 'm4 deep', value: 'oklch(41% 0.1961 296)' },
+  {
+    token: '--color-m5-accent',
+    name: 'm5 accent',
+    value: 'oklch(75.4% 0.165 52.47)',
+  },
+  { token: '--color-m5-deep', name: 'm5 deep', value: 'oklch(51% 0.1368 49)' },
 ]
 
 const FEEDBACK_COLORS = [
-  { token: '--color-ok', name: 'enade ok', value: '#1b8a5a' },
+  { token: '--color-ok', name: 'ok', value: 'oklch(56% 0.121 158)' },
   {
     token: '--color-ok-surface',
-    name: 'enade ok surface',
-    value: '#e8f7f0',
+    name: 'ok surface',
+    value: 'oklch(96% 0.018 166)',
   },
-  { token: '--color-warn', name: 'enade warn', value: '#b06000' },
+  { token: '--color-warn', name: 'warn', value: 'oklch(57% 0.135 59)' },
   {
     token: '--color-warn-surface',
-    name: 'enade warn surface',
-    value: '#fff3e0',
+    name: 'warn surface',
+    value: 'oklch(96% 0.028 79)',
   },
-  { token: '--color-low', name: 'enade low', value: '#c0392b' },
+  { token: '--color-low', name: 'low', value: 'oklch(54% 0.174 29)' },
   {
     token: '--color-low-surface',
-    name: 'enade low surface',
-    value: '#fdecea',
+    name: 'low surface',
+    value: 'oklch(95% 0.018 25)',
   },
-  { token: '--color-info-surface', name: 'info surface', value: '#f0f9ff' },
-  { token: '--color-info-border', name: 'info border', value: '#b3e0f0' },
+  { token: '--color-info', name: 'info', value: 'oklch(81% 0.055 215)' },
+  {
+    token: '--color-info-deep',
+    name: 'info deep',
+    value: 'oklch(29% 0.066 243)',
+  },
+  {
+    token: '--color-info-border',
+    name: 'info border',
+    value: 'oklch(88% 0.051 221)',
+  },
+  {
+    token: '--color-info-surface',
+    name: 'info surface',
+    value: 'oklch(100% 0 0)',
+  },
 ]
 
 const NEUTRAL_COLORS = [
-  { token: '--color-fg', name: 'fg', value: '#1a0e23' },
-  { token: '--color-fg-muted', name: 'fg muted', value: '#5b5266' },
-  { token: '--color-muted', name: 'muted', value: 'gray-100' },
-  { token: '--color-card-surface', name: 'card surface', value: 'white' },
   {
-    token: '--color-border-border-primary',
-    name: 'card border',
-    value: 'oklch 0.92',
+    token: '--color-surface-lv0',
+    name: 'surface lv0',
+    value: 'oklch(93% 0.0222 312)',
   },
   {
-    token: '--color-site-background',
-    name: 'site background',
-    value: '#f8f4fb',
+    token: '--color-surface-lv1',
+    name: 'surface lv1',
+    value: 'oklch(97% 0.0102 311)',
   },
-  { token: '--color-on-dark', name: 'on dark', value: '#fff' },
+  {
+    token: '--color-surface-lv2',
+    name: 'surface lv2',
+    value: 'oklch(100% 0 0)',
+  },
+  {
+    token: '--color-border-primary',
+    name: 'border primary',
+    value: 'oklch(0.92 0 0)',
+  },
+  {
+    token: '--color-border-secondary',
+    name: 'border secondary',
+    value: 'oklch(93.6% 0.022 312.18)',
+  },
+  { token: '--color-fg', name: 'fg', value: 'oklch(19.19% 0.0441 309.16)' },
+  {
+    token: '--color-fg-muted',
+    name: 'fg muted',
+    value: 'oklch(45.48% 0.0339 305.48)',
+  },
+  { token: '--color-muted', name: 'muted', value: 'oklch(96.7% 0 264)' },
+  { token: '--color-on-dark', name: 'on dark', value: 'oklch(100% 0 0)' },
 ]
 
 const FONT_SCALE = [

@@ -87,19 +87,27 @@ export function Swatch({
   value?: string
 }) {
   return (
-    <div className="flex min-w-28 flex-col gap-1.5">
+    <div className="flex items-center gap-3">
       <div
-        className="h-14 w-full rounded-control border border-border-primary"
+        className="h-8 w-8 shrink-0 rounded-control"
         style={{ background: `var(${token})` }}
       />
-      <span className="font-sans text-xs font-semibold text-fg">{name}</span>
-      {value && (
-        <span className="font-mono text-2xs text-fg-muted">{value}</span>
-      )}
+      <div className="flex flex-col gap-0.5">
+        <span className="font-sans text-xs font-semibold text-on-dark">
+          {name}
+        </span>
+        {value && (
+          <span className="font-mono text-2xs text-on-dark/70">{value}</span>
+        )}
+      </div>
     </div>
   )
 }
 
 export function SwatchGrid({ children }: { children: ReactNode }) {
-  return <div className="flex flex-wrap gap-5">{children}</div>
+  return (
+    <div className="grid gap-5 rounded-panel bg-black p-5 sm:grid-cols-2 lg:grid-cols-3">
+      {children}
+    </div>
+  )
 }

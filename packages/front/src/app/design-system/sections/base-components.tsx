@@ -59,13 +59,19 @@ export function BaseComponents() {
         </States>
       </SubSection>
 
-      <SubSection title="Tag · variant (module | curso | none)">
+      <SubSection title="Tag · variant (module | curso | blue | green | none)">
         <States>
           <State label="module">
             <Tag label="Gratuito" variant="module" module="1" />
           </State>
           <State label="curso">
             <Tag label="Tubarão, SC" variant="curso" source="Censo" />
+          </State>
+          <State label="blue">
+            <Tag label="Tem Sisu" variant="blue" />
+          </State>
+          <State label="green">
+            <Tag label="Gratuito" variant="green" />
           </State>
           <State label="none">
             <Tag label="Presencial" />
