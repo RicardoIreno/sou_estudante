@@ -14,7 +14,7 @@ Network: `data_net`.
 
 
 ## Rules
-- ⚠️: DON'T READ `data/dados_curso_completo.json`.
+- ⚠️: DON'T READ `data/dados_cursos.json`.
 - ⚠️: Never try to install inside this container (dev container).
 - When making tests, verify if containers are up.
 - Execute commands and tests using: `podman exec -it ...`

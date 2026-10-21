@@ -14,7 +14,7 @@ const (
 	defaultIESIndexName     = "ies"
 	defaultDictIndexName    = "dicionario-cursos"
 	defaultIESDictIndexName = "dicionario-ies"
-	defaultJSONFilePath     = "/data/dados_curso_completo.json"
+	defaultJSONFilePath     = "/data/dados_cursos.json"
 	defaultIESJSONFilePath  = "/data/dados_ies.json"
 	defaultNumWorkers       = 4
 	defaultFlushBytes       = 5_000_000
@@ -67,11 +67,11 @@ func Load() *Config {
 		ESURL:            getEnv("ES_URL", defaultESURL),
 		ESAPIKey:         os.Getenv("ES_APIKEY"),
 		Port:             getEnv("PORT", defaultPort),
-		CursosIndexName:  getEnv("ES_INDEX_NAME", defaultCursosIndexName),
+		CursosIndexName:  getEnv("CURSOS_INDEX_NAME", defaultCursosIndexName),
 		IESIndexName:     getEnv("IES_INDEX_NAME", defaultIESIndexName),
-		DictIndexName:    getEnv("ES_DICT_INDEX_NAME", defaultDictIndexName),
+		DictIndexName:    getEnv("CURSOS_DICT_INDEX_NAME", defaultDictIndexName),
 		IESDictIndexName: getEnv("IES_DICT_INDEX_NAME", defaultIESDictIndexName),
-		JSONFilePath:     getEnv("JSON_FILE_PATH", defaultJSONFilePath),
+		JSONFilePath:     getEnv("CURSOS_JSON_FILE_PATH", defaultJSONFilePath),
 		IESJSONFilePath:  getEnv("IES_JSON_FILE_PATH", defaultIESJSONFilePath),
 		ESIngestAPIKey:   os.Getenv("ES_INGEST_APIKEY"),
 		NumWorkers:       getEnvInt("ES_NUM_WORKERS", defaultNumWorkers),
