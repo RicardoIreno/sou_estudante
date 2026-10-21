@@ -99,6 +99,31 @@ describe('LayoutSearchPage', () => {
     expect(screen.getByText('resultados')).toBeInTheDocument()
   })
 
+  it('hides the notice once a search is made', () => {
+    mockSearchParams.value = new URLSearchParams('')
+
+    const { rerender } = render(
+      <LayoutSearchPage
+        module="4"
+        notice={<p>aviso</p>}
+        searchHeader={<p>cabeçalho</p>}
+      />,
+    )
+
+    expect(screen.getByText('aviso')).toBeInTheDocument()
+
+    mockSearchParams.value = new URLSearchParams('q=medicina')
+    rerender(
+      <LayoutSearchPage
+        module="4"
+        notice={<p>aviso</p>}
+        searchHeader={<p>cabeçalho</p>}
+      />,
+    )
+
+    expect(screen.queryByText('aviso')).not.toBeInTheDocument()
+  })
+
   it('omits the module attribute when not provided', () => {
     const { container } = renderLayout()
 

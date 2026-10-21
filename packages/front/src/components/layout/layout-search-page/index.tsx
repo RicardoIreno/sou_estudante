@@ -22,7 +22,7 @@ interface LayoutSearchPageProps {
   results?: ReactNode
   /** Entrada de busca exibida entre o cabeçalho e o aviso (ex.: redireciona para outra busca). */
   searchEntry?: ReactNode
-  /** Aviso exibido logo abaixo do cabeçalho (ex.: módulo em construção). */
+  /** Aviso exibido abaixo do cabeçalho enquanto nenhuma busca foi realizada. */
   notice?: ReactNode
   /** Mínimo de caracteres em `q` para considerar que houve busca. */
   minQueryLength?: number
@@ -77,8 +77,6 @@ export function LayoutSearchPage({
 
         {searchEntry && <div className="mb-6">{searchEntry}</div>}
 
-        {notice && <div className="mb-6">{notice}</div>}
-
         {hasSearch && (
           <>
             <div className="mb-2 font-sans text-xs font-bold tracking-[0.9px] text-accent-deep uppercase">
@@ -95,6 +93,14 @@ export function LayoutSearchPage({
               {searchHeader}
             </Suspense>
           </>
+        )}
+
+        {notice && (
+          <Suspense fallback={<div className="mb-6 mt-6">{notice}</div>}>
+            <SearchGate fallback={<div className="mb-6 mt-6">{notice}</div>}>
+              {null}
+            </SearchGate>
+          </Suspense>
         )}
 
         {showPrompt && (
