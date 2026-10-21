@@ -13,7 +13,7 @@ export const CalloutTagline = ({
   return (
     <span
       className={cn(
-        'font-bold text-xs uppercase tracking-wider text-callout-accent-deep',
+        'callout-tagline font-bold text-xs uppercase tracking-wider text-callout-accent-deep',
         className,
       )}
       {...props}
