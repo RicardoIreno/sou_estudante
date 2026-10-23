@@ -57,7 +57,7 @@ func TestHandlerExtraiFiltrosCumulativos(t *testing.T) {
 
 	handler := &Handler{Service: mockService}
 
-	req := httptest.NewRequest(http.MethodGet, "/cursos?q=medicina&uf=SP,RJ&turno=Noturno,Diurno&grau=Bacharelado&sort=enade", nil)
+	req := httptest.NewRequest(http.MethodGet, "/cursos?q=medicina&uf=SP,RJ&turno=Noturno,Diurno&grau=Bacharelado&sisu=Via%20Sisu&sort=enade", nil)
 	rec := httptest.NewRecorder()
 
 	handler.ServeHTTP(rec, req)
@@ -77,6 +77,9 @@ func TestHandlerExtraiFiltrosCumulativos(t *testing.T) {
 	}
 	if len(mockService.CapturedFilters.Grau) != 1 || mockService.CapturedFilters.Grau[0] != "Bacharelado" {
 		t.Errorf("esperado Grau ['Bacharelado'], recebido '%v'", mockService.CapturedFilters.Grau)
+	}
+	if len(mockService.CapturedFilters.Sisu) != 1 || mockService.CapturedFilters.Sisu[0] != "Via Sisu" {
+		t.Errorf("esperado Sisu ['Via Sisu'], recebido '%v'", mockService.CapturedFilters.Sisu)
 	}
 	if mockService.CapturedFilters.Sort != "enade" {
 		t.Errorf("esperado Sort 'enade', recebido '%s'", mockService.CapturedFilters.Sort)
