@@ -1,4 +1,4 @@
-import { MapPin } from 'lucide-react'
+import { Info, MapPin } from 'lucide-react'
 import { Callout } from '@/components/ui/callout'
 import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
@@ -35,6 +35,56 @@ export const ProfileIngresso = ({
   const permanenciaHref = id !== undefined ? `/permanencia/${id}` : undefined
   const idIes = curso.instituicao.co_ies
   const iesHref = idIes !== undefined ? buildIesHref(idIes, id) : undefined
+  const temSisu = curso.sisu?.tem_sisu ?? false
+  const nomeIes = curso.instituicao?.no_ies
+
+  if (!temSisu) {
+    return (
+      <Profile module={module} className="p-4" courseId={id} iesId={idIes}>
+        <Profile.Header
+          badge="Ingresso via Sisu"
+          title={titulo}
+          subtitle={subtitulo}
+          className="px-0"
+        >
+          <Tag label="Sem Sisu" variant="blue" className="text-2xs py-[2px]" />
+        </Profile.Header>
+
+        <Callout v="blue">
+          <Callout.Header>
+            <Callout.Icon>
+              <Info aria-hidden="true" />
+            </Callout.Icon>
+            <Callout.HeaderContent>
+              <Callout.Tagline>Para você, estudante</Callout.Tagline>
+              <Callout.Title>
+                O curso não possui ingresso por Sisu
+              </Callout.Title>
+            </Callout.HeaderContent>
+          </Callout.Header>
+          <Callout.Content>
+            <p>
+              Esta oferta não participa do Sisu. Isso não significa que não dá
+              para entrar: a instituição pode selecionar estudantes por
+              vestibular próprio, Enem direto, histórico escolar ou outro
+              processo seletivo.
+            </p>
+            <p>
+              Para saber como ingressar, consulte o site da instituição
+              {nomeIes ? (
+                <>
+                  {' '}
+                  — <strong>{nomeIes}</strong>
+                </>
+              ) : null}
+              . Lá estão as informações oficiais e atualizadas sobre o processo
+              seletivo.
+            </p>
+          </Callout.Content>
+        </Callout>
+      </Profile>
+    )
+  }
 
   const ofertasPorTurno = ofertas.reduce<OfertasPorTurno>((dic, oferta) => {
     const turno = oferta.turno || 'OUTROS'

@@ -48,7 +48,7 @@ const mockCurso: Curso = {
         inscricoes: 2000,
       },
     ],
-    tem_sisu: false,
+    tem_sisu: true,
   },
 }
 
@@ -65,5 +65,23 @@ describe('ProfileIngresso Component', () => {
     expect(screen.getByText('Tem Sisu')).toBeInTheDocument()
 
     expect(screen.getByText('Rio de Janeiro, RJ')).toBeInTheDocument()
+  })
+
+  it('exibe a mensagem de curso sem Sisu dentro do perfil, com rotas', () => {
+    render(
+      <ProfileIngresso
+        curso={{ ...mockCurso, sisu: { tem_sisu: false, ofertas: [] } }}
+      />,
+    )
+
+    expect(
+      screen.getByRole('navigation', { name: 'Rotas' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('O curso não possui ingresso por Sisu'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Sem Sisu')).toBeInTheDocument()
+    expect(screen.getByText(/Medicina — Bacharelado/i)).toBeInTheDocument()
+    expect(screen.queryByText('Tem Sisu')).not.toBeInTheDocument()
   })
 })
