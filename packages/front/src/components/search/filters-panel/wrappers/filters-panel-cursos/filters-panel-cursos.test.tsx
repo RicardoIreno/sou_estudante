@@ -51,6 +51,10 @@ describe('FiltersPanelCursos', () => {
     expect(screen.getByText('Categoria')).toBeInTheDocument()
     expect(screen.getByText('Modalidade')).toBeInTheDocument()
     expect(screen.getByText('Conceito Enade')).toBeInTheDocument()
+    expect(screen.getByText('Ingresso')).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', { name: /Via Sisu/ }),
+    ).toBeInTheDocument()
   })
 
   it('atualiza os parâmetros da URL de forma cumulativa ao selecionar mais de uma opção no mesmo grupo', () => {
@@ -107,6 +111,21 @@ describe('FiltersPanelCursos', () => {
     fireEvent.click(noturnoCheckbox)
     expect(mockUpdateParams).toHaveBeenCalledWith({
       turno: null,
+      page: '1',
+    })
+  })
+
+  it('atualiza a URL ao marcar a opção Via Sisu do grupo Ingresso', () => {
+    const params = new URLSearchParams()
+    vi.mocked(useSearchParams).mockReturnValue(
+      params as unknown as ReadonlyURLSearchParams,
+    )
+
+    render(<FiltersPanelCursos />)
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /Via Sisu/ }))
+    expect(mockUpdateParams).toHaveBeenCalledWith({
+      sisu: 'Via Sisu',
       page: '1',
     })
   })

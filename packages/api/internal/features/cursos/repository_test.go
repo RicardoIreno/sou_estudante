@@ -94,7 +94,7 @@ func TestBuildAggregationsUsaCamposKeywordSemSufixo(t *testing.T) {
 func TestBuildAggregationsIncluiTodosOsGrupos(t *testing.T) {
 	aggs := buildAggregations()
 
-	for _, key := range []string{"ufs", "graus", "modalidades", "enades", "categorias", "turnos", "gratuitos"} {
+	for _, key := range []string{"ufs", "graus", "modalidades", "enades", "categorias", "turnos", "gratuitos", "sisu"} {
 		if _, ok := aggs[key]; !ok {
 			t.Errorf("esperado agregação %q, obtido %v", key, aggs)
 		}
@@ -127,6 +127,31 @@ func TestBuildAggregationsGratuitosFiltraInGratuito(t *testing.T) {
 	}
 }
 
+// A contagem de ingresso via Sisu deve usar o campo booleano sisu.tem_sisu.
+func TestBuildAggregationsSisuFiltraTemSisu(t *testing.T) {
+	aggs := buildAggregations()
+
+	agg, ok := aggs["sisu"].(map[string]any)
+	if !ok {
+		t.Fatalf("agregação sisu ausente ou com tipo inesperado: %v", aggs["sisu"])
+	}
+	filters, ok := agg["filters"].(map[string]any)["filters"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado nó filters.filters, obtido %v", agg["filters"])
+	}
+	viaSisu, ok := filters["Via Sisu"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado bucket Via Sisu, obtido %v", filters)
+	}
+	term, ok := viaSisu["term"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado nó term, obtido %v", viaSisu)
+	}
+	if got := term["sisu.tem_sisu"]; got != true {
+		t.Errorf("sisu.tem_sisu = %v, esperado true", got)
+	}
+}
+
 func TestBuildFilterClausesUFUsaCampoKeyword(t *testing.T) {
 	clauses := buildFilterClauses(SearchFilterParams{UF: []string{"sp"}})
 	if len(clauses) != 1 {
@@ -147,6 +172,21 @@ func TestBuildFilterClausesEnadeUsaCampoKeyword(t *testing.T) {
 
 	if _, ok := termsNodeFrom(t, clauses[0])["enade.conceito_faixa_enade"]; !ok {
 		t.Errorf("esperado campo enade.conceito_faixa_enade, obtido %v", clauses[0])
+	}
+}
+
+func TestBuildFilterClausesSisuFiltraTemSisu(t *testing.T) {
+	clauses := buildFilterClauses(SearchFilterParams{Sisu: []string{"Via Sisu"}})
+	if len(clauses) != 1 {
+		t.Fatalf("esperado 1 cláusula, obtido %d", len(clauses))
+	}
+
+	term, ok := clauses[0]["term"].(map[string]any)
+	if !ok {
+		t.Fatalf("esperado nó term, obtido %T", clauses[0]["term"])
+	}
+	if got := term["sisu.tem_sisu"]; got != true {
+		t.Errorf("sisu.tem_sisu = %v, esperado true", got)
 	}
 }
 

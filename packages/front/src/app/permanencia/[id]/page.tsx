@@ -38,7 +38,7 @@ export default async function PermanenciaDetalhePage({
   const curso = await getCurso(id)
 
   return (
-    <div className="min-h-screen w-full bg-surface-lv2">
+    <div className="min-h-screen w-full">
       <ProfilePermanenciaLoader id={id} initialData={curso} />
     </div>
   )

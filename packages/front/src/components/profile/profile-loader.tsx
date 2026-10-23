@@ -12,6 +12,8 @@ export interface ProfileLoaderProps<TData> {
   /** Título do estado "não encontrado" (ex.: "Curso não encontrado"). */
   notFoundTitle: string
   notFoundDescription: string
+  /** Conteúdo opcional que substitui título + descrição no estado "não encontrado". */
+  notFoundContent?: ReactNode
   /** Mensagem exibida quando há erro sem texto ou os dados vieram vazios. */
   fallbackError: string
   /** Destino do link "Voltar à busca" no estado "não encontrado". */
@@ -31,6 +33,7 @@ export function ProfileLoader<TData>({
   notFound,
   notFoundTitle,
   notFoundDescription,
+  notFoundContent,
   fallbackError,
   backHref,
   children,
@@ -45,19 +48,25 @@ export function ProfileLoader<TData>({
 
   if (notFound) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <Typo v="title" s="xl" t="h1" className="block">
-          {notFoundTitle}
-        </Typo>
-        <Typo v="mute" s="sm" t="p" className="mt-2">
-          {notFoundDescription}
-        </Typo>
-        <Link
-          href={backHref}
-          className="mt-6 inline-block rounded-full border border-accent px-5 py-2 font-sans text-sm font-bold text-accent-deep transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
-        >
-          Voltar à busca
-        </Link>
+      <div className="mx-auto max-w-3xl px-4 py-16">
+        {notFoundContent ?? (
+          <div className="text-center">
+            <Typo v="title" s="xl" t="h1" className="block">
+              {notFoundTitle}
+            </Typo>
+            <Typo v="mute" s="sm" t="p" className="mt-2">
+              {notFoundDescription}
+            </Typo>
+          </div>
+        )}
+        <div className="mt-6 text-center">
+          <Link
+            href={backHref}
+            className="inline-block rounded-full border border-accent px-5 py-2 font-sans text-sm font-bold text-accent-deep transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep"
+          >
+            Voltar à busca
+          </Link>
+        </div>
       </div>
     )
   }

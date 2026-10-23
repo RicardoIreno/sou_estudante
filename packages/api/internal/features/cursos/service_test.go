@@ -59,6 +59,7 @@ func TestBuscarCursosComFiltrosCumulativos(t *testing.T) {
 		Categoria:  []string{"Federal"},
 		Modalidade: []string{"Presencial"},
 		Enade:      []string{"5", "4"},
+		Sisu:       []string{"Via Sisu"},
 		Sort:       "enade",
 	}
 
@@ -88,6 +89,7 @@ func TestBuscarCursosComFiltrosCumulativos(t *testing.T) {
 		"categoria":  "Federal",
 		"modalidade": "Presencial",
 		"enade":      "5,4",
+		"sisu":       "Via Sisu",
 		"sort":       "enade",
 		"page":       "1",
 		"limit":      "10",

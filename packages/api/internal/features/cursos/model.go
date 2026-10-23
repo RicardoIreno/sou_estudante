@@ -13,6 +13,7 @@ type SearchFilterParams struct {
 	Categoria  []string
 	Modalidade []string
 	Enade      []string
+	Sisu       []string
 	Sort       string
 	Exact      bool
 }
@@ -30,6 +31,7 @@ type SearchAggregations struct {
 	Modalidades []AggregationBucket `json:"modalidades,omitempty"`
 	Enades      []AggregationBucket `json:"enades,omitempty"`
 	Gratuitos   []AggregationBucket `json:"gratuitos,omitempty"`
+	Sisu        []AggregationBucket `json:"sisu,omitempty"`
 }
 
 // CursoListResponse é a resposta paginada de busca de cursos

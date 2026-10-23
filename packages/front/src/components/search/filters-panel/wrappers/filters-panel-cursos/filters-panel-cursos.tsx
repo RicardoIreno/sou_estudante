@@ -40,6 +40,8 @@ const CONCEITOS_ENADE = [
   { label: 'Conceito 1', value: '1' },
 ]
 
+const INGRESSOS = [{ label: 'Via Sisu', value: 'Via Sisu' }]
+
 const SECTIONS: FilterSectionDefinition[] = [
   {
     key: 'uf',
@@ -79,6 +81,12 @@ const SECTIONS: FilterSectionDefinition[] = [
     title: 'Conceito Enade',
     aggregationKey: 'enades',
     options: CONCEITOS_ENADE,
+  },
+  {
+    key: 'sisu',
+    title: 'Ingresso',
+    aggregationKey: 'sisu',
+    options: INGRESSOS,
   },
 ]
 

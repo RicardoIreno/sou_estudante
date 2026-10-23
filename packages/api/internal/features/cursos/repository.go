@@ -83,6 +83,14 @@ func categoriaFilter(categoria string) map[string]any {
 	return elasticsearch.CategoriaFilter(categoriaField, categoria)
 }
 
+// sisuTerm monta a cláusula que seleciona cursos com ingresso pelo Sisu
+// (tem_sisu == true), usada tanto no filtro quanto na agregação "sisu".
+func sisuTerm() map[string]any {
+	return map[string]any{
+		"term": map[string]any{"sisu.tem_sisu": true},
+	}
+}
+
 // hasExactCourseName verifica se existe ao menos um documento cujo nome de
 // curso seja exatamente igual a name (ignorando caixa).
 func (r *ElasticsearchRepository) hasExactCourseName(ctx context.Context, name string) (bool, error) {
@@ -199,6 +207,10 @@ func buildFilterClauses(filters SearchFilterParams) []map[string]any {
 		clauses = append(clauses, elasticsearch.TermsFilter("enade.conceito_faixa_enade", filters.Enade))
 	}
 
+	if len(filters.Sisu) > 0 {
+		clauses = append(clauses, sisuTerm())
+	}
+
 	if len(filters.Turno) > 0 {
 		should := []map[string]any{}
 		for _, turno := range filters.Turno {
@@ -259,6 +271,9 @@ func buildAggregations() map[string]any {
 				"term": map[string]any{"curso.in_gratuito": true},
 			},
 		}),
+		"sisu": elasticsearch.FiltersAgg(map[string]any{
+			"Via Sisu": sisuTerm(),
+		}),
 	}
 }
 
@@ -309,6 +324,7 @@ func (r *ElasticsearchRepository) Search(
 			Modalidades: elasticsearch.ParseBuckets(resp.Aggregations, "modalidades"),
 			Enades:      elasticsearch.ParseBuckets(resp.Aggregations, "enades"),
 			Gratuitos:   elasticsearch.ParseBuckets(resp.Aggregations, "gratuitos"),
+			Sisu:        elasticsearch.ParseBuckets(resp.Aggregations, "sisu"),
 		}
 	}
 

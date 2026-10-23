@@ -73,6 +73,7 @@ describe('ProfileIngressoLoader', () => {
     mockCurso({
       curso: {
         sequencial: 1,
+        instituicao: { no_ies: 'Universidade Federal' },
         sisu: { tem_sisu: false, ofertas: [] },
       } as unknown as Curso,
     })
@@ -82,6 +83,10 @@ describe('ProfileIngressoLoader', () => {
     expect(
       screen.getByText('O curso não possui ingresso por Sisu'),
     ).toBeInTheDocument()
+    expect(
+      screen.getByText(/consulte o site da instituição/),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Universidade Federal')).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Voltar à busca' }),
     ).toHaveAttribute('href', '/cursos')

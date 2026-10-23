@@ -198,7 +198,7 @@ export function FiltersPanel({
     <div
       data-module={module}
       className={cn(
-        'flex flex-col gap-6 rounded-card border border-border-primary bg-surface-lv1 p-6 font-sans text-fg shadow-sm',
+        'flex flex-col gap-6 rounded-card border border-border-primary bg-filters-bg p-6 font-sans text-fg shadow-sm',
         className,
       )}
     >

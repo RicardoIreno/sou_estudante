@@ -75,6 +75,7 @@ export interface SearchAggregations {
   modalidades?: AggregationBucket[]
   enades?: AggregationBucket[]
   gratuitos?: AggregationBucket[]
+  sisu?: AggregationBucket[]
   [key: string]: AggregationBucket[] | undefined
 }
 
