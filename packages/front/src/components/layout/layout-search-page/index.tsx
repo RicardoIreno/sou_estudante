@@ -1,5 +1,5 @@
 import { type ReactNode, Suspense } from 'react'
-import { RoutesBar } from '@/components/layout/routes-bar/routes-bar'
+// import { RoutesBar } from '@/components/layout/routes-bar/routes-bar'
 // Dependência deliberada de `search/`: o layout da página de busca precisa saber
 // se há um termo em `q` (SearchGate) para decidir entre os blocos e o estado vazio.
 import { SearchGate } from '@/components/search/search-gate/search-gate'
@@ -53,10 +53,10 @@ export function LayoutSearchPage({
 
   return (
     <div data-module={module} className="min-h-screen">
-      <div className="mx-auto w-full max-w-pages px-5 min-h-page bg-surface-lv1 rounded-b-callout">
-        <RoutesBar module={module} />
+      <div className="mx-auto w-full max-w-pages px-5 py-8 min-h-page bg-surface-lv1 rounded-b-callout">
+        {/* <RoutesBar module={module} /> */}
         {meta && module && (
-          <header className="mb-6 mt-6">
+          <header className="mb-6">
             <div className="mb-2 flex items-center gap-2 font-sans text-xs font-bold tracking-[0.9px] text-accent-deep uppercase">
               <IconModule module={module} />
               {meta.badge}
