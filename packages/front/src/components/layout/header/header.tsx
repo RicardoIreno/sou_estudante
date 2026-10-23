@@ -29,9 +29,11 @@ export const Header = ({
   if (variant === 'inner') {
     return (
       <header
+        data-module={module}
         className={cn(
           'flex h-[64px] items-center justify-between px-5',
           'mx-auto w-full bg-surface-lv1',
+          'border-b border-accent/40',
           className,
         )}
       >
@@ -60,9 +62,11 @@ export const Header = ({
     return (
       <div className="w-full">
         <header
+          data-module={module}
           className={cn(
             'flex items-center justify-between p-4 pb-0 bg-surface-lv1',
             'mx-auto w-full max-w-2xl',
+            'border-b border-accent/40',
             className,
           )}
         >
