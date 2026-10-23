@@ -39,9 +39,14 @@
   --color-m4-deep: oklch(41% 0.1961 296);
   --color-m5-deep: oklch(51% 0.1368 049);
 
+
   --color-surface-lv0: oklch(93% 0.0222 312);
   --color-surface-lv1: oklch(97% 0.0102 311);
   --color-surface-lv2: oklch(100% 0 0);
+
+  --color-filters-bg: oklch(98.5% 0 0);
+  --color-filter-option: oklch(95% 0 0);
+  --color-filter-option-active: oklch(89% 0 0);
 
   --color-surface-deep: oklch(93% 0.0222 312);
   --color-surface-footer: color-mix(

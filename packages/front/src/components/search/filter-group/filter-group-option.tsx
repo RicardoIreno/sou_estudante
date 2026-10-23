@@ -30,12 +30,12 @@ export function FilterGroupOption({
     <li className={className}>
       <label
         className={cn(
-          'inline-flex cursor-pointer items-center gap-1 rounded-full border px-2 py-1 transition duration-300',
+          'inline-flex cursor-pointer items-center gap-1 rounded-full px-2 py-1 transition duration-300',
           'focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-deep',
           'font-sans text-xs font-semibold tracking-wide uppercase',
           checked
-            ? 'border-accent/70 bg-accent/10 text-accent-fg'
-            : 'border-transparent bg-muted text-fg-muted',
+            ? 'bg-accent/70 border-accent/70 text-accent-fg'
+            : 'bg-filter-option text-fg-muted border border-fg-muted/10',
           disabled && 'cursor-not-allowed opacity-50',
         )}
       >

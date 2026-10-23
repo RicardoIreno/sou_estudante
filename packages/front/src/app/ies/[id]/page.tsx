@@ -56,7 +56,7 @@ export default async function IesDetalhePage({
   const courseId = parseCourseId(curso)
 
   return (
-    <div className="min-h-screen w-full bg-surface-lv2">
+    <div className="min-h-screen w-full">
       <ProfileIESLoader id={id} initialData={ies} courseId={courseId} />
     </div>
   )
