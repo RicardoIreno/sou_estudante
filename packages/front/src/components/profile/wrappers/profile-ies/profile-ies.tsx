@@ -3,8 +3,8 @@ import { Route } from '@/components/ui/route/route'
 import { Tag } from '@/components/ui/tag/tag'
 import { MODULE_META, type Module } from '@/lib/module'
 import type { IES } from '@/services/api/types'
-import { ProfileIESOverview } from './profile-ies-overview'
 import { ProfileIESFaculty } from './profile-ies-faculty'
+import { ProfileIESOverview } from './profile-ies-overview'
 
 interface ProfileIESProps {
   ies: IES
@@ -37,12 +37,17 @@ export const ProfileIES = ({
         badge={MODULE_META[module].badge}
         title={titulo}
         subtitle={subtitulo}
-        className='bg-white'
+        className="bg-white"
       >
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-x-2">
             {tags.map((tag) => (
-              <Tag key={tag} label={tag} className="mr-0 text-2xs py-[3px]" variant='none' />
+              <Tag
+                key={tag}
+                label={tag}
+                className="mr-0 text-2xs py-[3px]"
+                variant="none"
+              />
             ))}
           </div>
         )}
@@ -55,7 +60,11 @@ export const ProfileIES = ({
         <div className="h-[1.5px] flex-1 bg-border-secondary" />
       </div>
 
-      <ProfileIESOverview matriculados={ies.vagas_matriculas?.qt_mat ?? null} qtd_cursos={ies.docentes?.qt_cursos ?? null} docentes={ies.docentes?.qt_doc_exe ?? null} />
+      <ProfileIESOverview
+        matriculados={ies.vagas_matriculas?.qt_mat ?? null}
+        qtd_cursos={ies.docentes?.qt_cursos ?? null}
+        docentes={ies.docentes?.qt_doc_exe ?? null}
+      />
 
       <div className="mb-[0.875rem] mt-6 flex items-center gap-[0.625rem] px-4">
         <span className="whitespace-nowrap text-2xs font-bold uppercase tracking-[0.7px] text-fg-muted">

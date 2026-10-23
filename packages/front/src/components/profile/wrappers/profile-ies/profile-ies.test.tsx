@@ -15,7 +15,7 @@ const iesMock = {
     in_capital: true,
   },
   vagas_matriculas: {
-    qt_mat: 15000, 
+    qt_mat: 15000,
   },
   docentes: {
     qt_cursos: 85,
@@ -43,7 +43,9 @@ describe('ProfileIES', () => {
     render(<ProfileIES ies={iesMock} />)
 
     expect(screen.getByText(/panorama da instituição/i)).toBeInTheDocument()
-    expect(screen.getByText(/corpo docente da instituição/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/corpo docente da instituição/i),
+    ).toBeInTheDocument()
     expect(screen.getByText(/continue sua rota/i)).toBeInTheDocument()
   })
 
@@ -56,6 +58,8 @@ describe('ProfileIES', () => {
 
     render(<ProfileIES ies={incompleteIes} />)
 
-    expect(screen.getByText(/instituição não especificada/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/instituição não especificada/i),
+    ).toBeInTheDocument()
   })
 })

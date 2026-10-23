@@ -18,14 +18,14 @@ describe('ProfileRoutes', () => {
     ).toBeInTheDocument()
   })
 
-  it.each(LINKS)('renders the $name link pointing to $href', ({
-    name,
-    href,
-  }) => {
-    render(<ProfileRoutes />)
+  it.each(LINKS)(
+    'renders the $name link pointing to $href',
+    ({ name, href }) => {
+      render(<ProfileRoutes />)
 
-    expect(screen.getByRole('link', { name })).toHaveAttribute('href', href)
-  })
+      expect(screen.getByRole('link', { name })).toHaveAttribute('href', href)
+    },
+  )
 
   it('marks the active module as the current page', () => {
     render(<ProfileRoutes module="1" />)
