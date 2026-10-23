@@ -30,7 +30,7 @@ export const Header = ({
     return (
       <header
         className={cn(
-          'sticky top-0 z-[600] flex h-[64px] items-center justify-between px-5',
+          'flex h-[64px] items-center justify-between px-5',
           'mx-auto w-full bg-surface-lv1',
           className,
         )}
@@ -87,7 +87,7 @@ export const Header = ({
   return (
     <header
       className={cn(
-        'sticky top-0 z-[600] flex h-[52px] items-center justify-between bg-surface-header px-5',
+        'flex h-[52px] items-center justify-between bg-surface-header px-5',
         'mx-auto w-full',
         className,
       )}
