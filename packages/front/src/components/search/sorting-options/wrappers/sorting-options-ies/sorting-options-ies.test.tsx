@@ -29,15 +29,23 @@ describe('SortingOptionsIes', () => {
   it('atualiza o parâmetro sort ao pressionar uma opção', () => {
     render(<SortingOptionsIes />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Relevância' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Relevância' }))
 
     expect(updateParams).toHaveBeenCalledWith({ sort: 'relevancia' })
   })
 
-  it('propaga o módulo para os botões', () => {
+  it('renderiza o grupo de ordenação com título', () => {
+    render(<SortingOptionsIes />)
+
+    expect(
+      screen.getByRole('region', { name: 'Ordenação' }),
+    ).toBeInTheDocument()
+  })
+
+  it('propaga o módulo para o grupo', () => {
     render(<SortingOptionsIes module="4" />)
 
-    expect(screen.getByRole('button', { name: 'A Z' })).toHaveAttribute(
+    expect(screen.getByRole('region', { name: 'Ordenação' })).toHaveAttribute(
       'data-module',
       '4',
     )

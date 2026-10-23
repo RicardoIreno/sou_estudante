@@ -8,6 +8,8 @@ export interface FilterGroupOptionProps {
   disabled?: boolean
   className?: string
   onChange?: () => void
+  /** `checkbox` para multi-seleção (padrão) ou `radio` para seleção única. */
+  type?: 'checkbox' | 'radio'
 }
 
 export function FilterGroupOption({
@@ -17,9 +19,11 @@ export function FilterGroupOption({
   disabled = false,
   className,
   onChange,
+  type = 'checkbox',
 }: FilterGroupOptionProps) {
-  // `useFilterGroupContext` garante que a opção está dentro de `FilterGroup.Root`.
-  useFilterGroupContext('FilterGroup.Option')
+  // `useFilterGroupContext` garante que a opção está dentro de `FilterGroup.Root`
+  // e fornece o `groupId` usado como `name` dos radios para agrupá-los.
+  const { groupId } = useFilterGroupContext('FilterGroup.Option')
   const hasResultCount = typeof resultCount === 'number'
   const countPhrase = hasResultCount
     ? `${resultCount} ${resultCount === 1 ? 'resultado' : 'resultados'}`
@@ -40,7 +44,8 @@ export function FilterGroupOption({
         )}
       >
         <input
-          type="checkbox"
+          type={type}
+          name={type === 'radio' ? groupId : undefined}
           checked={checked}
           disabled={disabled}
           readOnly={checked !== undefined && !onChange}

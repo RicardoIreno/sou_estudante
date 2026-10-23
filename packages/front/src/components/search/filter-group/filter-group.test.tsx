@@ -75,6 +75,35 @@ describe('FilterGroup', () => {
     expect(handleChange).toHaveBeenCalled()
   })
 
+  it('suporta modo radio para seleção única', () => {
+    const handleChange = vi.fn()
+    render(
+      <FilterGroup>
+        <FilterGroup.Title>Ordenação</FilterGroup.Title>
+        <FilterGroup.List>
+          <FilterGroup.Option
+            type="radio"
+            label="A Z"
+            checked
+            onChange={handleChange}
+          />
+          <FilterGroup.Option
+            type="radio"
+            label="Relevância"
+            onChange={handleChange}
+          />
+        </FilterGroup.List>
+      </FilterGroup>,
+    )
+
+    const checked = screen.getByRole('radio', { name: 'A Z' })
+    const unchecked = screen.getByRole('radio', { name: 'Relevância' })
+
+    expect(checked).toBeChecked()
+    expect(unchecked).not.toBeChecked()
+    expect(checked).toHaveAttribute('name', unchecked.getAttribute('name'))
+  })
+
   it('expõe o tema do módulo via data-module', () => {
     render(
       <FilterGroup module="2">
