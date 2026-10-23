@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
 
+  experimental: {
+    agentUpgrade: 'security',
+  },
+
   // Gera um servidor mínimo autocontido para a imagem de produção (Dockerfile)
   output: 'standalone',
 
