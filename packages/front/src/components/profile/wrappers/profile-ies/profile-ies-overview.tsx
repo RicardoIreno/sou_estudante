@@ -3,9 +3,9 @@ import { ProfileIESOverviewCard } from "./profile-ies-overview-card"
 import { Callout } from "@/components/ui/callout"
 
 interface ProfileIESOverviewProps {
-    matriculados: number,
-    qtd_cursos: number,
-    docentes: number
+    matriculados: number | null;
+    qtd_cursos: number | null;
+    docentes: number | null;
 }
 
 export const ProfileIESOverview = ({ matriculados, qtd_cursos, docentes }: ProfileIESOverviewProps) => {
