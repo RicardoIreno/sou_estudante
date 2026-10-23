@@ -19,14 +19,14 @@ describe('RoutesBar', () => {
     ).toBeInTheDocument()
   })
 
-  it.each(LINKS)(
-    'renders the $name link pointing to $href',
-    ({ name, href }) => {
-      render(<RoutesBar />)
+  it.each(LINKS)('renders the $name link pointing to $href', ({
+    name,
+    href,
+  }) => {
+    render(<RoutesBar />)
 
-      expect(screen.getByRole('link', { name })).toHaveAttribute('href', href)
-    },
-  )
+    expect(screen.getByRole('link', { name })).toHaveAttribute('href', href)
+  })
 
   it('marks the active module as the current page', () => {
     render(<RoutesBar module="1" />)
