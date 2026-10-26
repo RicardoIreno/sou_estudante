@@ -118,7 +118,7 @@ describe('Menu', () => {
     render(<Menu mode="light" module="2" />)
 
     expect(screen.getByRole('button', { name: 'Menu' })).toHaveClass(
-      'border-accent-deep',
+      'border-accent-deep/50',
       'bg-accent',
       'text-accent-fg',
     )
