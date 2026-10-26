@@ -13,7 +13,8 @@ export const ShellHeader = () => {
     pathname === '/ingresso' ||
     pathname === '/comparar' ||
     pathname === '/permanencia' ||
-    pathname === '/metodologia'
+    pathname === '/metodologia' ||
+    pathname === '/sobre'
 
   if (isHome) {
     return <Header variant="home" className="max-w-home" />

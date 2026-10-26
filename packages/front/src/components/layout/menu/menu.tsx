@@ -157,13 +157,10 @@ export function Menu({ mode = 'light', module }: MenuProps) {
           <span aria-hidden className={cn(PONTO, 'bg-surface-deep')} />
           Metodologia
         </Link>
-        <div className={cn(ITEM, 'cursor-default hover:bg-transparent')}>
+        <Link href="/sobre" className={ITEM} onClick={() => setOpened(false)}>
           <span aria-hidden className={cn(PONTO, 'bg-surface-deep')} />
           Sobre
-          <span className="ml-auto rounded-full bg-surface-lv1 px-[7px] py-[2px] text-xs font-bold uppercase tracking-[0.4px] text-fg-muted">
-            em breve
-          </span>
-        </div>
+        </Link>
 
         <div className="px-5 pb-[0.4rem] pt-4 text-xs font-bold uppercase tracking-[0.8px] text-fg-muted">
           Módulos

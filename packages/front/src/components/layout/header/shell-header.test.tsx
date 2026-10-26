@@ -39,6 +39,7 @@ describe('ShellHeader', () => {
     '/comparar',
     '/permanencia',
     '/metodologia',
+    '/sobre',
   ])('shows the inner header with a back button on %s', (pathname) => {
     renderAt(pathname)
 
