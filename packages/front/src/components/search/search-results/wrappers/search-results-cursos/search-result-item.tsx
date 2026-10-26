@@ -47,8 +47,6 @@ export function SearchResultItem({
   const turno = oferta?.turno || ''
   const gratuito = curso.curso?.in_gratuito
 
-  const idCurso = curso.curso?.co_curso || ''
-
   // Localização
   const localizacaoItens = [municipio, uf].filter(Boolean)
   const localizacaoCompleta = localizacaoItens.join(' - ')
@@ -93,7 +91,7 @@ export function SearchResultItem({
           subtitle={`${instituicao}  •  ${localizacaoCompleta}`}
         />
       </Card.Header>
-      
+
       {tags.length > 0 && <Card.Tags source={tags} />}
 
       <Card.ProgressBar
