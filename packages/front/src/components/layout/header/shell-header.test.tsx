@@ -57,13 +57,12 @@ describe('ShellHeader', () => {
     ).toBe(true)
   })
 
-  it.each([
-    '/cursos/123',
-    '/ies/456',
-    '/ingresso/789',
-  ])('renders header on the detail page %s', (pathname) => {
-    renderAt(pathname)
+  it.each(['/cursos/123', '/ies/456', '/ingresso/789'])(
+    'renders header on the detail page %s',
+    (pathname) => {
+      renderAt(pathname)
 
-    expect(screen.getByRole('banner')).toHaveClass('max-w-2xl')
-  })
+      expect(screen.getByRole('banner')).toHaveClass('max-w-2xl')
+    },
+  )
 })
