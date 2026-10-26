@@ -63,6 +63,11 @@ describe('Menu', () => {
       '/',
     )
 
+    expect(screen.getByRole('link', { name: 'Metodologia' })).toHaveAttribute(
+      'href',
+      '/metodologia',
+    )
+
     expect(
       screen.getByRole('link', { name: 'Escolher curso' }),
     ).toHaveAttribute('href', '/cursos')
