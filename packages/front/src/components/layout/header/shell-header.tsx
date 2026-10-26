@@ -23,5 +23,11 @@ export const ShellHeader = () => {
     )
   }
 
-  return <Header variant="profile" module={moduleFromPathname(pathname)} />
+  return (
+    <Header
+      variant="profile"
+      module={moduleFromPathname(pathname)}
+      className={PAGE_CONTAINER_CLASS[container]}
+    />
+  )
 }

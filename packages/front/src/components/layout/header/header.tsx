@@ -65,7 +65,7 @@ export const Header = ({
           data-module={module}
           className={cn(
             'flex items-center justify-between p-4 pb-0 bg-surface-lv1',
-            'mx-auto w-full max-w-2xl',
+            'mx-auto w-full',
             'border-b border-accent/40',
             className,
           )}

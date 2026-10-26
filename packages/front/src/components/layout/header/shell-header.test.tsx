@@ -65,4 +65,10 @@ describe('ShellHeader', () => {
       expect(screen.getByRole('banner')).toHaveClass('max-w-2xl')
     },
   )
+
+  it('renders the full-width header on the design system page', () => {
+    renderAt('/design-system')
+
+    expect(screen.getByRole('banner')).toHaveClass('max-w-none')
+  })
 })
