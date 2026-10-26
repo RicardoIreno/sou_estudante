@@ -69,7 +69,7 @@ describe('ProfileIngressoLoader', () => {
     )
   })
 
-  it('avisa quando o curso não tem ingresso por Sisu', () => {
+  it('renderiza o perfil de ingresso quando o curso não tem Sisu', () => {
     mockCurso({
       curso: {
         sequencial: 1,
@@ -80,15 +80,9 @@ describe('ProfileIngressoLoader', () => {
 
     render(<ProfileIngressoLoader id="1" />)
 
+    expect(screen.getByText('detalhe do ingresso')).toBeInTheDocument()
     expect(
-      screen.getByText('O curso não possui ingresso por Sisu'),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(/consulte o site da instituição/),
-    ).toBeInTheDocument()
-    expect(screen.getByText('Universidade Federal')).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Voltar à busca' }),
-    ).toHaveAttribute('href', '/cursos')
+      screen.queryByRole('link', { name: 'Voltar à busca' }),
+    ).not.toBeInTheDocument()
   })
 })

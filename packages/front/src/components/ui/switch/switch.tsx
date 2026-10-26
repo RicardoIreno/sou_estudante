@@ -41,7 +41,7 @@ export function Switch({
         'relative inline-flex shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors duration-200',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-deep',
         isMedium ? 'h-6 w-11' : 'h-5 w-9',
-        checked ? 'bg-accent' : 'bg-muted',
+        checked ? 'bg-accent' : 'bg-muted border border-accent-deep/30',
         disabled && 'cursor-not-allowed opacity-50',
         className,
       )}

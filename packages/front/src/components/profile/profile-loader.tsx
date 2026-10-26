@@ -12,8 +12,6 @@ export interface ProfileLoaderProps<TData> {
   /** Título do estado "não encontrado" (ex.: "Curso não encontrado"). */
   notFoundTitle: string
   notFoundDescription: string
-  /** Conteúdo opcional que substitui título + descrição no estado "não encontrado". */
-  notFoundContent?: ReactNode
   /** Mensagem exibida quando há erro sem texto ou os dados vieram vazios. */
   fallbackError: string
   /** Destino do link "Voltar à busca" no estado "não encontrado". */
@@ -33,7 +31,6 @@ export function ProfileLoader<TData>({
   notFound,
   notFoundTitle,
   notFoundDescription,
-  notFoundContent,
   fallbackError,
   backHref,
   children,
@@ -49,16 +46,14 @@ export function ProfileLoader<TData>({
   if (notFound) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
-        {notFoundContent ?? (
-          <div className="text-center">
-            <Typo v="title" s="xl" t="h1" className="block">
-              {notFoundTitle}
-            </Typo>
-            <Typo v="mute" s="sm" t="p" className="mt-2">
-              {notFoundDescription}
-            </Typo>
-          </div>
-        )}
+        <div className="text-center">
+          <Typo v="title" s="xl" t="h1" className="block">
+            {notFoundTitle}
+          </Typo>
+          <Typo v="mute" s="sm" t="p" className="mt-2">
+            {notFoundDescription}
+          </Typo>
+        </div>
         <div className="mt-6 text-center">
           <Link
             href={backHref}

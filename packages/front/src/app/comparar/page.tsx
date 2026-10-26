@@ -1,5 +1,5 @@
 import { Comparar } from '@/components/compare/comparar'
-import { RoutesBar } from '@/components/layout/routes-bar/routes-bar'
+// import { RoutesBar } from '@/components/layout/routes-bar/routes-bar'
 import { IconModule } from '@/components/ui/icon-module/icon-module'
 import { MODULE_META, type Module } from '@/lib/module'
 
@@ -10,7 +10,7 @@ export default function CompararPage() {
   return (
     <div data-module={module}>
       <div className="mx-auto w-full min-h-page max-w-pages px-5 py-8 bg-surface-lv1 rounded-b-callout">
-        <RoutesBar module={module} />
+        {/* <RoutesBar module={module} /> */}
         <header className="mb-6">
           <div className="mb-2 flex items-center gap-2 font-sans text-xs font-bold tracking-[0.9px] text-accent-deep uppercase">
             <IconModule module={module} />

@@ -38,6 +38,8 @@ describe('ShellHeader', () => {
     '/ingresso',
     '/comparar',
     '/permanencia',
+    '/metodologia',
+    '/sobre',
   ])('shows the inner header with a back button on %s', (pathname) => {
     renderAt(pathname)
 
@@ -55,13 +57,18 @@ describe('ShellHeader', () => {
     ).toBe(true)
   })
 
-  it.each([
-    '/cursos/123',
-    '/ies/456',
-    '/ingresso/789',
-  ])('renders header on the detail page %s', (pathname) => {
-    renderAt(pathname)
+  it.each(['/cursos/123', '/ies/456', '/ingresso/789'])(
+    'renders header on the detail page %s',
+    (pathname) => {
+      renderAt(pathname)
 
-    expect(screen.getByRole('banner')).toHaveClass('max-w-2xl')
+      expect(screen.getByRole('banner')).toHaveClass('max-w-2xl')
+    },
+  )
+
+  it('renders the full-width header on the design system page', () => {
+    renderAt('/design-system')
+
+    expect(screen.getByRole('banner')).toHaveClass('max-w-none')
   })
 })

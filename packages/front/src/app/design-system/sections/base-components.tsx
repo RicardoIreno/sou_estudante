@@ -1,9 +1,7 @@
 'use client'
 
 import { Info, MapPin, TrendingUp } from 'lucide-react'
-import { useState } from 'react'
 import { BackLink } from '@/components/ui/back-link/back-link'
-import { BottomSheet } from '@/components/ui/bottom-sheet/bottom-sheet'
 import { Button } from '@/components/ui/button/button'
 import { Callout } from '@/components/ui/callout'
 import { Card } from '@/components/ui/card'
@@ -21,8 +19,6 @@ import { MODULES } from '@/lib/module'
 import { Section, State, States, SubSection } from '../kit'
 
 export function BaseComponents() {
-  const [sheetOpen, setSheetOpen] = useState(false)
-
   return (
     <Section
       id="base"
@@ -246,34 +242,6 @@ export function BaseComponents() {
             </Callout>
           </div>
         </div>
-      </SubSection>
-
-      <SubSection title="BottomSheet · interativo">
-        <div className="flex flex-wrap items-center gap-4">
-          <Button v="solid" onClick={() => setSheetOpen(true)}>
-            Abrir bottom sheet
-          </Button>
-          <span className="text-xs text-fg-muted">
-            (também fecha por Esc, toque no véu ou no X)
-          </span>
-        </div>
-        <BottomSheet
-          open={sheetOpen}
-          onClose={() => setSheetOpen(false)}
-          labelledBy="design-sheet-title"
-        >
-          <div className="px-4 pb-6 pt-2">
-            <h3
-              id="design-sheet-title"
-              className="font-display text-lg font-bold text-fg"
-            >
-              Filtros
-            </h3>
-            <p className="mt-2 text-sm text-fg-muted">
-              Exemplo de conteúdo do bottom sheet usado no mobile.
-            </p>
-          </div>
-        </BottomSheet>
       </SubSection>
 
       <SubSection title="Card · composição de partes">

@@ -63,6 +63,16 @@ describe('Menu', () => {
       '/',
     )
 
+    expect(screen.getByRole('link', { name: 'Metodologia' })).toHaveAttribute(
+      'href',
+      '/metodologia',
+    )
+
+    expect(screen.getByRole('link', { name: 'Sobre' })).toHaveAttribute(
+      'href',
+      '/sobre',
+    )
+
     expect(
       screen.getByRole('link', { name: 'Escolher curso' }),
     ).toHaveAttribute('href', '/cursos')
@@ -99,7 +109,18 @@ describe('Menu', () => {
     render(<Menu mode="light" />)
 
     expect(screen.getByRole('button', { name: 'Menu' })).toHaveClass(
-      'bg-surface-deep',
+      'bg-fg',
+      'text-on-dark',
+    )
+  })
+
+  it('uses the module accent surface when a module is provided', () => {
+    render(<Menu mode="light" module="2" />)
+
+    expect(screen.getByRole('button', { name: 'Menu' })).toHaveClass(
+      'border-accent-deep/50',
+      'bg-accent',
+      'text-accent-fg',
     )
   })
 

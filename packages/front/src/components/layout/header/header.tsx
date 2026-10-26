@@ -29,9 +29,11 @@ export const Header = ({
   if (variant === 'inner') {
     return (
       <header
+        data-module={module}
         className={cn(
-          'sticky top-0 z-[600] flex h-[64px] items-center justify-between px-5',
+          'flex h-[64px] items-center justify-between px-5',
           'mx-auto w-full bg-surface-lv1',
+          'border-b border-accent/40',
           className,
         )}
       >
@@ -50,7 +52,7 @@ export const Header = ({
                 {MODULE_META[module].title}
               </Link>
             ))}
-          <Menu mode="light" />
+          <Menu mode="light" module={module} />
         </div>
       </header>
     )
@@ -60,9 +62,11 @@ export const Header = ({
     return (
       <div className="w-full">
         <header
+          data-module={module}
           className={cn(
             'flex items-center justify-between p-4 pb-0 bg-surface-lv1',
-            'mx-auto w-full max-w-2xl',
+            'mx-auto w-full',
+            'border-b border-accent/40',
             className,
           )}
         >
@@ -77,7 +81,7 @@ export const Header = ({
                 variant="module"
               />
             )}
-            <Menu />
+            <Menu module={module} />
           </div>
         </header>
       </div>
@@ -87,7 +91,7 @@ export const Header = ({
   return (
     <header
       className={cn(
-        'sticky top-0 z-[600] flex h-[52px] items-center justify-between bg-surface-header px-5',
+        'flex h-[52px] items-center justify-between bg-surface-header px-5 py-2',
         'mx-auto w-full',
         className,
       )}

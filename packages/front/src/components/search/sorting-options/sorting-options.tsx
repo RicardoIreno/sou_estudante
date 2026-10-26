@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ui/button/button'
+import { FilterGroup } from '@/components/search/filter-group'
 import type { Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
 
@@ -14,44 +14,39 @@ export interface SortingOptionsProps {
   onSelect: (value: string) => void
   /** Valor da ordenação ativa; usado para marcar o botão correspondente. */
   value?: string
-  ariaLabel?: string
+  /** Título do grupo de ordenação. */
+  title?: string
   module?: Module
   className?: string
 }
 
 /**
  * Grupo de botões de ordenação agnóstico: recebe as opções, o valor ativo e o
- * callback, sem conhecer o endpoint de busca.
+ * callback, sem conhecer o endpoint de busca. Usa `FilterGroup`/`FilterGroupOption`
+ * para padronizar o visual com as seções de filtro.
  */
 export function SortingOptions({
   options,
   onSelect,
   value,
-  ariaLabel = 'Ordenar resultados',
+  title = 'Ordenação',
   module,
   className,
 }: SortingOptionsProps) {
   return (
-    // biome-ignore lint/a11y/useSemanticElements: grupo de botões de ordenação, não um formulário
-    <div
-      role="group"
-      aria-label={ariaLabel}
-      className={cn('flex flex-wrap gap-2', className)}
-    >
-      {options.map((option) => {
-        const active = option.value === value
-        return (
-          <Button
+    <FilterGroup module={module} className={cn('w-full', className)}>
+      <FilterGroup.Title>{title}</FilterGroup.Title>
+      <FilterGroup.List>
+        {options.map((option) => (
+          <FilterGroup.Option
             key={option.value}
-            module={module}
-            active={active}
-            aria-pressed={active}
-            onClick={() => onSelect(option.value)}
-          >
-            {option.label}
-          </Button>
-        )
-      })}
-    </div>
+            type="radio"
+            label={option.label}
+            checked={option.value === value}
+            onChange={() => onSelect(option.value)}
+          />
+        ))}
+      </FilterGroup.List>
+    </FilterGroup>
   )
 }

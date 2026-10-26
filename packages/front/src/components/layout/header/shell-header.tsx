@@ -2,31 +2,32 @@
 
 import { usePathname } from 'next/navigation'
 import { moduleFromPathname } from '@/lib/module'
+import { PAGE_CONTAINER_CLASS, pageContainer } from '@/lib/page-container'
 import { Header } from './header'
 
 export const ShellHeader = () => {
   const pathname = usePathname()
-  const isHome = pathname === '/'
-  const isInner =
-    pathname === '/cursos' ||
-    pathname === '/ies' ||
-    pathname === '/ingresso' ||
-    pathname === '/comparar' ||
-    pathname === '/permanencia'
+  const container = pageContainer(pathname)
 
-  if (isHome) {
-    return <Header variant="home" className="max-w-home" />
+  if (container === 'home') {
+    return <Header variant="home" className={PAGE_CONTAINER_CLASS.home} />
   }
 
-  if (isInner) {
+  if (container === 'pages') {
     return (
       <Header
         variant="inner"
         module={moduleFromPathname(pathname)}
-        className="max-w-pages"
+        className={PAGE_CONTAINER_CLASS.pages}
       />
     )
   }
 
-  return <Header variant="profile" module={moduleFromPathname(pathname)} />
+  return (
+    <Header
+      variant="profile"
+      module={moduleFromPathname(pathname)}
+      className={PAGE_CONTAINER_CLASS[container]}
+    />
+  )
 }

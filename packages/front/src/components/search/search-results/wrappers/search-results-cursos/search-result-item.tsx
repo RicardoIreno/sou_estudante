@@ -47,8 +47,6 @@ export function SearchResultItem({
   const turno = oferta?.turno || ''
   const gratuito = curso.curso?.in_gratuito
 
-  const idCurso = curso.curso?.co_curso || ''
-
   // Localização
   const localizacaoItens = [municipio, uf].filter(Boolean)
   const localizacaoCompleta = localizacaoItens.join(' - ')
@@ -89,15 +87,13 @@ export function SearchResultItem({
       <Card.Header>
         <Card.Title
           level={3}
-          title={`${nomeCurso} • ${idCurso}`}
-          subtitle={`${instituicao} • ${localizacaoCompleta}`}
+          title={`${nomeCurso}`}
+          subtitle={`${instituicao}  •  ${localizacaoCompleta}`}
         />
       </Card.Header>
-      <hr className="border-t-[1px] border-border-secondary my-2 relative -z-20" />
 
       {tags.length > 0 && <Card.Tags source={tags} />}
 
-      <hr className="border-t-[1px] border-border-secondary my-2 relative -z-20" />
       <Card.ProgressBar
         title="Taxa de desistência acumulada (5 anos)"
         percentage={
@@ -108,7 +104,6 @@ export function SearchResultItem({
         emptyHint="sem dados"
       />
 
-      <hr className="border-t-[1px] border-border-secondary my-2 relative -z-20" />
       {tagsBottom.length > 0 && <Card.Tags source={tagsBottom} />}
     </>
   )

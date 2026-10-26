@@ -29,34 +29,36 @@ describe('SortingOptionsCursos', () => {
   it('atualiza o parâmetro sort ao pressionar uma opção', () => {
     render(<SortingOptionsCursos />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'A Z' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'A Z' }))
 
     expect(updateParams).toHaveBeenCalledWith({ sort: 'az' })
   })
 
-  it('propaga o módulo para os botões', () => {
+  it('renderiza o grupo de ordenação com título', () => {
+    render(<SortingOptionsCursos />)
+
+    expect(
+      screen.getByRole('region', { name: 'Ordenação' }),
+    ).toBeInTheDocument()
+  })
+
+  it('propaga o módulo para o grupo', () => {
     render(<SortingOptionsCursos module="2" />)
 
-    expect(screen.getByRole('button', { name: 'Maior Enade' })).toHaveAttribute(
+    expect(screen.getByRole('region', { name: 'Ordenação' })).toHaveAttribute(
       'data-module',
       '2',
     )
   })
 
-  it('marca a opção ativa com aria-pressed', () => {
+  it('marca a opção ativa como checada', () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams('sort=az') as unknown as ReadonlyURLSearchParams,
     )
 
     render(<SortingOptionsCursos />)
 
-    expect(screen.getByRole('button', { name: 'A Z' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    )
-    expect(screen.getByRole('button', { name: 'Maior Enade' })).toHaveAttribute(
-      'aria-pressed',
-      'false',
-    )
+    expect(screen.getByRole('radio', { name: 'A Z' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Maior Enade' })).not.toBeChecked()
   })
 })
