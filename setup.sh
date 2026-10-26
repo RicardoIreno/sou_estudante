@@ -6,12 +6,13 @@
 #
 #   1. Recria o .env a partir do .env.example (permissões 600, backup opcional).
 #   2. Garante as credenciais do Elasticsearch no .env.
-#   3. Sobe o container do Elasticsearch (se necessário) e aguarda ficar pronto.
-#   4. Revoga as API Keys gerenciadas e gera novas com privilégio mínimo.
-#   5. Grava as novas chaves no .env.
+#   3. Constrói as imagens (API, bulk e front), salvo com --skip-build.
+#   4. Sobe o container do Elasticsearch (se necessário) e aguarda ficar pronto.
+#   5. Revoga as API Keys gerenciadas e gera novas com privilégio mínimo.
 #   6. Executa o job do container de bulking (se_bulk).
 #   7. Verifica se já existem índices no Elasticsearch.
-#   8. Informa os próximos passos (bulking via container se_bulk).
+#   8. Sobe os containers da API e do front (se_api e se_front).
+#   9. Abre a página do front no navegador (http://localhost:3000).
 #
 # O script fala com o Elasticsearch pelo host (http://localhost:9200 por
 # padrão), enquanto o .env mantém a URL interna (http://se_es01:9200) usada
@@ -48,6 +49,7 @@ BULK_INDEX_PATTERN="*"
 
 # URL usada pelo PRÓPRIO script (host). O .env continua com a URL interna.
 ES_HOST_URL="${ES_HOST_URL:-http://localhost:9200}"
+FRONT_URL="http://localhost:3000"
 ES_SERVICE="se_es01"           # nome do serviço no docker-compose
 ES_CONTAINER=""                # vazio = resolve via ESNODE01_NAME do .env
 BULK_SERVICE="se_bulk"
@@ -66,11 +68,15 @@ REUSE_VALID_KEYS=false         # reutiliza chaves válidas em vez de recriar
 PURGE_ALL_KEYS=false           # revoga TODAS as API Keys (perigoso)
 SKIP_ES_UP=false
 SKIP_BULK=false
+SKIP_BUILD=false
 API_ROLE_DESCRIPTORS_FILE=""
 BULK_ROLE_DESCRIPTORS_FILE=""
 
 CLI_USER=""
 CLI_PASS=""
+
+# Engine de containers: vazio = autodetectar; "podman" ou "docker" força.
+ENGINE=""
 
 # Comandos detectados em tempo de execução
 CONTAINER_ENGINE=""
@@ -129,6 +135,7 @@ ${BOLD}${CATEGORY_COLOR}Elasticsearch / containers:${RESET}
   ${CMD}-w, --wait <segundos>${RESET}           Espera o ES ficar pronto; 0 = sem limite ${MUTED}(padrão: ${WAIT_SECONDS})${RESET}
   ${CMD}    --skip-es-up${RESET}                Não tenta subir o ES (apenas aguarda)
   ${CMD}    --skip-bulk${RESET}              Não executa o container de bulking
+  ${CMD}    --skip-build${RESET}             Não constrói as imagens (API, bulk e front)
   ${CMD}    --bulk-service <nome>${RESET}     Serviço do bulk ${MUTED}(padrão: ${BULK_SERVICE})${RESET}
   ${CMD}    --bulk-profile <nome>${RESET}     Profile do bulk ${MUTED}(padrão: ${BULK_PROFILE})${RESET}
 
@@ -147,6 +154,7 @@ ${BOLD}${CATEGORY_COLOR}Gerais:${RESET}
   ${CMD}    --non-interactive${RESET}           Modo CI: não faz perguntas no terminal
   ${CMD}    --dry-run${RESET}                   Simula as ações sem alterar o .env ou criar recursos
   ${CMD}    --timeout <segundos>${RESET}        Timeout do curl ${MUTED}(padrão: ${CURL_TIMEOUT})${RESET}
+  ${CMD}    --engine <podman|docker>${RESET}    Engine de containers ${MUTED}(padrão: autodetectar)${RESET}
   ${CMD}-k, --insecure${RESET}                  Ignora validação do certificado TLS
   ${CMD}-h, --help${RESET}                      Exibe esta ajuda
 
@@ -173,6 +181,7 @@ parse_args() {
       -w|--wait)              require_option_value "$1" "${2:-}"; WAIT_SECONDS="$2"; shift 2 ;;
       --skip-es-up)           SKIP_ES_UP=true; shift ;;
       --skip-bulk)          SKIP_BULK=true; shift ;;
+      --skip-build)         SKIP_BUILD=true; shift ;;
       --bulk-service)       require_option_value "$1" "${2:-}"; BULK_SERVICE="$2"; shift 2 ;;
       --bulk-profile)       require_option_value "$1" "${2:-}"; BULK_PROFILE="$2"; shift 2 ;;
       -n|--key-name)          require_option_value "$1" "${2:-}"; API_KEY_NAME="$2"; shift 2 ;;
@@ -187,12 +196,18 @@ parse_args() {
       --non-interactive)      NON_INTERACTIVE=true; shift ;;
       --dry-run)              DRY_RUN=true; shift ;;
       --timeout)              require_option_value "$1" "${2:-}"; CURL_TIMEOUT="$2"; shift 2 ;;
+      --engine)               require_option_value "$1" "${2:-}"; ENGINE="$2"; shift 2 ;;
       -k|--insecure)          CURL_INSECURE=true; shift ;;
       -f|--force|--invalidate-old) shift ;;
       -h|--help)              usage; exit 0 ;;
       *)                      usage; die "Opção desconhecida: $1" ;;
     esac
   done
+
+  case "$ENGINE" in
+    ""|podman|docker) ;;
+    *) die "Engine inválido para --engine: '$ENGINE' (use podman ou docker)." ;;
+  esac
 }
 
 # -----------------------------------------------------------------------------
@@ -200,6 +215,11 @@ parse_args() {
 # -----------------------------------------------------------------------------
 require_engine() {
   [[ -n "$CONTAINER_ENGINE" ]] && return 0
+  if [[ -n "$ENGINE" ]]; then
+    command -v "$ENGINE" >/dev/null 2>&1 || die "Engine solicitado não encontrado: $ENGINE"
+    CONTAINER_ENGINE="$ENGINE"
+    return 0
+  fi
   if command -v podman >/dev/null 2>&1; then
     CONTAINER_ENGINE="podman"
   elif command -v docker >/dev/null 2>&1; then
@@ -211,6 +231,30 @@ require_engine() {
 
 require_compose() {
   [[ ${#COMPOSE_CMD[@]} -gt 0 ]] && return 0
+  if [[ -n "$ENGINE" ]]; then
+    case "$ENGINE" in
+      podman)
+        if podman compose version >/dev/null 2>&1; then
+          COMPOSE_CMD=(podman compose)
+        elif command -v podman-compose >/dev/null 2>&1; then
+          COMPOSE_CMD=(podman-compose)
+        else
+          die "Engine podman solicitado, mas nenhum compose compatível encontrado (podman compose ou podman-compose)."
+        fi
+        return 0
+        ;;
+      docker)
+        if docker compose version >/dev/null 2>&1; then
+          COMPOSE_CMD=(docker compose)
+        elif command -v docker-compose >/dev/null 2>&1; then
+          COMPOSE_CMD=(docker-compose)
+        else
+          die "Engine docker solicitado, mas nenhum compose compatível encontrado (docker compose ou docker-compose)."
+        fi
+        return 0
+        ;;
+    esac
+  fi
   if command -v podman >/dev/null 2>&1 && podman compose version >/dev/null 2>&1; then
     COMPOSE_CMD=(podman compose)
   elif command -v podman-compose >/dev/null 2>&1; then
@@ -227,6 +271,8 @@ require_compose() {
 compose_display() {
   if [[ ${#COMPOSE_CMD[@]} -gt 0 ]]; then
     printf '%s' "${COMPOSE_CMD[*]}"
+  elif [[ "$ENGINE" == "docker" ]]; then
+    printf 'docker compose'
   else
     printf 'podman compose'
   fi
@@ -433,7 +479,32 @@ ensure_credentials() {
 }
 
 # -----------------------------------------------------------------------------
-# Etapa 2: Elasticsearch & Cluster Health
+# Etapa 2: Build das imagens
+# -----------------------------------------------------------------------------
+build_images() {
+  print_step "3. Build das imagens (API, bulk e front)"
+
+  if [[ "$SKIP_BUILD" == true ]]; then
+    log_info "Etapa ignorada (--skip-build)."
+    return 0
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    log_info "[DRY-RUN] Executaria: $(compose_display) --profile ${BULK_PROFILE} build"
+    return 0
+  fi
+
+  require_compose
+  log_info "Construindo as imagens..."
+  if "${COMPOSE_CMD[@]}" --profile "$BULK_PROFILE" build; then
+    log_success "Imagens construídas com sucesso."
+  else
+    die "Falha ao construir as imagens. Verifique o log acima."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+# Etapa 3: Elasticsearch & Cluster Health
 # -----------------------------------------------------------------------------
 resolve_host_url() {
   is_blank "$ES_HOST_URL" && die "URL do Elasticsearch (--url) não pode ser vazia."
@@ -536,7 +607,7 @@ wait_for_elasticsearch() {
 }
 
 # -----------------------------------------------------------------------------
-# Etapa 3: API Keys & Privilégio Mínimo
+# Etapa 4: API Keys & Privilégio Mínimo
 # -----------------------------------------------------------------------------
 validate_existing_api_key() {
   local url="$1" var_name="$2" label="$3" current_key
@@ -780,7 +851,7 @@ setup_single_api_key() {
 setup_api_keys() {
   local url="$1" user pass api_role_descriptors bulk_role_descriptors
 
-  print_step "3. Gerenciamento das API Keys do Elasticsearch"
+  print_step "5. Gerenciamento das API Keys do Elasticsearch"
   user="$(get_env_var "$VAR_USER")"
   pass="$(get_env_var "$VAR_PASS")"
 
@@ -812,10 +883,10 @@ setup_api_keys() {
 }
 
 # -----------------------------------------------------------------------------
-# Etapa 4: Container de bulking (job one-shot)
+# Etapa 5: Container de bulking (job one-shot)
 # -----------------------------------------------------------------------------
 start_bulk() {
-  print_step "4. Container de bulking (${BULK_SERVICE})"
+  print_step "6. Container de bulking (${BULK_SERVICE})"
 
   if [[ "$SKIP_BULK" == true ]]; then
     log_info "Etapa ignorada (--skip-bulk)."
@@ -851,12 +922,12 @@ start_bulk() {
 }
 
 # -----------------------------------------------------------------------------
-# Etapa 5: Índices existentes
+# Etapa 6: Índices existentes
 # -----------------------------------------------------------------------------
 check_indices() {
   local url="$1" key response http_code body names
 
-  print_step "5. Índices existentes no Elasticsearch"
+  print_step "7. Índices existentes no Elasticsearch"
   key="$(get_env_var "$VAR_BULK_APIKEY")"
 
   if is_blank "$key"; then
@@ -897,6 +968,51 @@ check_indices() {
 }
 
 # -----------------------------------------------------------------------------
+# Etapa 7: API e Front
+# -----------------------------------------------------------------------------
+start_services() {
+  print_step "8. API e front (se_api, se_front)"
+
+  if [[ "$DRY_RUN" == true ]]; then
+    log_info "[DRY-RUN] Executaria: $(compose_display) up -d se_api se_front"
+    return 0
+  fi
+
+  require_compose
+  log_info "Subindo os containers da API e do front..."
+  if "${COMPOSE_CMD[@]}" up -d se_api se_front; then
+    log_success "se_api e se_front em execução."
+  else
+    die "Falha ao subir se_api e se_front. Verifique o log acima."
+  fi
+}
+
+open_front() {
+  print_step "9. Página do front"
+
+  local opener=""
+  if command -v xdg-open >/dev/null 2>&1; then
+    opener="xdg-open"
+  elif command -v open >/dev/null 2>&1; then
+    opener="open"
+  elif command -v wslview >/dev/null 2>&1; then
+    opener="wslview"
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    log_info "[DRY-RUN] Abriria ${CMD}${FRONT_URL}${RESET} no navegador."
+    return 0
+  fi
+
+  if [[ -n "$opener" ]]; then
+    "$opener" "$FRONT_URL" >/dev/null 2>&1 || true
+    log_success "Front aberto no navegador em ${CMD}${FRONT_URL}${RESET}."
+  else
+    log_info "Abra o front em ${CMD}${FRONT_URL}${RESET} (nenhum navegador encontrado no host)."
+  fi
+}
+
+# -----------------------------------------------------------------------------
 # Resumo
 # -----------------------------------------------------------------------------
 print_summary() {
@@ -913,11 +1029,12 @@ print_summary() {
   else
     log_success "Container de bulking (${BULK_SERVICE}) executado com sucesso."
   fi
+  log_success "API e front em execução: ${CMD}http://localhost:8080${RESET} e ${CMD}${FRONT_URL}${RESET}."
   echo
   log_info "Próximos passos — reindexação de dados pelo container de bulking:"
   printf '      %s\n' "${compose_cmd} --profile ${BULK_PROFILE} run --rm --no-deps ${BULK_SERVICE}"
   echo
-  log_info "Depois suba a API e o front: ${CMD}${compose_cmd} up -d se_api se_front${RESET}"
+  log_info "Para parar os serviços: ${CMD}${compose_cmd} down${RESET}"
   echo
 }
 
@@ -929,7 +1046,7 @@ main() {
   require_command curl
   build_curl_opts
 
-  print_header "Setup do ambiente SoU_Estudante (Elasticsearch + bulk)"
+  print_header "Setup do ambiente SoU_Estudante"
 
   if [[ "$DRY_RUN" == true ]]; then
     log_warn "Modo --dry-run ativo. Nenhuma alteração real será feita."
@@ -945,7 +1062,9 @@ main() {
   url="$(resolve_host_url)"
   es_container="$(resolve_es_container)"
 
-  print_step "2b. Elasticsearch"
+  build_images
+
+  print_step "4. Elasticsearch"
   ensure_elasticsearch_up "$es_container"
   if [[ "$DRY_RUN" == false ]]; then
     wait_for_elasticsearch "$url" "$(get_env_var "$VAR_USER")" "$(get_env_var "$VAR_PASS")"
@@ -954,6 +1073,8 @@ main() {
   setup_api_keys "$url"
   start_bulk
   check_indices "$url"
+  start_services
+  open_front
 
   print_summary
 }
