@@ -2,18 +2,19 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { MODULE_META, MODULES } from '@/lib/module'
+import { MODULE_META, MODULES, type Module } from '@/lib/module'
 import { cn } from '@/utils/cn'
 
 interface MenuProps {
   mode?: 'light' | 'dark'
+  module?: Module
 }
 
 const ITEM =
   'flex w-full items-center gap-[11px] px-5 py-[0.7rem] text-left text-sm text-fg transition-colors duration-fast hover:bg-muted'
 const PONTO = 'h-[9px] w-[9px] shrink-0 rounded-full'
 
-export function Menu({ mode = 'light' }: MenuProps) {
+export function Menu({ mode = 'light', module }: MenuProps) {
   const [opened, setOpened] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const drawerRef = useRef<HTMLElement>(null)
@@ -65,12 +66,15 @@ export function Menu({ mode = 'light' }: MenuProps) {
         ref={buttonRef}
         aria-label="Menu"
         aria-expanded={opened}
+        data-module={module}
         onClick={() => setOpened(true)}
         className={cn(
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
           mode === 'dark'
             ? 'bg-on-dark/10 text-on-dark hover:bg-on-dark/[.18]'
-            : 'bg-surface-deep hover:bg-surface-deep/70',
+            : module
+              ? 'border border-accent-deep/50 bg-accent text-accent-fg hover:bg-accent/80'
+              : 'bg-fg text-on-dark hover:bg-fg/80',
         )}
       >
         <svg

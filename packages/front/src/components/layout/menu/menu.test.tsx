@@ -99,7 +99,18 @@ describe('Menu', () => {
     render(<Menu mode="light" />)
 
     expect(screen.getByRole('button', { name: 'Menu' })).toHaveClass(
-      'bg-surface-deep',
+      'bg-fg',
+      'text-on-dark',
+    )
+  })
+
+  it('uses the module accent surface when a module is provided', () => {
+    render(<Menu mode="light" module="2" />)
+
+    expect(screen.getByRole('button', { name: 'Menu' })).toHaveClass(
+      'border-accent-deep',
+      'bg-accent',
+      'text-accent-fg',
     )
   })
 

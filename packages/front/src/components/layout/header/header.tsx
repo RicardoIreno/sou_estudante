@@ -52,7 +52,7 @@ export const Header = ({
                 {MODULE_META[module].title}
               </Link>
             ))}
-          <Menu mode="light" />
+          <Menu mode="light" module={module} />
         </div>
       </header>
     )
@@ -81,7 +81,7 @@ export const Header = ({
                 variant="module"
               />
             )}
-            <Menu />
+            <Menu module={module} />
           </div>
         </header>
       </div>
@@ -91,7 +91,7 @@ export const Header = ({
   return (
     <header
       className={cn(
-        'flex h-[52px] items-center justify-between bg-surface-header px-5',
+        'flex h-[52px] items-center justify-between bg-surface-header px-5 py-2',
         'mx-auto w-full',
         className,
       )}
