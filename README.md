@@ -24,7 +24,7 @@ Tudo é orquestrado por `docker-compose.yml` (desenvolvimento) e `docker-compose
 
 ### Pré-requisitos
 
-- **Podman** com `podman compose` (runtime adotado pelo projeto, usado também no deploy). O `setup.sh` usa `podman compose` e, se não encontrar, tenta `podman-compose`, `docker compose` ou `docker-compose`. Os comandos abaixo funcionam com `docker compose` trocando o prefixo.
+- **Podman** com `podman compose` (runtime adotado pelo projeto, usado também no deploy). O `setup.sh` usa `podman compose` e, se não encontrar, tenta `podman-compose`, `docker compose` ou `docker-compose`. Para forçar Docker, use `./setup.sh --engine docker`. Os comandos abaixo funcionam com `docker compose` trocando o prefixo.
 - `curl`; `jq` é opcional.
 - No Windows, use o WSL ([instalação](https://learn.microsoft.com/pt-br/windows/wsl/install)).
 
@@ -39,11 +39,9 @@ Sem eles o `setup.sh` apenas avisa e pula a ingestão: a API sobe, mas sem dados
 
 ### Passo a passo
 
-1. `podman compose build`
-2. `./setup.sh`
-3. `podman compose up -d`
+1. `./setup.sh`
 
-O `./setup.sh` é executado no host e faz, em ordem: cria o `.env` a partir de `.env.example` (pede a senha do Elasticsearch se estiver em branco); sobe o Elasticsearch e aguarda; gera as API keys (leitura para a API, leitura/escrita para a ingestão) e grava no `.env`; roda o job de ingestão `se_bulk`; lista os índices existentes. Veja `./setup.sh --help` para as opções (`--keep-env`, `--skip-bulk`, `--dry-run`, `--non-interactive`, ...).
+O `./setup.sh` é executado no host e faz, em ordem: cria o `.env` a partir de `.env.example` (pede a senha do Elasticsearch se estiver em branco); constrói as imagens; sobe o Elasticsearch e aguarda; gera as API keys (leitura para a API, leitura/escrita para a ingestão) e grava no `.env`; roda o job de ingestão `se_bulk`; lista os índices existentes; sobe `se_api` e `se_front`; e abre o front no navegador. Veja `./setup.sh --help` para as opções (`--keep-env`, `--skip-build`, `--skip-bulk`, `--dry-run`, `--non-interactive`, ...).
 
 Para reingerir os dados depois: `podman compose --profile bulk run --rm --no-deps se_bulk`. A ingestão só carrega índices que não existem ou estão vazios (ver [docs/10.database.md](docs/10.database.md)).
 

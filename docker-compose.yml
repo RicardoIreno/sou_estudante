@@ -11,8 +11,6 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - elsou-data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
     networks:
       - data_net
     healthcheck:
@@ -45,6 +43,7 @@ services:
       - ./packages/api:/app:z
       - go-mod-cache:/root/go/pkg/mod
     networks:
+      - web_net
       - data_net
     depends_on:
       se_es01:
@@ -90,12 +89,10 @@ services:
       - node_modules-data:/app/node_modules
       - /app/.next
     networks:
-      - data_net
+      - web_net
     depends_on:
-      se_es01:
-        condition: service_healthy
-      # se_api:
-      #   condition: service_started
+      se_api:
+        condition: service_started
     restart: unless-stopped
 
 volumes:
@@ -107,6 +104,9 @@ volumes:
     driver: local
 
 networks:
+  web_net:
+    name: web_net
+    driver: bridge
   data_net:
     name: data_net
     driver: bridge
