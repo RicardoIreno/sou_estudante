@@ -17,8 +17,6 @@ services:
         hard: -1
     volumes:
       - elsou-data:/usr/share/elasticsearch/data
-    ports:
-      - "127.0.0.1:9200:9200"
     networks:
       - data_net
     healthcheck:
@@ -50,6 +48,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     networks:
+      - web_net
       - data_net
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1"]
@@ -80,10 +79,8 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - data_net
+      - web_net
     depends_on:
-      se_es01:
-        condition: service_healthy
       se_api:
         condition: service_started
     restart: unless-stopped
@@ -122,6 +119,9 @@ volumes:
     driver: local
 
 networks:
+  web_net:
+    name: web_net
+    driver: bridge
   data_net:
     name: data_net
     driver: bridge
